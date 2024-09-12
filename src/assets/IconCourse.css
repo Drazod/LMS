@@ -1,0 +1,121 @@
+svg#freepik_stories-college-project:not(.animated) .animable {
+    opacity: 0;
+}
+
+svg#freepik_stories-college-project.animated #freepik--background-complete--inject-12 {
+    animation: 1s 1 forwards cubic-bezier(.36, -0.01, .5, 1.38) fadeIn, 1.5s Infinite linear wind;
+    animation-delay: 0s, 1s;
+}
+
+svg#freepik_stories-college-project.animated #freepik--Books--inject-12 {
+    animation: 1s 1 forwards cubic-bezier(.36, -0.01, .5, 1.38) fadeIn, 1.5s Infinite linear wind;
+    animation-delay: 0s, 1s;
+}
+
+svg#freepik_stories-college-project.animated #freepik--speech-bubble-2--inject-12 {
+    animation: 1s 1 forwards cubic-bezier(.36, -0.01, .5, 1.38) slideLeft, 1.5s Infinite linear shake;
+    animation-delay: 0s, 1s;
+}
+
+svg#freepik_stories-college-project.animated #freepik--speech-bubble-1--inject-12 {
+    animation: 1.5s Infinite linear shake;
+    animation-delay: 0s;
+}
+
+svg#freepik_stories-college-project.animated #freepik--character-2--inject-12 {
+    animation: 1s 1 forwards cubic-bezier(.36, -0.01, .5, 1.38) slideDown, 1.5s Infinite linear floating;
+    animation-delay: 0s, 1s;
+}
+
+svg#freepik_stories-college-project.animated #freepik--character-1--inject-12 {
+    animation: 1s 1 forwards cubic-bezier(.36, -0.01, .5, 1.38) slideDown, 1.5s Infinite linear floating;
+    animation-delay: 0s, 1s;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes wind {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(1deg);
+    }
+
+    75% {
+        transform: rotate(-1deg);
+    }
+}
+
+@keyframes slideLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floating {
+    0% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}

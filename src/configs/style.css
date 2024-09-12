@@ -1,0 +1,13 @@
+.bg-course-banner {
+    background-image: url('../assets/CourseDetail/banner2.jpg');
+    width: 100%;
+    /* Other background properties as needed */
+}
+
+.list-image-checkmark {
+    margin-top: 8px;
+    margin-left: 22px;
+    list-style-image: url('../assets/CourseDetail/checkmark.png') !important;
+    width: 100%;
+    /* Other list style properties as needed */
+} 

@@ -1,0 +1,24 @@
+/* customStyles.css */
+
+.ovbl-dark {
+  position: relative;
+  overflow: hidden;
+  /* Ensure the pseudo-element is contained within the parent */
+}
+
+.ovbl-dark::after {
+  content: "";
+  background: #100018;
+  background: -moz-linear-gradient(45deg, #100018 0%, #26006c 50%, #110038 100%);
+  background: -webkit-linear-gradient(45deg, #100018 0%, #26006c 50%, #110038 100%);
+  background: linear-gradient(45deg, #100018 0%, #26006c 50%, #110038 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#100018', endColorstr='#110038', GradientType=1);
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  /* Adjust this value as needed */
+  opacity: 0.8;
+}
