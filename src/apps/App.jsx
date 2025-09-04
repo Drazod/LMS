@@ -30,7 +30,6 @@ import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentFailed from "@/pages/PaymentFailed";
 import { RequireAuth } from "react-auth-kit";
 import PrivateRoute from "@/components/PrivateRoute";
-import WelcomePage from "@/pages/WelcomePage";
 
 const App = () => {
   return (
@@ -45,8 +44,8 @@ const App = () => {
           </Route>
         </Route>
         <Route path="/student/:courseId" element={<StudentStudy />} />
-        <Route path="/" element={<WelcomePage />}>
-          {/* <Route index element={<Home />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
           <Route path="course" element={<OurCourse />} />
           <Route path="course/search" element={<CourseSearch />} />
           <Route path="/course/:courseId" element={<CourseDetail />} />
@@ -55,7 +54,7 @@ const App = () => {
           <Route path="/cart/" element={<RequireAuth loginPath="/auth/login">
             <StudentCart/>
           </RequireAuth>
-          } /> */}
+          } />
         </Route>
         <Route path="/create/" element={<AdminDashboardLayout />}>
           <Route path="course" element={<CreateCourse />} />

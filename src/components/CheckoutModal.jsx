@@ -15,7 +15,7 @@ import CreditCard from '../assets/Cart/CreditCard.png';
 
 const CheckoutModal = React.memo((props) => {
     const dispatch = useDispatch();
-    const modalState = useSelector(stateOfModal);
+    const modalState = true;
     const [paymentOptions, setPaymentOptions] = useState(1)
     const handleCloseModal = () =>
         dispatch(closeModal());

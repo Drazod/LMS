@@ -218,7 +218,7 @@ const StudentCart = () => {
                         </Breadcrumbs>
                     </div>
                 </div>
-                {listCartItem.length != 0 ? (
+                {listCartItem.length == 0 ? (
                     <div className="flex flex-row w-11/12 mb-10 mx-auto">
                         <div className="flex flex-col w-3/4">
                             <div className="flex flex-row items-center w-11/12 mb-1">
@@ -308,7 +308,7 @@ const StudentCart = () => {
                                     <Button className="flex w-full items-center justify-center bg-indigo-600 rounded-lg mt-3 font-bold text-base text-white transition-all hover:bg-indigo-700"
                                         onClick={handleOpenModal}
                                         size="sm"
-                                        disabled={totalPrice == 0}>
+                                        disabled={totalPrice != 0}>
                                         Checkout
                                     </Button>
                                 </form>
