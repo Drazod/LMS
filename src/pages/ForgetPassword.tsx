@@ -4,7 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import imgUrl2 from "../assets/auth/logo-white-2.png";
 import * as Yup from "yup";
 import axios from "axios";
-import FloatingLabel from "@/components/label"; // Import the custom FloatingLabel component
+import FloatingLabel from "@/components/label";
 
 const SignupSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),

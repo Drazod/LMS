@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 const FloatingLabel = ({ htmlFor, children, isFocused, inputValue }) => {
   const shouldFloat = isFocused || inputValue.length > 0;
 

@@ -59,7 +59,7 @@ const initialState = {
   haveCourses: true,
 };
 
-const adminCourseViewSlice = createSlice({
+export const adminCourseViewSlice = createSlice({
   name: "adminCourseView",
   initialState,
   reducers: {},
@@ -100,5 +100,3 @@ const adminCourseViewSlice = createSlice({
       });
   },
 });
-
-export default adminCourseViewSlice.reducer;

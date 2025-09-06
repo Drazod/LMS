@@ -152,7 +152,7 @@ const initialState = {
   uploading: false,
 };
 
-const editLessionSlice = createSlice({
+export const editLessionSlice = createSlice({
   name: "editLession",
   initialState,
   reducers: {
@@ -339,4 +339,3 @@ export const {
   deleteBlock,
   cleanContent,
 } = editLessionSlice.actions;
-export default editLessionSlice.reducer;

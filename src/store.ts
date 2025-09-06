@@ -1,19 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
-import selectedIndexReducer from "../features/slices/selectedIndex";
-import modalReducer from "../slices/modalSlice";
-import editLessionReducer from "@/slices/editLessionSlice";
-import adminCourseviewReducer from "@/slices/adminCourseViewSlice";
-import { studentApi } from "../apis/StudentDashboardApi";
+
+import { selectedIndexSlice } from "@/features/slices/selectedIndex";
+import { modalSlice } from "@/slices/modalSlice";
+import { editLessionSlice } from "@/slices/editLessionSlice";
+import { adminCourseViewSlice } from "@/slices/adminCourseViewSlice";
+import { studentApi } from "@/apis/StudentDashboardApi";
 import { instuctorApi } from "@/apis/InstructorDashboardApi";
 import { CourseApi } from "@/apis/CourseApi";
-// import { adminApi } from "@/apis/adminApi";
 
 export const store = configureStore({
   reducer: {
-    modal: modalReducer,
-    selectedIndex: selectedIndexReducer,
-    editLession: editLessionReducer,
-    adminCourseView: adminCourseviewReducer,
+    modal: modalSlice.reducer,
+    selectedIndex: selectedIndexSlice.reducer,
+    editLession: editLessionSlice.reducer,
+    adminCourseView: adminCourseViewSlice.reducer,
     // [adminApi.reducerPath]: adminApi.reducer,
     [studentApi.reducerPath]: studentApi.reducer,
     [instuctorApi.reducerPath]: instuctorApi.reducer,
