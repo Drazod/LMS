@@ -14,7 +14,7 @@ const SignupSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-const base_url = "https://curcus-3-0.onrender.com/";
+const base_url = "http://localhost:8080/";
 
 export default function Register() {
   const navigate = useNavigate();
