@@ -1,13 +1,20 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useState } from "react";
-import imgUrl2 from "../assets/auth/logo-white-2.png";
-import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
+
 import axios from "axios";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -17,57 +24,48 @@ import {
 } from "@/components/ui/select"
 
 import { FacebookLogoIcon, GoogleLogoIcon } from "@phosphor-icons/react";
+import imgUrl2 from "../assets/auth/logo-white-2.png";
 
-const SignupSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email").required("Required"),
-  password: Yup.string()
-    .min(8, "Password must be at least 8 characters")
-    .required("Password is required"),
-});
-
-const base_url = "https://curcus-3-0.onrender.com/";
+const base_url = "https://curcus-3-0.onrender.com/"; // TO BE CHANGED LATER
 
 export default function Register() {
   const navigate = useNavigate();
-  const initialValues = {
-    userRole: "",
-    name: "",
-    email: "",
-    password: "",
-  };
 
-  const handleSubmit = async (data) => {
-    const userRoleMap = {
-      Student: "S",
-      Instructor: "I",
-    };
+  const signUpSchema = z.object({
+    userRole: z.string().min(1, "Role is required"),
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email address."),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+  });
 
-    const postData = {
-      userRole: userRoleMap[data.userRole],
-      name: data.name,
-      email: data.email,
-      password: data.password,
-    };
+  const form = useForm<z.infer<typeof signUpSchema>>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      userRole: "",
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
     try {
       const response = await axios.post(
         `${base_url}api/v1/auth/register`,
-        postData
+        values
       );
-      localStorage.setItem('userId', response.data.payload.userId)
-      localStorage.setItem('role', response.data.payload.userRole)
-      localStorage.setItem('name', response.data.payload.name)
-      localStorage.setItem('avtUrl', response.data.payload.avtUrl)
+
+      localStorage.setItem('userId', response.data.payload.userId);
+      localStorage.setItem('role', response.data.payload.userRole);
+      localStorage.setItem('name', response.data.payload.name);
+      localStorage.setItem('avtUrl', response.data.payload.avtUrl);
+
       navigate('/');
-    } catch (error) { }
+    } catch (error) {
+      console.error("Registration error:", error);
+    }
   };
-  const [nameFocused, setNameFocused] = useState(false);
-  const [nameValue, setNameValue] = useState("");
-  const [emailFocused, setEmailFocused] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
-  const [emailValue, setEmailValue] = useState("");
-  const [passwordValue, setPasswordValue] = useState("");
-  const [userRoleFocused, setUserRoleFocused] = useState(false);
-  const [userRoleValue, setUserRoleValue] = useState("");
+
   return (
     <>
       <div className="page-wraper">
@@ -89,38 +87,59 @@ export default function Register() {
                   Sign up for a new account
                 </h2>
               </div>
-              <Formik
-                initialValues={initialValues}
-                onSubmit={handleSubmit}
-                validationSchema={SignupSchema}
-              >
-                {({ errors, touched, handleChange }) => (
-                  <form>
-                    <div className="flex flex-col gap-6">
-                      <div className="grid gap-3">
-                        <Label htmlFor="role">Role</Label>
-                        <Select>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Role" />
-                          </SelectTrigger>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="userRole"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Role</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a role" />
+                            </SelectTrigger>
+                          </FormControl>
                           <SelectContent>
                             <SelectItem value="student">Student</SelectItem>
                             <SelectItem value="instructor">Instructor</SelectItem>
                           </SelectContent>
                         </Select>
-                      </div>
-                      <div className="grid gap-3">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="m@example.com"
-                          required
-                        />
-                      </div>
-                      <div className="grid gap-3">
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input className="mb-1.5" placeholder="Enter your name" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input className="mb-1.5" placeholder="Enter email address" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
                         <div className="flex items-center">
-                          <Label htmlFor="password">Password</Label>
+                          <FormLabel>Password</FormLabel>
                           <a
                             href="#"
                             className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
@@ -128,23 +147,25 @@ export default function Register() {
                             Forgot your password?
                           </a>
                         </div>
-                        <Input id="password" type="password" required />
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <Button type="submit" className="w-full">
-                          Sign up
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                          <GoogleLogoIcon weight="bold" /> Sign up with Google
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                          <FacebookLogoIcon weight="bold" /> Sign up with Facebook
-                        </Button>
-                      </div>
-                    </div>
-                  </form>
-                )}
-              </Formik>
+                        <FormControl>
+                          <Input placeholder="Enter password" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex flex-col gap-3">
+                    <Button type="submit" className="w-full">
+                      Sign up
+                    </Button>
+                    <Button variant="outline" className="w-full">
+                      <GoogleLogoIcon weight="bold" /> Sign up with Google
+                    </Button>
+                    <Button variant="outline" className="w-full">
+                      <FacebookLogoIcon weight="bold" /> Sign up with Facebook
+                    </Button>
+                  </div>
+                </form>
+              </Form>
             </div>
           </div>
         </div>

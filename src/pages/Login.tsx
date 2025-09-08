@@ -1,70 +1,69 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useState } from 'react';
 import { useSignIn } from "react-auth-kit";
-import imgUrl2 from "../assets/auth/logo-white-2.png";
-import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
+
 import axios from "axios";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 import { FacebookLogoIcon, GoogleLogoIcon } from "@phosphor-icons/react";
+import imgUrl2 from "@/assets/auth/logo-white-2.png";
 
-const SignupSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email").required("Required"),
-  password: Yup.string()
-    .min(8, "Password must be at least 8 characters")
-    .required("Password is required"),
-});
-
-const base_url = "https://curcus-3-0.onrender.com/";
+const base_url = "https://curcus-3-0.onrender.com/"; // TO BE CHANGED LATER
 
 export default function LoginPage() {
-  const navigate = useNavigate();
-  const initialValues = {
-    email: "",
-    password: "",
-  };
   const signIn = useSignIn();
-  const [error, setError] = useState(""); // State for error message
+  const navigate = useNavigate();
+  
+  const loginSchema = z.object({
+    email: z.string().email("Invalid email address."),
+    password: z.string(),
+  });
 
-  const handleSubmit = async (data) => {
-    const postData = {
-      email: data.email,
-      password: data.password,
-    };
-    console.log(data);
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    }
+  });
+
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
       const response = await axios.post(
         `${base_url}api/v1/auth/authenticate`,
-        postData
+        values
       );
+
       signIn({
         token: response.data.payload.tokens.access_token,
         expiresIn: 3600,
         tokenType: "Bearer",
         authState: { email: response.data.payload.email },
       });
+
       localStorage.setItem('userId', response.data.payload.userId);
       localStorage.setItem('role', response.data.payload.userRole);
       localStorage.setItem('name', response.data.payload.name);
       localStorage.setItem('avtUrl', response.data.payload.avtUrl);
 
       console.log(response.data.payload.tokens.access_token);
-
       navigate("/");
     } catch (error) {
-      setError("The username or password is incorrect ! ");
-      console.log("Error: ", error);
+      console.error("Login error:", error);
     }
   };
-
-  const [emailFocused, setEmailFocused] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
-  const [emailValue, setEmailValue] = useState("");
-  const [passwordValue, setPasswordValue] = useState("");
 
   return (
     <>
@@ -87,26 +86,27 @@ export default function LoginPage() {
                   Login to your account
                 </h2>
               </div>
-              <Formik
-                initialValues={initialValues}
-                onSubmit={handleSubmit}
-                validationSchema={SignupSchema}
-              >
-                {({ errors, touched, handleChange }) => (
-                  <form>
-                    <div className="flex flex-col gap-6">
-                      <div className="grid gap-3">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="m@example.com"
-                          required
-                        />
-                      </div>
-                      <div className="grid gap-3">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input className="mt-1.5" placeholder="Enter email address" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
                         <div className="flex items-center">
-                          <Label htmlFor="password">Password</Label>
+                          <FormLabel>Password</FormLabel>
                           <a
                             href="#"
                             className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
@@ -114,29 +114,31 @@ export default function LoginPage() {
                             Forgot your password?
                           </a>
                         </div>
-                        <Input id="password" type="password" required />
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <Button type="submit" className="w-full">
-                          Login
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                          <GoogleLogoIcon weight="bold" /> Sign up with Google
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                          <FacebookLogoIcon weight="bold" /> Sign up with Facebook
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="mt-4 text-center text-sm">
-                      Don&apos;t have an account?{" "}
-                      <a href="/auth/register" className="underline underline-offset-4">
-                        Sign up
-                      </a>
-                    </div>
-                  </form>
-                )}
-              </Formik>
+                        <FormControl>
+                          <Input placeholder="Enter password" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex flex-col gap-3">
+                    <Button type="submit" className="w-full">
+                      Login
+                    </Button>
+                    <Button variant="outline" className="w-full">
+                      <GoogleLogoIcon weight="bold" /> Sign up with Google
+                    </Button>
+                    <Button variant="outline" className="w-full">
+                      <FacebookLogoIcon weight="bold" /> Sign up with Facebook
+                    </Button>
+                  </div>
+                </form>
+                <div className="mt-8 text-center text-sm">
+                  Don&apos;t have an account?{" "}
+                  <a href="/auth/register" className="underline underline-offset-4">
+                    Sign up
+                  </a>
+                </div>
+              </Form>
             </div>
           </div>
         </div>
