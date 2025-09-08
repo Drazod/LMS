@@ -25,7 +25,7 @@ const base_url = "https://curcus-3-0.onrender.com/"; // TO BE CHANGED LATER
 export default function LoginPage() {
   const signIn = useSignIn();
   const navigate = useNavigate();
-  
+
   const loginSchema = z.object({
     email: z.string().email("Invalid email address."),
     password: z.string(),
@@ -67,79 +67,71 @@ export default function LoginPage() {
 
   return (
     <>
-      <div className="page-wraper">
-        <div className="account-form">
-          <div className="w-full h-screen grid grid-cols-1 md:grid-cols-3 justify-center items-center">
-            <div className="relative w-full h-full col-span-1 bg-[url('/auth/bg2.jpg')] bg-cover bg-center">
+      <div className="bg-[url('/auth/bg2.jpg')] bg-cover bg-center">
+        <div className="backdrop-blur-2xl min-h-dvh bg-white/80 md:flex md:items-center">
+          <div className="mx-auto px-10 py-24 w-full sm:max-w-9/10 md:max-w-7/10 xl:max-w-1/2 2xl:max-w-3/10">
+            <div className="flex flex-col gap-4 mb-8">
               <img
                 src={imgUrl2}
                 alt="logo"
-                width={211}
-                height={57}
-                className="absolute top-1/4 md:top-1/2 left-1/2 -translate-x-1/2 z-50"
+                width={177}
+                height={48}
               />
-              <div className="absolute top-0 left-0 w-full h-full bg-[#4c1864]/50"></div>
+              <h2 className="font-bold text-3xl md:text-4xl">Log in to your account</h2>
             </div>
-            <div className="mx-auto w-2/5 py-8 col-span-1 md:col-span-2">
-              <div className="mb-10">
-                <h2 className="mb-2 leading-8 pl-2 border-l-4 border-yellow-800 text-[26px] font-bold">
-                  Login to your account
-                </h2>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input className="mt-1.5 bg-background" placeholder="Enter email address" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center">
+                        <FormLabel>Password</FormLabel>
+                        <a
+                          href="#"
+                          className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                        >
+                          Forgot your password?
+                        </a>
+                      </div>
+                      <FormControl>
+                        <Input className="bg-background" placeholder="Enter password" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full">
+                  Login
+                </Button>
+              </form>
+              <div className="flex flex-col gap-4 mt-8">
+                <Button variant="outline" className="w-full">
+                  <GoogleLogoIcon weight="bold" /> Sign up with Google
+                </Button>
+                <Button variant="outline" className="w-full">
+                  <FacebookLogoIcon weight="bold" /> Sign up with Facebook
+                </Button>
               </div>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input className="mt-1.5" placeholder="Enter email address" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center">
-                          <FormLabel>Password</FormLabel>
-                          <a
-                            href="#"
-                            className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                          >
-                            Forgot your password?
-                          </a>
-                        </div>
-                        <FormControl>
-                          <Input placeholder="Enter password" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <div className="flex flex-col gap-3">
-                    <Button type="submit" className="w-full">
-                      Login
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <GoogleLogoIcon weight="bold" /> Sign up with Google
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <FacebookLogoIcon weight="bold" /> Sign up with Facebook
-                    </Button>
-                  </div>
-                </form>
-                <div className="mt-8 text-center text-sm">
-                  Don&apos;t have an account?{" "}
-                  <a href="/auth/register" className="underline underline-offset-4">
-                    Sign up
-                  </a>
-                </div>
-              </Form>
-            </div>
+              <div className="mt-8 text-center text-sm">
+                Don&apos;t have an account?{" "}
+                <a href="/auth/register" className="underline underline-offset-4">
+                  Sign up
+                </a>
+              </div>
+            </Form>
           </div>
         </div>
       </div>
