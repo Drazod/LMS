@@ -2,7 +2,7 @@ import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
 import { ThemeProvider } from "@material-tailwind/react";
 import { Provider } from "react-redux";
-import { store } from "../apps/store";
+import { store } from "../store";
 const AllTheProviders = ({ children }) => {
   return (
     <ThemeProvider theme="light">

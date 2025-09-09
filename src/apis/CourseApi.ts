@@ -1,4 +1,4 @@
-import { API_ROUTES, API_URL } from "@/configs/ApiConfig";
+import { API_URL } from "@/configs/ApiConfig";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const CourseApi = createApi({
