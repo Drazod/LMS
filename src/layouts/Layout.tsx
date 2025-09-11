@@ -2,15 +2,16 @@
  * @description Layout
  * Layout lấy các file từ component và ghép lại với nhau để tạo thành layout hoàn chỉnh chung cho các trang khác nhau
  */
-import React from "react";
-import Header from "../components/Header1";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+
 import { Outlet } from "react-router-dom";
 
-const Layout = ({ children }) => {
+import Header from "@/components/Header1";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
+export default function Layout() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <Navbar />
       <div>
@@ -19,6 +20,4 @@ const Layout = ({ children }) => {
       <Footer />
     </div>
   );
-};
-
-export default Layout;
+}
