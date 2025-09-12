@@ -14,20 +14,15 @@ import {
   FacebookLogoIcon,
   GoogleLogoIcon,
   LinkedinLogoIcon,
-  MagnifyingGlassIcon,
   ShoppingCartIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
 import SelectLanguage from "./Home_Component/DropLang1";
-import SearchHeader from "@/components/Home_Component/SearchHeader";
-import NavMobile from "./Home_Component/NavMobile";
+import { SearchHeader } from "@/components/Home_Component/SearchHeader";
 
 import Logo from "@/assets/logo-white.png";
 
-function Header() {
-  const [openHome, setOpenHome] = useState(false);
-  const [openBlog, setOpenBlog] = useState(false);
-  const [openDash, setOpenDash] = useState(false);
+export const Header = () => {
   const [color, setColor] = useState(false);
 
   const [name, setName] = useState("");
@@ -75,8 +70,8 @@ function Header() {
     <header
       className={
         color
-          ? "fixed w-full bg-background z-30 text-sm sm:text-base text-foreground transition-colors duration-500 border-b-2 border-foreground/10"
-          : "fixed w-full bg-transparent z-30 text-sm sm:text-base text-white transition-colors duration-500"
+          ? "fixed w-full bg-background z-30 text-sm sm:text-base text-foreground transition-colors duration-150 border-b-2 border-foreground/10"
+          : "fixed w-full bg-transparent z-30 text-sm sm:text-base text-white transition-colors duration-150"
       }
     >
       <div className={color ? "hidden" : "container mt-4 rounded-2xl sm:flex gap-8 mx-auto px-1 py-1 backdrop-blur-3xl bg-background/25 text-center"}>
@@ -117,7 +112,7 @@ function Header() {
       </div>
       <div className="container mx-auto px-8 h-20 flex items-center justify-between ">
         <div className="flex items-center gap-6">
-          <img src={Logo} className="invert w-28 sm:w-fit object-cover"></img>
+          <img src={Logo} className={`${color ? "invert" : ""} w-28 sm:w-fit object-cover`}></img>
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
@@ -153,38 +148,15 @@ function Header() {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="icon" className="size-8" asChild>
-            <a href="https://www.facebook.com">
-              <FacebookLogoIcon weight="duotone" className="!size-7" />
-            </a>
-          </Button>
-          <Button variant="ghost" size="icon" className="size-8" asChild>
-            <a href="https://www.google.com">
-              <GoogleLogoIcon weight="duotone" className="!size-7" />
-            </a>
-          </Button>
-          <Button variant="ghost" size="icon" className="size-8 mr-4" asChild>
-            <a href="https://www.linkedin.com">
-              <LinkedinLogoIcon weight="duotone" className="!size-7" />
-            </a>
-          </Button>
-          {/* <SearchHeader /> */}
-          <Button variant="ghost" size="icon" className="size-8" asChild>
-            <a href="/">
-              <MagnifyingGlassIcon weight="duotone" className="!size-7" />
-            </a>
-          </Button>
+        <div className="flex items-center gap-2">
+          <SearchHeader color={color} />
           <Button variant="ghost" size="icon" className="size-8" asChild>
             <a href="/cart">
               <ShoppingCartIcon weight="duotone" className="!size-7" />
             </a>
           </Button>
-          <NavMobile />
         </div>
       </div>
     </header>
   );
 }
-
-export default Header;

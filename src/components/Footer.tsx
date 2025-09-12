@@ -1,94 +1,67 @@
-import React from "react";
-import Logo from "../assets/logo-white.png";
-import { Button, TextField } from "@mui/material";
-import { ArrowLongRightIcon } from "@heroicons/react/24/solid";
-import FacebookOutlinedIcon from "@mui/icons-material/FacebookOutlined";
-import GoogleIcon from "@mui/icons-material/Google";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-const Footer = () => {
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+
+import {
+  FacebookLogoIcon,
+  GoogleLogoIcon,
+  LinkedinLogoIcon,
+} from "@phosphor-icons/react/dist/ssr";
+
+import Logo from "@/assets/logo-white.png";
+
+export const Footer = () => {
   return (
-    <footer className="bg-black">
-      <div className="relative w-full text-white container mx-auto sm:px-6">
-        <div className="flex  justify-between px-4">
-          <a href="#">
+    <Card className="container mx-auto my-10 rounded-4xl py-14 px-14">
+      <CardContent className="flex flex-col gap-10 p-0 pt-0">
+        <div className="flex justify-between">
+          <a href="/">
             <img
               src={Logo}
-              className="w-28 sm:w-fit object-cover mr-12 my-5 sm:my-0"
+              className="invert w-28 sm:w-fit object-cover mr-12 my-5 sm:my-0"
             ></img>
           </a>
-          <div className="flex">
-            <div>
-              <div className="hidden sm:flex text-center my-6 mr-6">
-                <a href="https://www.facebook.com" className="mx-2">
-                  <FacebookOutlinedIcon fontSize="small" />
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex gap-2">
+              <Button variant="ghost" size="icon" className="size-8" asChild>
+                <a href="https://www.facebook.com">
+                  <FacebookLogoIcon weight="duotone" className="!size-7" />
                 </a>
-                <a href="https://www.google.com" className="mx-2">
-                  <GoogleIcon fontSize="small" />
+              </Button>
+              <Button variant="ghost" size="icon" className="size-8" asChild>
+                <a href="https://www.google.com">
+                  <GoogleLogoIcon weight="duotone" className="!size-7" />
                 </a>
-                <a href="https://www.linkedin.com" className="mx-2">
-                  <LinkedInIcon fontSize="small" />
+              </Button>
+              <Button variant="ghost" size="icon" className="size-8" asChild>
+                <a href="https://www.linkedin.com">
+                  <LinkedinLogoIcon weight="duotone" className="!size-7" />
                 </a>
-              </div>
-            </div>
-            <div>
-              <Button
-                variant="contained"
-                className="!bg-orange-500 !text-black !mt-4 !hover:bg-purple-800"
-              >
-                Join Now
               </Button>
             </div>
+            <Button>Join Now</Button>
           </div>
         </div>
-        <div className="sm:hidden mx-4">
-          <h3 className="font-bold mb-4 text-base">Sign Up For A Newsletter</h3>
-          <p className="text-gray-500">
-            Weekly Breaking News Analysis And Cutting Edge Advices On Job
-            Searching.
-          </p>
-          <div className=" flex mt-6 justify-between">
-            <TextField
-              id="filled-basic1"
-              label="Your email here"
-              variant="filled"
-              className="!bg-gray-400 !rounded-sm !mr-2 !w-full"
-              size="small"
-            />
-            <Button
-              variant="contained"
-              className="!float-right !bg-orange-500 !hover:bg-purple-800"
-            >
-              <ArrowLongRightIcon className="text-black" />
-            </Button>
-          </div>
-        </div>
-        <div className="flex flex-row mt-8 space-x-4">
-          <div className="basis-4/12 hidden sm:block">
-            <h3 className="font-bold mb-4 text-base">
+        <div className="flex justify-between">
+          <div className="hidden sm:flex flex-col w-2/5">
+            <h3 className="font-bold mb-2 text-base">
               Sign Up For A Newsletter
             </h3>
-            <p className="text-gray-500">
+            <p>
               Weekly Breaking News Analysis And Cutting Edge Advices On Job
               Searching.
             </p>
-
-            <div className=" flex mt-6 justify-between">
-              <TextField
-                id="filled-basic"
-                label="Your email here"
-                variant="filled"
-                className="!bg-gray-400 !rounded-sm !mr-2 !w-full"
-                size="small"
-              />
-              <Button
-                variant="contained"
-                className="!float-right !bg-orange-500 !hover:bg-purple-800"
-              >
-                <ArrowLongRightIcon className="text-black" />
+            <div className="flex w-full items-center gap-2 mt-6">
+              <Input type="email" placeholder="Email" />
+              <Button type="submit" variant="outline">
+                Subscribe
               </Button>
             </div>
           </div>
-          <div className="basis-2/12">
+          <div>
             <h3 className="font-bold mb-4 text-base">Company</h3>
             <ul className="text-gray-500 space-y-2">
               <li>
@@ -113,7 +86,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="basis-2/12">
+          <div>
             <h3 className="font-bold mb-4 text-base">Get In Touch</h3>
             <ul className="text-gray-500 space-y-2">
               <li>
@@ -138,7 +111,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="basis-2/12">
+          <div>
             <h3 className="font-bold mb-4 text-base">Courses</h3>
             <ul className="text-gray-500 space-y-2">
               <li>
@@ -164,10 +137,10 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        <div className="text-center mt-24 text-gray-500">Templates Hub</div>
-      </div>
-    </footer>
+        <div className="text-center mt-10">
+          <small>&copy; 2025, EduChamp. All rights reserved.</small>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
-
-export default Footer;
