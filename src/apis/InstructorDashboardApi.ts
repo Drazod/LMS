@@ -1,182 +1,190 @@
 import { API_ROUTES, API_URL } from "@/configs/ApiConfig";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+// Helper to read react-auth-kit cookies as a fallback
+function getCookie(name: string): string | null {
+  const m = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
 export const instuctorApi = createApi({
-  reducerPath: "instuctorApi",
+  reducerPath: "instructorApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: API_URL,
+    baseUrl: API_URL, // or: import.meta.env.VITE_API_BASE_URL
+    prepareHeaders: (headers) => {
+      // Get token from localStorage first; fallback to react-auth-kit cookies
+      const token = localStorage.getItem("token") || getCookie("_auth");
+      const tokenType =
+        localStorage.getItem("token_type") || getCookie("_auth_type") || "Bearer";
+
+      if (token && !headers.has("Authorization")) {
+        headers.set("Authorization", `${tokenType} ${token}`);
+      }
+      return headers;
+    },
   }),
-  tagTypes: ["instuctor", "instuctor-profile"],
+  tagTypes: ["instructor", "instructor-profile"],
   endpoints: (builder) => ({
-    getInstructorCourses: builder.query({
-      query: ({ page, size }) => ({
-        url:
-          API_ROUTES.instructor +
-          `${localStorage.getItem("userId")}/course?page=${page}&size=${size}`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      providesTags: ["instuctor"],
+    getInstructorCourses: builder.query<any, { page: number; size: number }>({
+      query: ({ page, size }) => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instructor}${userId}/course?page=${page}&size=${size}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["instructor"],
     }),
-    getInstructor: builder.query({
-      query: () => ({
-        url: API_ROUTES.instructor + `id/${localStorage.getItem("userId")}`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      providesTags: ["instuctor-profile"],
+
+    getInstructor: builder.query<any, void>({
+      query: () => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instructor}id/${userId}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["instructor-profile"],
     }),
-    updateInstructorProfile: builder.mutation({
-      query: ({ name,firstName,
-  lastName,
-  phoneNumber,
-  publicAvtId,
-  avt }) => ({
-        url: API_ROUTES.instructor + `${localStorage.getItem("userId")}`,
-        method: "PUT",
-        body: {  name,
-          firstName,
-          lastName,
-          phoneNumber,
-          publicAvtId,
-          avt },
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      invalidatesTags: ["instuctor-profile"],
+
+    updateInstructorProfile: builder.mutation<
+      any,
+      {
+        name: string;
+        firstName: string;
+        lastName: string;
+        phoneNumber: string;
+        publicAvtId?: string | null;
+        avt?: string | null;
+      }
+    >({
+      query: (body) => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instructor}${userId}`,
+          method: "PUT",
+          body,
+        };
+      },
+      invalidatesTags: ["instructor-profile"],
     }),
-    updateInstructorAddress: builder.mutation({
-      query: ({
-        firstName,
-        lastName,
-        phoneNumber,
-        userAddress,
-        userCity,
-        userCountry,
-        userPostalCode,
-      }) => ({
-        url:
-          API_ROUTES.instructor +
-          `${localStorage.getItem("userId")}/update-address`,
-        method: "POST",
-        body: {
-          firstName,
-          lastName,
-          phoneNumber,
-          userAddress,
-          userCity,
-          userCountry,
-          userPostalCode,
-        },
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      invalidatesTags: ["instuctor-profile"],
+
+    updateInstructorAddress: builder.mutation<
+      any,
+      {
+        firstName: string;
+        lastName: string;
+        phoneNumber: string;
+        userAddress: string;
+        userCity: string;
+        userCountry: string;
+        userPostalCode: string;
+      }
+    >({
+      query: (body) => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instructor}${userId}/update-address`,
+          method: "POST",
+          body,
+        };
+      },
+      invalidatesTags: ["instructor-profile"],
     }),
-    updateInstructorPassword: builder.mutation({
-      query: ({ name, email, password, firstName, lastName, phoneNumber }) => ({
-        url:
-          API_ROUTES.instructor +
-          `${localStorage.getItem("userId")}/changePassword`,
-        method: "PUT",
-        body: { name, email, password, firstName, lastName, phoneNumber },
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      invalidatesTags: ["instuctor-profile"],
+
+    updateInstructorPassword: builder.mutation<
+      any,
+      {
+        name: string;
+        email: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+        phoneNumber: string;
+      }
+    >({
+      query: (body) => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instructor}${userId}/changePassword`,
+          method: "PUT",
+          body,
+        };
+      },
+      invalidatesTags: ["instructor-profile"],
     }),
-    getTotalUsersBuy: builder.query({
-      query: () => ({
-        url:
-          API_ROUTES.instuctorStat +
-          `${localStorage.getItem("userId")}/totalUsersBuy`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      providesTags: ["instuctor"],
+
+    getTotalUsersBuy: builder.query<any, void>({
+      query: () => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instuctorStat}${userId}/totalUsersBuy`,
+          method: "GET",
+        };
+      },
+      providesTags: ["instructor"],
     }),
-    getTotalRevenue: builder.query({
-      query: () => ({
-        url:
-          API_ROUTES.instuctorStat +
-          `${localStorage.getItem("userId")}/totalRevenue`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      providesTags: ["instuctor"],
+
+    getTotalRevenue: builder.query<any, void>({
+      query: () => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instuctorStat}${userId}/totalRevenue`,
+          method: "GET",
+        };
+      },
+      providesTags: ["instructor"],
     }),
-    getTotalCourses: builder.query({
-      query: () => ({
-        url:
-          API_ROUTES.instuctorStat +
-          `${localStorage.getItem("userId")}/totalCourses`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      providesTags: ["instuctor"],
+
+    getTotalCourses: builder.query<any, void>({
+      query: () => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instuctorStat}${userId}/totalCourses`,
+          method: "GET",
+        };
+      },
+      providesTags: ["instructor"],
     }),
-    getTopCourse: builder.query({
-      query: () => ({
-        url:
-          API_ROUTES.instuctorStat +
-          `${localStorage.getItem("userId")}/topCourse`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      providesTags: ["instuctor"],
+
+    getTopCourse: builder.query<any, void>({
+      query: () => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instuctorStat}${userId}/topCourse`,
+          method: "GET",
+        };
+      },
+      providesTags: ["instructor"],
     }),
-    getRevenuePerYear: builder.query({
-      query: () => ({
-        url:
-          API_ROUTES.instuctorStat +
-          `${localStorage.getItem("userId")}/revenuePerYear`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      providesTags: ["instuctor"],
+
+    getRevenuePerYear: builder.query<any, void>({
+      query: () => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instuctorStat}${userId}/revenuePerYear`,
+          method: "GET",
+        };
+      },
+      providesTags: ["instructor"],
     }),
-    getCoursesPerYear: builder.query({
-      query: () => ({
-        url:
-          API_ROUTES.instuctorStat +
-          `${localStorage.getItem("userId")}/coursesPerYear`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+    deleteInstructorCourse: builder.mutation<{ message?: string }, number>({
+      query: (courseId) => ({
+        url: `courses/${courseId}`,
+        method: "DELETE",
       }),
-      providesTags: ["instuctor"],
+      invalidatesTags: ["instuctor"],
     }),
-    // getInstructorCourse: builder.query({
-    //   query: (id) => ({
-    //     url: `${localStorage.getItem("userId")}/courses/${id}`,
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //     },
-    //   }),
-    //   providesTags: ["instuctor"],
-    // }),
+    getCoursesPerYear: builder.query<any, void>({
+      query: () => {
+        const userId = localStorage.getItem("userId");
+        return {
+          url: `${API_ROUTES.instuctorStat}${userId}/coursesPerYear`,
+          method: "GET",
+        };
+      },
+      providesTags: ["instructor"],
+    }),
   }),
 });
 
@@ -192,4 +200,5 @@ export const {
   useGetTopCourseQuery,
   useGetRevenuePerYearQuery,
   useGetCoursesPerYearQuery,
+  useDeleteInstructorCourseMutation,
 } = instuctorApi;

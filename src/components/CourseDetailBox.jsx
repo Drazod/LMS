@@ -4,7 +4,7 @@ import BuyNowButton from "./BuyNowButton"; // Adjust the path as needed
 
 const CourseDetailBox = ({ course, courseId }) => {
     const [activeSection, setActiveSection] = useState("");
-
+    console.log("CourseDetailBox rendered with courseId:", courseId);
     useEffect(() => {
       const handleScroll = () => {
         const sections = document.querySelectorAll("section");
@@ -31,7 +31,7 @@ const CourseDetailBox = ({ course, courseId }) => {
                 <h4 className="text-center inline-block leading-7 font-bold text-4xl">{course.price.toLocaleString('en-US', { style: 'currency', currency: 'VND' })}</h4>
             </div>
             <div className="text-center">
-                <BuyNowButton course={courseId} />
+                <BuyNowButton courseId={courseId} />
             </div>
             <div className="items-center border-black/10 border-y-[1px] px-5 py-5">
                 <div className="flex items-center">

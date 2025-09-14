@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 
 import imgUrl2 from "../assets/auth/logo-white-2.png";
 
-const base_url = "https://curcus-3-0.onrender.com/";
+const base_url = "https://localhost:8080/";
 
 export default function ForgetPassword() {
   const resetPasswordSchema = z.object({

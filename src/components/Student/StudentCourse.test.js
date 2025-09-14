@@ -24,7 +24,7 @@ const mockCourses = {
       enrollmentDate: "2020-02-02T11:11:11.000+00:00",
       isComplete: true,
       certificateLink:
-        "https://curcus-3-0.onrender.com/api/certificate?studentId=2&courseId=35",
+        "https://localhost:8080/api/certificate?studentId=2&courseId=35",
     },
     {
       enrollmentId: 28,
@@ -43,7 +43,7 @@ const mockCourses = {
       enrollmentDate: "2020-02-02T14:22:22.000+00:00",
       isComplete: true,
       certificateLink:
-        "https://curcus-3-0.onrender.com/api/certificate?studentId=2&courseId=42",
+        "https://localhost:8080/api/certificate?studentId=2&courseId=42",
     },
     {
       enrollmentId: 29,
@@ -62,7 +62,7 @@ const mockCourses = {
       enrollmentDate: "2022-03-03T03:33:33.000+00:00",
       isComplete: true,
       certificateLink:
-        "https://curcus-3-0.onrender.com/api/certificate?studentId=2&courseId=160",
+        "https://localhost:8080/api/certificate?studentId=2&courseId=160",
     },
     {
       enrollmentId: 30,

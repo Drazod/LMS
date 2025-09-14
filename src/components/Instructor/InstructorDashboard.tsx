@@ -1,17 +1,8 @@
-import {
-  Breadcrumbs,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Divider,
-  Link,
-  styled,
-  Typography,
-} from "@mui/material";
+import React, { useMemo } from "react";
+import { Button, Card, CardContent, Typography, styled } from "@mui/material";
 import { Line } from "react-chartjs-2";
 import "chart.js/auto";
-import React from "react";
+
 import IconLearningHours from "../../assets/IconLearningHours";
 import IconCourse from "../../assets/IconCourse";
 import BreadCrumbsDashboard from "../BreadCrumbsDashboard";
@@ -19,6 +10,7 @@ import IconSale from "../../assets/IconSale";
 import IconEnroll from "../../assets/IconEnroll";
 import { useDispatch } from "react-redux";
 import { setSelectedIndex } from "@/features/slices/selectedIndex";
+
 import {
   useGetCoursesPerYearQuery,
   useGetRevenuePerYearQuery,
@@ -28,7 +20,26 @@ import {
   useGetTotalUsersBuyQuery,
 } from "@/apis/InstructorDashboardApi";
 import Loader from "../Loader";
-const InstructorDashboard = () => {
+
+// ---- helpers
+const CreateButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.getContrastText("#d8a409"),
+  backgroundColor: "#d8a409",
+  "&:hover": {
+    color: theme.palette.getContrastText("#4d0a91"),
+    backgroundColor: "#4d0a91",
+  },
+}));
+
+const formatCurrency = (v: unknown) =>
+  typeof v === "number"
+    ? `${v.toLocaleString("en-US")} đ`
+    : `${Number(v ?? 0).toLocaleString("en-US")} đ`;
+
+const InstructorDashboard: React.FC = () => {
+  const dispatch = useDispatch();
+
+  // RTK Query hooks
   const { data: totalUsersBuy, isLoading: isLoadingTotalUsersBuy } =
     useGetTotalUsersBuyQuery();
   const { data: totalRevenue, isLoading: isLoadingTotalRevenue } =
@@ -42,16 +53,55 @@ const InstructorDashboard = () => {
   const { data: coursesPerYear, isLoading: isLoadingCoursesPerYear } =
     useGetCoursesPerYearQuery();
 
-  const dispatch = useDispatch();
-  const CreateButton = styled(Button)(({ theme }) => ({
-    color: theme.palette.getContrastText("#d8a409"),
-    backgroundColor: "#d8a409",
-    "&:hover": {
-      color: theme.palette.getContrastText("#4d0a91"),
-      backgroundColor: "#4d0a91",
-    },
-  }));
+  // short hands to payloads with safe defaults
+  const revenueMap =
+    (revenuePerYear?.payload as Record<string, number> | undefined) ?? {};
+  const coursesMap =
+    (coursesPerYear?.payload as Record<string, number> | undefined) ?? {};
 
+  // Build chart data only when inputs change
+  const courseData = useMemo(
+    () => ({
+      labels: Object.keys(revenueMap),
+      datasets: [
+        {
+          label: "Total Revenue",
+          data: Object.values(revenueMap).map(Number),
+          fill: false,
+          // colors left to Chart.js defaults; customize if you want
+        },
+      ],
+    }),
+    [revenueMap]
+  );
+
+  const hoursData = useMemo(
+    () => ({
+      labels: Object.keys(coursesMap),
+      datasets: [
+        {
+          label: "Tổng số khóa học",
+          data: Object.values(coursesMap).map(Number),
+          fill: false,
+        },
+      ],
+    }),
+    [coursesMap]
+  );
+
+  const chartOptions = useMemo(
+    () => ({
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+      // maintainAspectRatio: false, // uncomment if you want responsive height
+    }),
+    []
+  );
+
+  // show loader while any piece is fetching
   if (
     isLoadingTotalUsersBuy ||
     isLoadingTotalRevenue ||
@@ -59,54 +109,23 @@ const InstructorDashboard = () => {
     isLoadingTopCourse ||
     isLoadingRevenuePerYear ||
     isLoadingCoursesPerYear
-  )
+  ) {
     return <Loader />;
-  const courseData = {
-    labels: Object.keys(revenuePerYear.payload),
-    datasets: [
-      {
-        label: "Total Revenue",
-        data: Object.values(revenuePerYear.payload),
-        fill: false,
-        backgroundColor: "rgb(50, 100, 100)",
-        borderColor: "rgba(50, 100, 100, 1)",
-      },
-    ],
-  };
+  }
 
-  //hoursData labels is 7 day from now array of date
-  const hoursData = {
-    labels: Object.keys(coursesPerYear.payload),
-    datasets: [
-      {
-        label: "Tổng số khóa học",
-        data: Object.values(coursesPerYear.payload),
-        fill: false,
-        backgroundColor: "rgb(50, 100, 100)",
-        borderColor: "rgba(50, 100, 100, 1)",
-      },
-    ],
-  };
-  const options = {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
   return (
     <div className="mt-5">
-      <BreadCrumbsDashboard name={"Dashboard"} />
+      <BreadCrumbsDashboard name="Dashboard" />
+
       <div className="grid grid-cols-1 md:grid-cols-4 mt-5 gap-4">
+        {/* Total Sales */}
         <Card>
           <CardContent>
             <div className="flex justify-between">
               <div className="flex flex-col gap-4">
-                <Typography variant="medium" className="!font-bold ">
-                  Total Sales
-                </Typography>
-                <Typography variant="h5" className="!font-bold ">
-                  {totalRevenue?.payload?.toLocaleString("en-US") || 0} đ
+                <Typography className="!font-bold">Total Sales</Typography>
+                <Typography variant="h5" className="!font-bold">
+                  {formatCurrency(totalRevenue?.payload)}
                 </Typography>
               </div>
               <div className="w-20 h-20 my-auto mx-auto">
@@ -115,15 +134,15 @@ const InstructorDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Total Enroll */}
         <Card>
           <CardContent>
             <div className="flex justify-between">
               <div className="flex flex-col gap-4">
-                <Typography variant="medium" className="!font-bold ">
-                  Total Enroll
-                </Typography>
-                <Typography variant="h5" className="!font-bold ">
-                  {totalUsersBuy.payload || 0}
+                <Typography className="!font-bold">Total Enroll</Typography>
+                <Typography variant="h5" className="!font-bold">
+                  {Number(totalUsersBuy?.payload ?? 0)}
                 </Typography>
               </div>
               <div className="w-20 h-20 my-auto mx-auto">
@@ -132,15 +151,15 @@ const InstructorDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Total Courses */}
         <Card>
           <CardContent>
             <div className="flex justify-between">
               <div className="flex flex-col gap-4">
-                <Typography variant="medium" className="!font-bold ">
-                  Total Courses
-                </Typography>
-                <Typography variant="h5" className="!font-bold ">
-                  {totalCourses.payload || 0}
+                <Typography className="!font-bold">Total Courses</Typography>
+                <Typography variant="h5" className="!font-bold">
+                  {Number(totalCourses?.payload ?? 0)}
                 </Typography>
               </div>
               <div className="w-20 h-20 my-auto mx-auto">
@@ -149,18 +168,15 @@ const InstructorDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Top Course */}
         <Card>
           <CardContent>
             <div className="flex justify-between">
               <div className="flex flex-col gap-4">
-                <Typography variant="medium" className="!font-bold ">
-                  Top Course
-                </Typography>
-                <Typography variant="h5" className="!font-bold ">
-                  ID:{" "}
-                  {topCourse.payload.courseId
-                    ? topCourse.payload.courseId
-                    : "No Course"}
+                <Typography className="!font-bold">Top Course</Typography>
+                <Typography variant="h5" className="!font-bold">
+                  ID: {topCourse?.payload?.courseId ?? "No Course"}
                 </Typography>
               </div>
               <div className="w-20 h-20 my-auto mx-auto">
@@ -169,23 +185,25 @@ const InstructorDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Revenue chart */}
         <Card className="md:col-span-2">
           <CardContent>
-            <Typography variant="medium" className="!font-bold ">
-              Total Revenue Overview
-            </Typography>
-            <Line data={courseData} options={options} />
+            <Typography className="!font-bold">Total Revenue Overview</Typography>
+            <Line data={courseData} options={chartOptions} />
           </CardContent>
         </Card>
+
+        {/* Courses chart */}
         <Card className="md:col-span-2">
           <CardContent>
-            <Typography variant="medium" className="!font-bold ">
-              Total Courses Overview
-            </Typography>
-            <Line data={hoursData} options={options} />
+            <Typography className="!font-bold">Total Courses Overview</Typography>
+            <Line data={hoursData} options={chartOptions} />
           </CardContent>
         </Card>
       </div>
+
+      {/* CTA */}
       <Card className="mt-2">
         <CardContent>
           <div className="flex justify-between">

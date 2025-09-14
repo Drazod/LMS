@@ -1,7 +1,7 @@
 import { useSignIn } from "react-auth-kit";
 import { useNavigate } from "react-router-dom";
 
-import axios from "axios";
+import { api } from "@/lib/api";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { FacebookLogoIcon, GoogleLogoIcon } from "@phosphor-icons/react";
 import imgUrl2 from "@/assets/auth/logo-white-2.png";
 
-const base_url = "https://curcus-3-0.onrender.com/"; // TO BE CHANGED LATER
+// const base_url = "https://localhost:8080/"; // TO BE CHANGED LATER
 
 export default function LoginPage() {
   const signIn = useSignIn();
@@ -41,24 +41,21 @@ export default function LoginPage() {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
-      const response = await axios.post(
-        `${base_url}api/v1/auth/authenticate`,
-        values
-      );
-
+      const { data } = await api.post("/v1/auth/authenticate", values);
+      console.log("dRAZOD", data);
       signIn({
-        token: response.data.payload.tokens.access_token,
+        token: data.payload.tokens.access_token,
         expiresIn: 3600,
         tokenType: "Bearer",
-        authState: { email: response.data.payload.email },
+        authState: { email: data.payload.email },
       });
 
-      localStorage.setItem('userId', response.data.payload.userId);
-      localStorage.setItem('role', response.data.payload.userRole);
-      localStorage.setItem('name', response.data.payload.name);
-      localStorage.setItem('avtUrl', response.data.payload.avtUrl);
+      localStorage.setItem('userId', data.payload.userId);
+      localStorage.setItem('role', data.payload.userRole);
+      localStorage.setItem('name', data.payload.name);
+      localStorage.setItem('avtUrl', data.payload.avtUrl);
 
-      console.log(response.data.payload.tokens.access_token);
+      console.log(data.payload.tokens.access_token);
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
@@ -88,7 +85,7 @@ export default function LoginPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input className="mt-1.5 bg-background" placeholder="Enter email address" {...field} />
+                        <Input type="email" className="mt-1.5 bg-background" placeholder="Enter email address" {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -108,7 +105,7 @@ export default function LoginPage() {
                         </a>
                       </div>
                       <FormControl>
-                        <Input className="bg-background" placeholder="Enter password" {...field} />
+                        <Input type="password" className="bg-background" placeholder="Enter password" {...field} />
                       </FormControl>
                     </FormItem>
                   )}

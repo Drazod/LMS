@@ -1,7 +1,7 @@
 // services/courseService.js
 import axios from 'axios';
 
-const API_BASE_URL = 'https://curcus-3-0.onrender.com/api';
+const API_BASE_URL = 'https://localhost:8080/api';
 
 export const getCourses = async (page = 0, size = 10) => {
   try {

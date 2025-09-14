@@ -68,7 +68,7 @@ const PopularCourses = () => {
 
   useEffect(() => {
     axios
-d      .get("http://localhost:8080/api/courses?page=1&size=10")
+     .get("http://localhost:8080/api/courses?page=1&size=10")
       .then((res) => {
         setCourses(res.data.payload);
       })

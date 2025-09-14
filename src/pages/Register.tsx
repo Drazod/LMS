@@ -26,7 +26,7 @@ import {
 import { FacebookLogoIcon, GoogleLogoIcon } from "@phosphor-icons/react";
 import imgUrl2 from "../assets/auth/logo-white-2.png";
 
-const base_url = "https://curcus-3-0.onrender.com/"; // TO BE CHANGED LATER
+const base_url = "https://localhost:8080/"; // TO BE CHANGED LATER
 
 export default function Register() {
   const navigate = useNavigate();
@@ -62,6 +62,7 @@ export default function Register() {
 
       navigate('/');
     } catch (error) {
+      console.log("Registration error:", error);
       console.error("Registration error:", error);
     }
   };

@@ -1,116 +1,125 @@
-import { API_URL, API_ROUTES } from "@/configs/ApiConfig";
+// src/apis/StudentApi.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { API_URL, API_ROUTES } from "@/configs/ApiConfig";
+
+// ---- shared API shapes (adjust to your backend if needed)
+type ApiResponse<T> = {
+  payload: T;
+  metadata?: any;
+  message?: string;
+};
+
+type StudentProfile = {
+  userId: number;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  publicAvtId?: string;
+  avt?: string; // URL or base64 depending on your app
+};
+
+type StudentStats = Record<string, number>;
+type StudentCourse = any; // replace with your real course type
+type StudentCoursesResponse = StudentCourse[];
+
+// ---- small helper
+const getUserId = () => Number(localStorage.getItem("userId"));
 
 export const studentApi = createApi({
   reducerPath: "studentApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: API_URL + API_ROUTES.student,
+    baseUrl: `${API_URL}${API_ROUTES.student}`, // e.g. https://api.../api/student/
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem("token");
+      if (token) headers.set("authorization", `Bearer ${token}`);
+      return headers;
+    },
   }),
   tagTypes: ["student", "student-profile"],
   endpoints: (builder) => ({
-    getStudentStats: builder.query({
-      query: () => ({
-        url: `${localStorage.getItem("userId")}/statistic`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
+    // GET /{userId}/statistic
+    getStudentStats: builder.query<ApiResponse<StudentStats>, { userId?: number } | void>({
+      query: (arg) => {
+        const userId = (arg as any)?.userId ?? getUserId();
+        return `${userId}/statistic`;
+      },
       providesTags: ["student"],
     }),
-    getStudentCourses: builder.query({
-      query: () => ({
-        url: `${localStorage.getItem("userId")}/courses`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
+
+    // GET /{userId}/courses
+    getStudentCourses: builder.query<ApiResponse<StudentCoursesResponse>, { userId?: number } | void>({
+      query: (arg) => {
+        const userId = (arg as any)?.userId ?? getUserId();
+        return `${userId}/courses`;
+      },
       providesTags: ["student"],
     }),
-    getStudent: builder.query({
-      query: () => ({
-        url: `${localStorage.getItem("userId")}`,
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
+
+    // GET /{userId}
+    getStudent: builder.query<ApiResponse<StudentProfile>, { userId?: number } | void>({
+      query: (arg) => {
+        const userId = (arg as any)?.userId ?? getUserId();
+        return `${userId}`;
+      },
       providesTags: ["student-profile"],
     }),
-    updateStudentProfile: builder.mutation({
-      query: ({ name,
-        firstName,
-        lastName,
-        phoneNumber,
-        publicAvtId,
-        avt }) => ({
-        url: `${localStorage.getItem("userId")}`,
+
+    // PUT /{userId}
+    updateStudentProfile: builder.mutation<
+      ApiResponse<StudentProfile>,
+      Partial<StudentProfile> & { userId?: number }
+    >({
+      query: ({ userId, ...body }) => ({
+        url: `${userId ?? getUserId()}`,
         method: "PUT",
-        body: {  name,
-          firstName,
-          lastName,
-          phoneNumber,
-          publicAvtId,
-          avt },
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      invalidatesTags: ["student-profile"],
-    }),
-    updateStudentAddress: builder.mutation({
-      query: ({
-        firstName,
-        lastName,
-        phoneNumber,
-        userAddress,
-        userCity,
-        userCountry,
-        userPostalCode,
-      }) => ({
-        url: `${localStorage.getItem("userId")}/update-address`,
-        method: "POST",
-        body: {
-          firstName,
-          lastName,
-          phoneNumber,
-          userAddress,
-          userCity,
-          userCountry,
-          userPostalCode,
-        },
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        body,
       }),
       invalidatesTags: ["student-profile"],
     }),
 
-    updateStudentPassword: builder.mutation({
-      query: ({ name, email, password, firstName, lastName, phoneNumber }) => ({
-        url: `${localStorage.getItem("userId")}/changePassword`,
-        method: "PUT",
-        body: { name, email, password, firstName, lastName, phoneNumber },
-        headers: {
-          "Content-Type": "application/json",
-          //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+    // POST /{userId}/update-address
+    updateStudentAddress: builder.mutation<
+      ApiResponse<StudentProfile>,
+      {
+        userId?: number;
+        firstName?: string;
+        lastName?: string;
+        phoneNumber?: string;
+        userAddress?: string;
+        userCity?: string;
+        userCountry?: string;
+        userPostalCode?: string;
+      }
+    >({
+      query: ({ userId, ...body }) => ({
+        url: `${userId ?? getUserId()}/update-address`,
+        method: "POST",
+        body,
       }),
       invalidatesTags: ["student-profile"],
     }),
-    // getStudentCourse: builder.query({
-    //   query: (id) => ({
-    //     url: `${localStorage.getItem("userId")}/courses/${id}`,
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //     },
-    //   }),
-    //   providesTags: ["student"],
-    // }),
+
+    // PUT /{userId}/changePassword
+    updateStudentPassword: builder.mutation<
+      ApiResponse<unknown>,
+      {
+        userId?: number;
+        name?: string;
+        email?: string;
+        password: string;
+        firstName?: string;
+        lastName?: string;
+        phoneNumber?: string;
+      }
+    >({
+      query: ({ userId, ...body }) => ({
+        url: `${userId ?? getUserId()}/changePassword`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["student-profile"],
+    }),
   }),
 });
 
