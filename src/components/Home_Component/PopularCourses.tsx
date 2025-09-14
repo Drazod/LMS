@@ -63,12 +63,13 @@ const CourseCard = ({ course, listStar }) => (
     </div>
   </div>
 );
+
 const PopularCourses = () => {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
     axios
-d      .get("http://localhost:8080/api/courses?page=1&size=10")
+      .get("http://localhost:8080/api/courses?page=1&size=10")
       .then((res) => {
         setCourses(res.data.payload);
       })
@@ -76,15 +77,13 @@ d      .get("http://localhost:8080/api/courses?page=1&size=10")
         console.log(err);
       });
   }, []);
+
   return (
-    <div className="container mx-auto ">
-      <h2 className="text-3xl font-bold mb-6 border-l-8 border-orange-500 pl-2 ml-2 sm:ml-0">
-        Popular Courses
-      </h2>
-      <p className="text-gray-600 mb-10 lg:w-2/5 ml-2 sm:ml-0">
-        It is a long established fact that a reader will be distracted by the
-        readable content of a page
-      </p>
+    <div className="container mx-auto px-14 py-20">
+      <div className="text-center flex flex-col gap-3">
+        <h1 className="text-4xl font-bold">Popular Courses</h1>
+        <p>It is a long established fact that a reader will be distracted by the readable content of a page</p>
+      </div>
       <div className="relative w-full h-full">
         <Swiper
           breakpoints={{
