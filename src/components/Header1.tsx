@@ -110,7 +110,7 @@ export const Header = () => {
           )}
         </div>
       </div>
-      <div className="container mx-auto px-8 h-20 flex items-center justify-between ">
+      <div className="container mx-auto px-14 h-20 flex items-center justify-between ">
         <div className="flex items-center gap-6">
           <img src={Logo} className={`${color ? "invert" : ""} w-28 sm:w-fit object-cover`}></img>
           <NavigationMenu>
