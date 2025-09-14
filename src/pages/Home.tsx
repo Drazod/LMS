@@ -1,4 +1,3 @@
-import React from "react";
 import SliderComponent from "@/components/Home_Component/swiper";
 import Sections from "@/components/Home_Component/Section";
 import PopularCourses from "@/components/Home_Component/PopularCourses";

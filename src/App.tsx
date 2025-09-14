@@ -16,6 +16,19 @@ import StudentCart from "@/pages/StudentCart";
 // import { Dashboard } from "@mui/icons-material";
 // import CourseSelectionPage from "../pages/MockCourseSelect";
 
+// import AdminDashboardLayout from "../layouts/AdminDashboardLayout";
+// import AdminDashboard from "../pages/AdminDashboard";
+// import AdminCourseView from "../pages/AdminCourseView";
+// import CourseSearch from "@/pages/CourseSearch";
+// import Section from "@/pages/Section";
+// import AddVideo from "@/components/create_course/Video";
+// import OurCourse from "../pages/OurCourse";
+// import OurCourse from "../pages/MockCourseSelect";
+// import CourseDetail from "@/pages/CourseDetail";
+// import StudentAndInstructorLayout from "@/layouts/StudentAndInstructorLayout";
+// import StudentCart from "../pages/StudentCart";
+// import StudentStudy from "@/components/Student/StudentStudy";
+// import CreateCourse from "@/pages/CreateCourse";
 
 
 
@@ -76,26 +89,30 @@ const App = () => {
           <Route element={<PrivateRoute allowedRoles={['I']} />}>
             <Route path="instructor" element={<InstructorDashboardpage />} />
           </Route>
-        </Route>
-        <Route path="/student/:courseId" element={<StudentStudy />} />
+        </Route> */}
+        {/* <Route path="/student/:courseId" element={<StudentStudy />} /> */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="course" element={<OurCourse />} />
-          <Route path="course/search" element={<CourseSearch />} />
-          <Route path="/course/:courseId" element={<CourseDetail />} />
-          <Route path="/payment-success" element={<PaymentSuccess/>} />
-          <Route path="/payment-failed" element={<PaymentFailed/>} />
-          <Route path="/cart/" element={<RequireAuth loginPath="/auth/login">
-            <StudentCart/>
-          </RequireAuth>
-          } />
+          {/* <Route path="/course" element={<OurCourse />} /> */}
+          {/* <Route path="/course/search" element={<CourseSearch />} /> */}
+          {/* <Route path="/course/:courseId" element={<CourseDetail />} /> */}
+          {/* <Route path="/payment-success" element={<PaymentSuccess />} /> */}
+          {/* <Route path="/payment-failed" element={<PaymentFailed />} /> */}
+          {/* <Route
+            path="/cart/"
+            element={
+              <RequireAuth loginPath="/auth/login">
+                <StudentCart />
+              </RequireAuth>
+            }
+          /> */}
         </Route>
-        <Route path="/create/" element={<AdminDashboardLayout />}>
+        {/* <Route path="/create/" element={<AdminDashboardLayout />}>
           <Route path="course" element={<CreateCourse />} />
           <Route path="lession/:lessionId" element={<Section />} />
           <Route path="video" element={<AddVideo />} />
-        </Route>
-        <Route element={<PrivateRoute allowedRoles={['A']} />}>
+        </Route> */}
+        {/* <Route element={<PrivateRoute allowedRoles={['A']} />}>
           <Route path="/admin/" element={<AdminDashboardLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="dashboard" element={<AdminDashboard />} />

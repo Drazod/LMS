@@ -1,45 +1,63 @@
-import * as React from "react";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import en_flag from "../../assets/home/us_flag.png";
-import uk_flag from "../../assets/home/uk_flag.png";
-export default function SelectLanguage() {
-  const [lang, setLang] = React.useState("us");
+import { useState } from "react";
+import Flag from "react-world-flags";
 
-  const handleChange = (event) => {
-    setLang(event.target.value);
-  };
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export default function SelectLanguage() {
+  const [lang, setLang] = useState("en-us");
+
+  const langOptions = [
+    {
+      value: "en-us",
+      label: "English (US)",
+      icon: <Flag code="USA" className="h-5" />
+    },
+    {
+      value: "en-uk",
+      label: "English (UK)",
+      icon: <Flag code="GBR" className="h-5" />,
+    },
+    {
+      value: "vi-vn",
+      label: "Tiếng Việt",
+      icon: <Flag code="VNM" className="h-5" />,
+    }
+  ]
+
+  const handleChange = (value: string) => {
+  setLang(value);
+};
 
   return (
     <div>
-      <FormControl variant="standard" width="20px">
-        <Select
-          value={lang}
-          onChange={handleChange}
-          label="Language"
-          disableUnderline
-          fullWidth
-          className="!text-white !text-sm !sm:text-base"
-        >
-          <MenuItem value={"us"}>
-            <img
-              src={en_flag}
-              alt="US Flag"
-              className="object-cover w-6 mr-1 mb-1 inline-block"
-            />
-            English (US)
-          </MenuItem>
-          <MenuItem value={"uk"}>
-            <img
-              src={uk_flag}
-              alt="UK Flag"
-              className="object-cover w-6 mr-1 mb-1 inline-block"
-            />
-            English (UK)
-          </MenuItem>
-        </Select>
-      </FormControl>
+      <Select value={lang} onValueChange={handleChange}>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select a fruit" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Languages</SelectLabel>
+            {
+              langOptions.map((option) => (
+                <SelectItem value={option.value}>
+                  <div className="flex items-center gap-2">
+                    {option.icon}
+                    {option.label}
+                  </div>
+                </SelectItem>
+              ))
+            }
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     </div>
   );
 }
