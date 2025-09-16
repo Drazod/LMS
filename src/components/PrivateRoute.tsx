@@ -1,7 +1,10 @@
-import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
-const PrivateRoute = ({ allowedRoles }) => {
+interface PrivateRouteProps {
+  allowedRoles: string[];
+}
+
+const PrivateRoute = ({ allowedRoles }: PrivateRouteProps) => {
   let authState;
   try {
     console.log(localStorage.getItem('role'))

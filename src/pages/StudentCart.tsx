@@ -249,8 +249,8 @@ const StudentCart: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-col h-full w-full">
-        <div className="flex border-b-2 items-center border-gray-100 mb-6 mx-auto w-11/12">
+      <div className="container mx-auto px-14 flex flex-col h-full w-full">
+        <div className="flex items-center">
           <div className="w-5/6 flex flex-row ">
             <Breadcrumbs
               separator={<ChevronRightIcon className="h-4 w-4 text-black" strokeWidth={2.5} />}

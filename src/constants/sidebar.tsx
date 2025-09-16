@@ -4,9 +4,10 @@ import InstructorProfile from "@/components/Instructor/InstructorProfile";
 import StudentCourse from "@/components/Student/StudentCourse";
 import StudentDashboard from "@/components/Student/StudentDashboard";
 import StudentProfile from "@/components/Student/StudentProfile";
-import StudentStudy from "@/components/Student/StudentStudy";
-import UserProfile from "@/components/UserProfile";
 import CreateCourse from "@/pages/CreateCourse";
+
+// import StudentStudy from "@/components/Student/StudentStudy";
+// import UserProfile from "@/components/UserProfile";
 
 const student_sidebar = [
   {
@@ -70,6 +71,7 @@ const student_sidebar = [
     ele: <StudentProfile />,
   },
 ];
+
 const instructor_sidebar = [
   {
     name: "Dashboard",
@@ -152,4 +154,5 @@ const instructor_sidebar = [
     ele: <InstructorProfile />,
   },
 ];
+
 export { student_sidebar, instructor_sidebar };

@@ -2,9 +2,24 @@
 import { useEffect, useRef, useState, ChangeEvent, KeyboardEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+
+import {
+  CaretRightIcon,
+  MagnifyingGlassIcon,
+} from "@phosphor-icons/react/dist/ssr";
+
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Pagination from "@mui/material/Pagination";
-import Button from "@mui/material/Button";
+// import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -14,6 +29,7 @@ import Category from "@/components/OurCourse/Category";
 import AdvImg from "@/assets/courses/adv.jpg";
 
 import api from "@/lib/api";
+import { Input } from "@/components/ui/input";
 
 // ===== Types (align with your backend payloads) =====
 type InstructorMini = {
@@ -53,6 +69,21 @@ type ApiResponse<T> = {
   };
   // plus your other fields like code/message if present
 };
+
+const receentCourses = [
+  {
+    title: "Introduction to EduChamp",
+    oldPrice: 199,
+    newPrice: 159,
+    amountReview: 100,
+  },
+  {
+    title: "English for a Better Tommorow",
+    oldPrice: 99,
+    newPrice: "Free",
+    amountReview: 200,
+  },
+];
 
 // ===== Component =====
 const OurCourse: React.FC = () => {
@@ -185,53 +216,35 @@ const OurCourse: React.FC = () => {
       </div>
 
       <div className="border-t-[1px] border-b-[1px]">
-        <div className="flex gap-1 items-center p-4 text-sm max-w-[500px] md:max-w-[1180px] mx-auto">
-          <Link to={"/"}>Home</Link>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="size-3"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-          </svg>
-          <p>Our Course</p>
+        <div className="container mx-auto px-14 flex gap-1 items-center p-4 text-sm">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator><CaretRightIcon weight="bold" /></BreadcrumbSeparator>
+              <BreadcrumbItem>
+                <BreadcrumbPage>Course</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
       </div>
 
-      <div className="md:flex md:gap-8 p-4 max-w-[500px] md:max-w-[1180px] mx-auto mt-16 mb-12">
+      <div className="container mx-auto md:flex md:gap-8 p-14">
         {/* Left panel */}
-        <div className="h-full md:w-1/4 w-full space-y-12">
-          <div className="w-full flex gap-1">
-            <OutlinedInput
-              fullWidth
-              sx={{
-                "& input": {
-                  paddingTop: "7px",
-                  paddingBottom: "7px",
-                },
-                borderRight: 0,
-              }}
-              onChange={handleOutlineInputChange}
+        <div className="h-full md:w-1/3 w-full space-y-12">
+          <div className="w-full flex items-center gap-2">
+            <Input
+              placeholder="Search courses..."
               value={titleSearch}
-              onKeyUp={handleSearchKeyUp}
-            />
+              onChange={handleOutlineInputChange}
+              onKeyUp={handleSearchKeyUp} />
             <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#f7b204",
-                color: "#000",
-                padding: "1px",
-                "&:hover": {
-                  backgroundColor: "#4c1864",
-                  color: "#fff",
-                },
-              }}
+              variant="secondary" className="size-9"
               onClick={handleSearchButtonClick}
             >
-              <SearchIcon />
+              <MagnifyingGlassIcon className="!size-6" weight="duotone" />
             </Button>
           </div>
 
@@ -246,10 +259,15 @@ const OurCourse: React.FC = () => {
             </Link>
           </div>
 
-          <div>
+          <div className="flex flex-col gap-3">
             <h4 className="font-semibold text-lg">RECENT COURSES</h4>
-            <BriefCourseCard title={"Introduction Educhamp"} oldPrice={190} newPrice={120} amountReview={3} />
-            <BriefCourseCard title={"English For Tommorow"} oldPrice={"free"} newPrice={"free"} amountReview={7} />
+            <div className="flex flex-col gap-3">
+              {
+                receentCourses.map((course) => (
+                  <BriefCourseCard title={course.title} oldPrice={course.oldPrice} newPrice={course.newPrice} amountReview={course.amountReview} />
+                ))
+              }
+            </div>
           </div>
         </div>
 

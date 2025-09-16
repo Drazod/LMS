@@ -110,15 +110,15 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full hover:cursor-pointer">
                   Login
                 </Button>
               </form>
               <div className="flex flex-col gap-4 mt-8">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full hover:cursor-pointer">
                   <GoogleLogoIcon weight="bold" /> Sign up with Google
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full hover:cursor-pointer">
                   <FacebookLogoIcon weight="bold" /> Sign up with Facebook
                 </Button>
               </div>
