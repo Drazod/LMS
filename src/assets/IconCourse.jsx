@@ -5,7 +5,7 @@ function IconCourse() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       id="freepik_stories-college-project"
-      className="animated mt-8"
+      className="animated"
       version="1.1"
       viewBox="0 0 750 500"
     >

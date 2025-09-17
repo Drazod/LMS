@@ -1,20 +1,30 @@
-import {
-  Breadcrumbs,
-  Card,
-  CardContent,
-  Container,
-  Divider,
-  Link,
-  Typography,
-} from "@mui/material";
-import { Line } from "react-chartjs-2";
-import "chart.js/auto";
-import React from "react";
 import IconLearningHours from "../../assets/IconLearningHours";
 import IconCourse from "../../assets/IconCourse";
 import BreadCrumbsDashboard from "../BreadCrumbsDashboard";
 import { useGetStudentStatsQuery } from "@/apis/StudentDashboardApi";
 import Loader from "../Loader";
+
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  LabelList,
+  Line,
+  LineChart
+} from "recharts";
+import {
+  Card,
+  CardContent,
+  CardHeader
+} from "@/components/ui/card";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 const StudentDashboard = () => {
   const { data: studentStat, isLoading, isError } = useGetStudentStatsQuery();
@@ -33,6 +43,7 @@ const StudentDashboard = () => {
       },
     ],
   };
+
   const hoursData = {
     labels: Object.keys(studentStat.payload.finishCourse5),
     datasets: [
@@ -47,6 +58,27 @@ const StudentDashboard = () => {
       },
     ],
   };
+
+  const chartData = [
+    { month: "January", desktop: 186, mobile: 80 },
+    { month: "February", desktop: 305, mobile: 200 },
+    { month: "March", desktop: 237, mobile: 120 },
+    { month: "April", desktop: 73, mobile: 190 },
+    { month: "May", desktop: 209, mobile: 130 },
+    { month: "June", desktop: 214, mobile: 140 },
+  ];
+
+  const chartConfig = {
+    desktop: {
+      label: "Desktop",
+      color: "var(--chart-1)",
+    },
+    mobile: {
+      label: "Mobile",
+      color: "var(--chart-2)",
+    },
+  } satisfies ChartConfig;
+
   const options = {
     scales: {
       y: {
@@ -54,58 +86,190 @@ const StudentDashboard = () => {
       },
     },
   };
+
   return (
-    <div className="mt-5">
-      <BreadCrumbsDashboard name={"Dashboard"} />
-      <div className="grid grid-cols-1 md:grid-cols-2 mt-10 gap-8">
+    <div>
+      {/* <BreadCrumbsDashboard name={"Dashboard"} /> */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Card>
+          <CardHeader>
+            Total Purchased Courses
+          </CardHeader>
           <CardContent>
-            <div className="flex justify-between">
-              <div className="flex flex-col gap-4">
-                <Typography variant="medium" className="font-bold">
-                  Total Purchased Courses
-                </Typography>
-                <Typography variant="h5" className="font-bold">
-                  {studentStat.payload.purchaseCourse}
-                </Typography>
-              </div>
-              <div className="w-32 h-32">
+            <div className="flex justify-between items-start">
+              <p className="font-bold text-6xl">
+                {studentStat.payload.purchaseCourse}
+              </p>
+              <div className="w-32 h-auto">
                 <IconCourse />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
+          <CardHeader>
+            Total Finished Courses
+          </CardHeader>
           <CardContent>
-            <div className="flex justify-between">
-              <div className="flex flex-col gap-4">
-                <Typography variant="medium" className="font-bold">
-                  Total Finished Courses
-                </Typography>
-                <Typography variant="h5" className="font-bold">
-                  {studentStat.payload.finishCourse}
-                </Typography>
-              </div>
-              <div className="w-32 h-32">
+            <div className="flex justify-between items-start">
+              <p className="font-bold text-6xl">
+                {studentStat.payload.finishCourse}
+              </p>
+              <div className="w-32 h-auto">
                 <IconLearningHours />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
+          <CardHeader>
+            Your Learning Progress
+          </CardHeader>
           <CardContent>
-            <Typography variant="medium" className="font-bold">
-              Your learning progress
-            </Typography>
-            <Line data={courseData} options={options} />
+            {/* <Line data={hoursData} options={options} /> */}
+            <ChartContainer config={chartConfig}>
+              <AreaChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  left: -20,
+                  right: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickCount={3}
+                />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                <defs>
+                  <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                      offset="5%"
+                      stopColor="var(--color-desktop)"
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="var(--color-desktop)"
+                      stopOpacity={0.1}
+                    />
+                  </linearGradient>
+                  <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                      offset="5%"
+                      stopColor="var(--color-mobile)"
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="var(--color-mobile)"
+                      stopOpacity={0.1}
+                    />
+                  </linearGradient>
+                </defs>
+                <Area
+                  dataKey="mobile"
+                  type="natural"
+                  fill="url(#fillMobile)"
+                  fillOpacity={0.4}
+                  stroke="var(--color-mobile)"
+                  stackId="a"
+                />
+                <Area
+                  dataKey="desktop"
+                  type="natural"
+                  fill="url(#fillDesktop)"
+                  fillOpacity={0.4}
+                  stroke="var(--color-desktop)"
+                  stackId="a"
+                />
+              </AreaChart>
+            </ChartContainer>
           </CardContent>
         </Card>
         <Card>
+          <CardHeader>
+            Learning Hours Overview
+          </CardHeader>
           <CardContent>
-            <Typography variant="medium" className="font-bold">
-              Learning hours overview
-            </Typography>
-            <Line data={hoursData} options={options} />
+            {/* <Line data={hoursData} options={options} /> */}
+            <ChartContainer config={chartConfig}>
+              <LineChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  left: -20,
+                  right: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickCount={3}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="line" />}
+                />
+                <Line
+                  dataKey="desktop"
+                  type="linear"
+                  stroke="var(--color-desktop)"
+                  strokeWidth={2}
+                  dot={{
+                    fill: "var(--color-desktop)",
+                  }}
+                  activeDot={{
+                    r: 6,
+                  }}
+                >
+                  <LabelList
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                </Line>
+                <Line
+                  dataKey="mobile"
+                  type="linear"
+                  stroke="var(--color-mobile)"
+                  strokeWidth={2}
+                  dot={{
+                    fill: "var(--color-mobile)",
+                  }}
+                  activeDot={{
+                    r: 6,
+                  }}
+                >
+                  <LabelList
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                </Line>
+              </LineChart>
+            </ChartContainer>
           </CardContent>
         </Card>
       </div>

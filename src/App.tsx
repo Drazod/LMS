@@ -15,8 +15,6 @@ import StudentCart from "@/pages/StudentCart";
 
 import PrivateRoute from "@/components/PrivateRoute";
 import StudentAndInstructorLayout from "@/layouts/StudentAndInstructorLayout";
-import StudentDashboardpage from "@/pages/StudentDashboardpage";
-import InstructorDashboardpage from "@/pages/InstructorDashboardpage";
 
 // import RegisterPage from "../pages/Registerpage";
 // import { Dashboard } from "@mui/icons-material";
@@ -47,8 +45,16 @@ import AddVideo from "@/components/create_course/Video";
 
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentFailed from "@/pages/PaymentFailed";
+import { student_sidebar, instructor_sidebar } from "./constants/sidebar";
 
 const App = () => {
+  const mapChildren = (items: { path: string; ele: React.ReactNode }[]) =>
+    items.map((it, i) =>
+      i === 0 && (it.path === "" || it.path === ".")
+        ? { index: true, element: it.ele }
+        : { path: it.path, element: it.ele }
+    );
+
   return (
     <BrowserRouter>
       <Routes>
@@ -72,14 +78,23 @@ const App = () => {
           <Route path="lession/:lessionId" element={<Section />} />
           <Route path="video" element={<AddVideo />} />
         </Route>
-        <Route path="/dashboard" element={<StudentAndInstructorLayout />}>
-          {/* <Route element={<PrivateRoute allowedRoles={['S']} />}>
-            <Route path="student" element={<StudentDashboardpage />} />
-          </Route> */}
-          <Route path="student" element={<StudentDashboardpage />} />
-          {/* <Route element={<PrivateRoute allowedRoles={['I']} />}>
-            <Route path="instructor" element={<InstructorDashboardpage />} />
-          </Route> */}
+        <Route path="/dashboard/student" element={<StudentAndInstructorLayout />}>
+          <Route element={<PrivateRoute allowedRoles={['S']} />}>
+            {mapChildren(
+              student_sidebar.map((it) => ({ ...it, path: it.path?.replace(/^\/+/, "") }))
+            ).map((routeProps, idx) => (
+              <Route key={idx} {...routeProps} />
+            ))}
+          </Route>
+        </Route>
+        <Route path="/dashboard/instructor" element={<StudentAndInstructorLayout />}>
+          <Route element={<PrivateRoute allowedRoles={['I']} />}>
+            {mapChildren(
+              instructor_sidebar.map((it) => ({ ...it, path: it.path?.replace(/^\/+/, "") }))
+            ).map((routeProps, idx) => (
+              <Route key={idx} {...routeProps} />
+            ))}
+          </Route>
         </Route>
         {/* <Route path="/student/:courseId" element={<StudentStudy />} /> */}
         {/* <Route path="/create/" element={<AdminDashboardLayout />}>

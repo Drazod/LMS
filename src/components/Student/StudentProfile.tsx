@@ -1,12 +1,43 @@
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod";
+
+const formSchema = z.object({
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  phoneNumber: z.string().min(10, { message: "Phone number must be at least 10 digits" }),
+  address: z.string().min(5, { message: "Address must be at least 5 characters" }),
+  city: z.string().min(2, { message: "City must be at least 2 characters" }),
+  country: z.string().min(2, { message: "Country must be at least 2 characters" }),
+  postalCode: z.string().min(5, { message: "Postal code must be at least 5 characters" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  newPassword: z.string().min(6, { message: "New password must be at least 6 characters" }),
+  reTypePassword: z.string().min(6, { message: "Please re-type your password" }),
+}).refine((data) => data.newPassword === data.reTypePassword, {
+  message: "Passwords do not match.",
+})
+
+import { Button } from "@/components/ui/button";
 import {
-  Button,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+import { FloppyDiskIcon } from "@phosphor-icons/react/dist/ssr";
+
+import {
   Container,
   Dialog,
   DialogContent,
   DialogTitle,
   Divider,
-  FormControl,
-  Input,
   InputBase,
   OutlinedInput,
   styled,
@@ -25,6 +56,7 @@ import { Toast } from "@/configs/SweetAlert";
 import ImageUpload from "../ImageUpload";
 import { handleDelete } from "@/utils/deleteImage";
 import Loader from "../Loader";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 const SaveButton = styled(Button)(({ theme }) => ({
   color: theme.palette.getContrastText("#d8a409"),
   backgroundColor: "#d8a409",
@@ -179,15 +211,207 @@ const StudentProfile = () => {
   };
   if (isLoading) return <Loader />;
   if (isError) return <div>Error</div>;
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: student.payload.firstName,
+      lastName: student.payload.lastName,
+      email: student.payload.email,
+      phoneNumber: student.payload.phoneNumber,
+      address: student.payload.userAddress,
+      city: student.payload.userCity,
+      country: student.payload.userCountry,
+      postalCode: student.payload.userPostalCode,
+      password: "",
+      newPassword: "",
+      reTypePassword: "",
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values)
+  };
+
   return (
-    <div className="mt-5">
-      <BreadCrumbsDashboard name={"User Profile"} />
-      <div className="my-10">
+    <div>
+      {/* START REFACTORING */}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <Card>
+              <CardHeader>
+                Personal Details
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="First name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Last name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Phone number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                Address
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Address" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input placeholder="City" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Country" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="postalCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Postal Code</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Postal Code" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                Password
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Current Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="Current Password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="newPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="New Password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="reTypePassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Re-type New Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="Re-type New Password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+          </div>
+          <Button type="submit"><FloppyDiskIcon className="!size-5" /> Save changes</Button>
+        </form>
+      </Form>
+      {/* END REFACTORING */}
+      {/* <div>
         <div className="border border-gray-30 rounded-md p-4">
-          <Typography variant="h6" className="!font-bold px-4">
-            User Profile
-          </Typography>
-          <Divider />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-4 px-4">
             <Typography variant="h6" className="!mt-5 md:col-span-3">
               1. Personal Details
@@ -417,125 +641,6 @@ const StudentProfile = () => {
               </DeleteButton>
             </div>
           </div>
-          {/* <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-            <div className="col-span-1"></div>
-            <Typography variant="h6" className="!my-5 md:col-span-2">
-              1. Personal Information
-            </Typography>
-            <div className="md:col-span-2"></div>
-            <Typography variant="medium" className="!my-auto">
-              First Name:
-            </Typography>
-            <form autoComplete="off" className="w-full md:col-span-2">
-              <FormControl className="w-full" size="small">
-                <OutlinedInput />
-              </FormControl>
-            </form>
-            <div className="md:col-span-2"></div>
-            <Typography variant="medium" className="!my-auto">
-              Last Name:
-            </Typography>
-            <form autoComplete="off" className="w-full md:col-span-2">
-              <FormControl className="w-full" size="small">
-                <OutlinedInput />
-              </FormControl>
-            </form>
-            <div className="md:col-span-2"></div>
-            <Typography variant="medium" className="!my-auto">
-              Email:
-            </Typography>
-            <form autoComplete="off" className="w-full md:col-span-2">
-              <FormControl className="w-full" size="small">
-                <OutlinedInput />
-              </FormControl>
-            </form>
-            <div className="md:col-span-2"></div>
-            <Typography variant="medium" className="!my-auto">
-              Phone Number:
-            </Typography>
-            <form autoComplete="off" className="w-full md:col-span-2">
-              <FormControl className="w-full" size="small">
-                <OutlinedInput />
-              </FormControl>
-            </form>
-            <div className="md:col-span-2"></div>
-            <div></div>
-            <Typography variant="h6" className="!my-5 md:col-span-2">
-              2. Address
-            </Typography>
-            <div className="md:col-span-2"></div>
-            <Typography variant="medium" className="!my-auto">
-              Address
-            </Typography>
-            <form autoComplete="off" className="w-full md:col-span-2">
-              <FormControl className="w-full" size="small">
-                <OutlinedInput />
-              </FormControl>
-            </form>
-            <div className="md:col-span-2"></div>
-            <Typography variant="medium" className="!my-auto">
-              City:
-            </Typography>
-            <form autoComplete="off" className="w-full md:col-span-2">
-              <FormControl className="w-full" size="small">
-                <OutlinedInput />
-              </FormControl>
-            </form>
-            <div className="md:col-span-2"></div>
-            <Typography variant="medium" className="!my-auto">
-              Postal Code:
-            </Typography>
-            <form autoComplete="off" className="w-full md:col-span-2">
-              <FormControl className="w-full" size="small">
-                <OutlinedInput />
-              </FormControl>
-            </form>
-            <div className="md:col-span-2"></div>
-            <div></div>
-            <div className="md:col-span-2 flex gap-4">
-              <SaveButton variant="contained">Save</SaveButton>
-              <DeleteButton variant="contained">Cancel</DeleteButton>
-            </div>
-            <div className="md:col-span-2"></div>
-            <div></div>
-            <Typography variant="h6" className="!my-5 md:col-span-2">
-              3. Password
-            </Typography>
-            <div className="md:col-span-2"></div>
-            <Typography variant="medium" className="!my-auto">
-              Current Password:
-            </Typography>
-            <form autoComplete="off" className="w-full md:col-span-2">
-              <FormControl className="w-full" size="small">
-                <OutlinedInput />
-              </FormControl>
-            </form>
-            <div className="md:col-span-2"></div>
-            <Typography variant="medium" className="!my-auto">
-              New Password:
-            </Typography>
-            <form autoComplete="off" className="w-full md:col-span-2">
-              <FormControl className="w-full" size="small">
-                <OutlinedInput />
-              </FormControl>
-            </form>
-            <div className="md:col-span-2"></div>
-            <Typography variant="medium" className="!my-auto">
-              Re Type Password:
-            </Typography>
-            <form autoComplete="off" className="w-full md:col-span-2">
-              <FormControl className="w-full" size="small">
-                <OutlinedInput />
-              </FormControl>
-            </form>
-            <div className="md:col-span-2"></div>
-            <div></div>
-            <div className="md:col-span-2 flex gap-4">
-              <SaveButton variant="contained">Save</SaveButton>
-              <DeleteButton variant="contained">Cancel</DeleteButton>
-            </div>
-            <div></div>
-          </div> */}
         </div>
       </div>
       <Dialog onClose={handleClose} open={open}>
@@ -601,7 +706,7 @@ const StudentProfile = () => {
             </div>
           )}
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };
