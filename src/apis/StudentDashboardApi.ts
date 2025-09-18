@@ -16,6 +16,11 @@ type StudentProfile = {
   lastName?: string;
   phoneNumber?: string;
   publicAvtId?: string;
+  email: string;
+  userAddress?: string;
+  userCity?: string;
+  userCountry?: string;
+  userPostalCode?: string;
   avt?: string; // URL or base64 depending on your app
 };
 

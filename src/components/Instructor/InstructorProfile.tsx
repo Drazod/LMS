@@ -23,7 +23,7 @@ import {
 } from "@/apis/InstructorDashboardApi";
 import { Toast } from "@/configs/SweetAlert";
 import { handleDelete } from "@/utils/deleteImage";
-import ImageUpload from "../ImageUpload";
+import {ImageUpload} from "../ImageUpload";
 import Loader from "../Loader";
 const SaveButton = styled(Button)(({ theme }) => ({
   color: theme.palette.getContrastText("#d8a409"),

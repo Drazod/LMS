@@ -1,5 +1,7 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useState } from "react";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -16,398 +18,478 @@ const formSchema = z.object({
   reTypePassword: z.string().min(6, { message: "Please re-type your password" }),
 }).refine((data) => data.newPassword === data.reTypePassword, {
   message: "Passwords do not match.",
-})
+});
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-import { FloppyDiskIcon } from "@phosphor-icons/react/dist/ssr";
-
 import {
-  Container,
+  Card,
+  CardContent,
+  CardHeader
+} from "@/components/ui/card";
+import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
-  Divider,
-  InputBase,
-  OutlinedInput,
-  styled,
-  Typography,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { grey } from "@mui/material/colors";
-import BreadCrumbsDashboard from "../BreadCrumbsDashboard";
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import Loader from "@/components/Loader";
+import { ImageUpload } from "@/components/ImageUpload";
+
 import {
   useGetStudentQuery,
   useUpdateStudentAddressMutation,
   useUpdateStudentPasswordMutation,
   useUpdateStudentProfileMutation,
 } from "@/apis/StudentDashboardApi";
-import { Toast } from "@/configs/SweetAlert";
-import ImageUpload from "../ImageUpload";
 import { handleDelete } from "@/utils/deleteImage";
-import Loader from "../Loader";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-const SaveButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.getContrastText("#d8a409"),
-  backgroundColor: "#d8a409",
-  "&:hover": {
-    color: theme.palette.getContrastText("#4d0a91"),
-    backgroundColor: "#4d0a91",
-  },
-}));
-const DeleteButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.getContrastText(grey[800]),
-  backgroundColor: grey[800],
-  "&:hover": {
-    color: theme.palette.getContrastText(grey[900]),
-    backgroundColor: grey[900],
-  },
-}));
+
+import { FloppyDiskIcon } from "@phosphor-icons/react/dist/ssr";
+
 const StudentProfile = () => {
   const { data: student, isLoading, isError } = useGetStudentQuery();
-  const [updateStudentProfile, { isLoading: isUpdated, error: updateError }] =
-    useUpdateStudentProfileMutation();
-  const [
-    updateStudentAddress,
-    { isLoading: addressLoading, error: addressError },
-  ] = useUpdateStudentAddressMutation();
-  const [
-    updateStudentPassword,
-    { isLoading: isPasswordUpdated, error: updatePasswordError },
-  ] = useUpdateStudentPasswordMutation();
+  const [updateStudentProfile] = useUpdateStudentProfileMutation();
+  const [updateStudentAddress] = useUpdateStudentAddressMutation();
+  const [updateStudentPassword] = useUpdateStudentPasswordMutation();
 
   const [avatar, setAvatar] = useState("");
   const [publicId, setPublicId] = useState("");
   const [updateAvatar, setUpdateAvatar] = useState("");
-  const [updatePublicId, setUpdatePublicId] = useState("");
-  const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
-  const [postalCode, setPostalCode] = useState("");
-  const [password, setPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [reTypePassword, setReTypePassword] = useState("");
-  useEffect(() => {
-    if (!isLoading && !isError) {
-      setEmail(student.payload.email);
-      setFirstName(student.payload.firstName);
-      setLastName(student.payload.lastName);
-      setPhoneNumber(student.payload.phoneNumber);
-      setAddress(student.payload.userAddress);
-      setCity(student.payload.userCity);
-      setCountry(student.payload.userCountry);
-      setPostalCode(student.payload.userPostalCode);
-      setAvatar(student.payload.avtUrl);
-      setPublicId(student.payload.publicAvtId);
-    }
-  }, [student, isLoading, isError]);
-  const handleCancelProfile = () => {
-    setEmail(student.payload.email);
-    setFirstName(student.payload.firstName);
-    setLastName(student.payload.lastName);
-    setPhoneNumber(student.payload.phoneNumber);
-    setAvatar(student.payload.avtUrl);
-    setPublicId(student.payload.publicAvtId);
-    handleDelete(updatePublicId);
-    setUpdateAvatar(null);
-    setUpdatePublicId(null);
-  };
-  const handleCancelAddress = () => {
-    setAddress(student.payload.userAddress);
-    setCity(student.payload.userCity);
-    setCountry(student.payload.userCountry);
-    setPostalCode(student.payload.userPostalCode);
-  };
-  const handleCancelPassword = () => {
-    setPassword("");
-    setNewPassword("");
-    setReTypePassword("");
-  };
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleUpdateProfile = async () => {
-    try {
-      await updateStudentProfile({
-        name: `${firstName} ${lastName}`,
-        email,
-        // password,
-        firstName,
-        lastName,
-        phoneNumber,
-      })
-        .unwrap()
-        .then(() => {
-          Toast.fire({
-            icon: "success",
-            title: "Update successfully",
-          });
-        });
-    } catch (err) {
-      Toast.fire({
-        icon: "error",
-        title: "Update failed",
-      });
-    }
-  };
-  const handleUpdateAddress = async () => {
-    try {
-      await updateStudentAddress({
-        firstName,
-        lastName,
-        phoneNumber,
-        userAddress: address,
-        userCity: city,
-        userCountry: country,
-        userPostalCode: postalCode,
-      })
-        .unwrap()
-        .then(() => {
-          Toast.fire({
-            icon: "success",
-            title: "Update successfully",
-          });
-        });
-    } catch (err) {
-      Toast.fire({
-        icon: "error",
-        title: "Update failed",
-      });
-    }
-  };
-  const handleUpdatePassword = async () => {
-    await updateStudentPassword({
-      name: `${firstName} ${lastName}`,
-      email,
-      phoneNumber,
-      firstName,
-      lastName,
-    })
-      .unwrap()
-      .then(() => {
-        Toast.fire({
-          icon: "success",
-          title: "Update successfully",
-        });
-      });
-  };
-  if (isLoading) return <Loader />;
-  if (isError) return <div>Error</div>;
+  // const [updatePublicId, setUpdatePublicId] = useState("");
+  // const [open, setOpen] = useState(false);
+  // const [email, setEmail] = useState("");
+  // const [firstName, setFirstName] = useState("");
+  // const [lastName, setLastName] = useState("");
+  // const [phoneNumber, setPhoneNumber] = useState("");
+  // const [address, setAddress] = useState("");
+  // const [city, setCity] = useState("");
+  // const [country, setCountry] = useState("");
+  // const [postalCode, setPostalCode] = useState("");
+  // const [password, setPassword] = useState("");
+  // const [newPassword, setNewPassword] = useState("");
+  // const [reTypePassword, setReTypePassword] = useState("");
+  // useEffect(() => {
+  //   if (!isLoading && !isError) {
+  //     setEmail(student.payload.email);
+  //     setFirstName(student.payload.firstName);
+  //     setLastName(student.payload.lastName);
+  //     setPhoneNumber(student.payload.phoneNumber);
+  //     setAddress(student.payload.userAddress);
+  //     setCity(student.payload.userCity);
+  //     setCountry(student.payload.userCountry);
+  //     setPostalCode(student.payload.userPostalCode);
+  //     setAvatar(student.payload.avtUrl);
+  //     setPublicId(student.payload.publicAvtId);
+  //   }
+  // }, [student, isLoading, isError]);
+  // const handleCancelProfile = () => {
+  //   setEmail(student.payload.email);
+  //   setFirstName(student.payload.firstName);
+  //   setLastName(student.payload.lastName);
+  //   setPhoneNumber(student.payload.phoneNumber);
+  //   setAvatar(student.payload.avtUrl);
+  //   setPublicId(student.payload.publicAvtId);
+  //   handleDelete(updatePublicId);
+  //   setUpdateAvatar(null);
+  //   setUpdatePublicId(null);
+  // };
+  // const handleCancelAddress = () => {
+  //   setAddress(student.payload.userAddress);
+  //   setCity(student.payload.userCity);
+  //   setCountry(student.payload.userCountry);
+  //   setPostalCode(student.payload.userPostalCode);
+  // };
+  // const handleCancelPassword = () => {
+  //   setPassword("");
+  //   setNewPassword("");
+  //   setReTypePassword("");
+  // };
+  // const handleClickOpen = () => {
+  //   setOpen(true);
+  // };
+  // const handleClose = () => {
+  //   setOpen(false);
+  // };
+  // const handleUpdateProfile = async () => {
+  //   try {
+  //     await updateStudentProfile({
+  //       name: `${firstName} ${lastName}`,
+  //       email,
+  //       // password,
+  //       firstName,
+  //       lastName,
+  //       phoneNumber,
+  //     })
+  //       .unwrap()
+  //       .then(() => {
+  //         Toast.fire({
+  //           icon: "success",
+  //           title: "Update successfully",
+  //         });
+  //       });
+  //   } catch (err) {
+  //     Toast.fire({
+  //       icon: "error",
+  //       title: "Update failed",
+  //     });
+  //   }
+  // };
+  // const handleUpdateAddress = async () => {
+  //   try {
+  //     await updateStudentAddress({
+  //       firstName,
+  //       lastName,
+  //       phoneNumber,
+  //       userAddress: address,
+  //       userCity: city,
+  //       userCountry: country,
+  //       userPostalCode: postalCode,
+  //     })
+  //       .unwrap()
+  //       .then(() => {
+  //         Toast.fire({
+  //           icon: "success",
+  //           title: "Update successfully",
+  //         });
+  //       });
+  //   } catch (err) {
+  //     Toast.fire({
+  //       icon: "error",
+  //       title: "Update failed",
+  //     });
+  //   }
+  // };
+  // const handleUpdatePassword = async () => {
+  //   await updateStudentPassword({
+  //     name: `${firstName} ${lastName}`,
+  //     email,
+  //     phoneNumber,
+  //     firstName,
+  //     lastName,
+  //   })
+  //     .unwrap()
+  //     .then(() => {
+  //       Toast.fire({
+  //         icon: "success",
+  //         title: "Update successfully",
+  //       });
+  //     });
+  // };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: student.payload.firstName,
-      lastName: student.payload.lastName,
-      email: student.payload.email,
-      phoneNumber: student.payload.phoneNumber,
-      address: student.payload.userAddress,
-      city: student.payload.userCity,
-      country: student.payload.userCountry,
-      postalCode: student.payload.userPostalCode,
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      address: "",
+      city: "",
+      country: "",
+      postalCode: "",
       password: "",
       newPassword: "",
       reTypePassword: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmitUpdateProfile(values: z.infer<typeof formSchema>) {
+    try {
+      await updateStudentProfile({
+        name: `${values.firstName} ${values.lastName}`,
+        email: values.email,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        phoneNumber: values.phoneNumber,
+      }).unwrap();
+      console.log("Profile updated");
+    } catch (err) {
+      console.error("Update profile failed", err);
+    }
+  };
+
+  async function onSubmitUpdateAddress(values: z.infer<typeof formSchema>) {
+    try {
+      await updateStudentAddress({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        phoneNumber: values.phoneNumber,
+        userAddress: values.address,
+        userCity: values.city,
+        userCountry: values.country,
+        userPostalCode: values.postalCode,
+      }).unwrap();
+      console.log("Address updated");
+    } catch (err) {
+      console.error("Update address failed", err);
+    }
+  };
+
+  async function onSubmitUpdatePassword(values: z.infer<typeof formSchema>) {
+    try {
+      await updateStudentPassword({
+        email: values.email,
+        password: values.newPassword,
+      }).unwrap();
+
+      form.setValue("password", "");
+      form.setValue("newPassword", "");
+      form.setValue("reTypePassword", "");
+
+      console.log("Password updated");
+    } catch (err) {
+      console.error("Update password failed", err);
+    }
   };
 
   return (
     <div>
       {/* START REFACTORING */}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <Card>
-              <CardHeader>
-                Personal Details
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="First name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Last name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Phone number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                Address
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Address" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>City</FormLabel>
-                      <FormControl>
-                        <Input placeholder="City" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Country</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Country" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="postalCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Postal Code</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Postal Code" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                Password
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Current Password</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="Current Password" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="newPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>New Password</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="New Password" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="reTypePassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Re-type New Password</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="Re-type New Password" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-          </div>
-          <Button type="submit"><FloppyDiskIcon className="!size-5" /> Save changes</Button>
-        </form>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          <Card>
+            <CardHeader>
+              Personal Details
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {avatar === "" && updateAvatar === "" ? (
+                <figure className="my-auto mx-auto md:h-full lg:h-80 w-full flex flex-col gap-1.5">
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Avatar</label>
+                  <div className="flex items-center  justify-center h-full w-full my-auto">
+                    <label
+                      htmlFor="dropzone-file"
+                      className="flex flex-col items-center justify-center h-full w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 "
+                    >
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6 px-3 text-center">
+                        <svg
+                          className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 20 16"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                          />
+                        </svg>
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                          <span className="font-semibold">Click to upload</span>{" "}
+                          or drag and drop
+                        </p>
+
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          SVG, PNG, JPG or GIF (MAX. 800x400px)
+                        </p>
+                      </div>
+                      <ImageUpload
+                        setImage={setAvatar}
+                        setPublicId={setPublicId}
+                      />
+                    </label>
+                  </div>
+                </figure>
+              ) : (
+                <div className="flex flex-col justify-around mx-auto my-auto w-full">
+                  <p>Avatar</p>
+                  <img
+                    src={updateAvatar !== "" ? updateAvatar : avatar}
+                    onClick={handleClickOpen}
+                    alt="avatar"
+                    className="h-[300px] w-full mx-auto col-span-4 object-cover rounded-l-md"
+                  />
+                </div>
+              )}
+              <form onSubmit={form.handleSubmit(onSubmitUpdateProfile)} className="flex flex-col gap-5 justify-end">
+                <div className="flex flex-col gap-4">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="First name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Last name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Phone number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <Button variant="secondary" type="submit"><FloppyDiskIcon className="!size-5" /> Save profile</Button>
+              </form>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              Address
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <form onSubmit={form.handleSubmit(onSubmitUpdateAddress)} className="flex flex-col gap-5 justify-items-end">
+                <div className="flex flex-col gap-4">
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Address</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Address" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input placeholder="City" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Country" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="postalCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Postal Code</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Postal Code" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <Button variant="secondary" type="submit"><FloppyDiskIcon className="!size-5" /> Save address</Button>
+              </form>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              Password
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <form onSubmit={form.handleSubmit(onSubmitUpdatePassword)} className="flex flex-col gap-5 justify-items-end">
+                <div className="flex flex-col gap-4">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Current Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="Current Password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="newPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>New Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="New Password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="reTypePassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Re-type New Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="Re-type New Password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <Button variant="secondary" type="submit"><FloppyDiskIcon className="!size-5" /> Save password</Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </Form>
       {/* END REFACTORING */}
       {/* <div>
@@ -642,8 +724,8 @@ const StudentProfile = () => {
             </div>
           </div>
         </div>
-      </div>
-      <Dialog onClose={handleClose} open={open}>
+      </div> */}
+      {/* <Dialog open={open}>
         <DialogTitle>Change Avatar</DialogTitle>
         <DialogContent>
           {updateAvatar === "" || !updateAvatar ? (
@@ -695,7 +777,7 @@ const StudentProfile = () => {
               />
               <Button
                 color="error"
-                variant="contained"
+                variant="outline"
                 className="!mt-5"
                 onClick={() => {
                   handleDelete(updatePublicId), setUpdateAvatar(null);

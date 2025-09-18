@@ -1,5 +1,10 @@
-function ImageUpload({ setImage, setPublicId }) {
-  const uploadImage = async (e) => {
+type ImageUploadProps = {
+  setImage: (url: string) => void;
+  setPublicId: (id: string) => void;
+};
+
+export const ImageUpload = ({ setImage, setPublicId }: ImageUploadProps) => {
+  const uploadImage = async (e: { target: { files: any; }; }) => {
     const files = e.target.files;
     const cloudName = import.meta.env.VITE_REACT_APP_CLOUD_NAME;
     const data = new FormData();
@@ -31,5 +36,3 @@ function ImageUpload({ setImage, setPublicId }) {
     </div>
   );
 }
-
-export default ImageUpload;
