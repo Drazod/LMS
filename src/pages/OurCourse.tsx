@@ -233,7 +233,7 @@ const OurCourse: React.FC = () => {
 
       <div className="container mx-auto md:flex md:gap-8 p-14">
         {/* Left panel */}
-        <div className="h-full md:w-1/3 w-full space-y-12">
+        <div className="h-full md:w-1/5 w-full space-y-12">
           <div className="w-full flex items-center gap-2">
             <Input
               placeholder="Search courses..."
@@ -272,7 +272,7 @@ const OurCourse: React.FC = () => {
         </div>
 
         {/* Right panel */}
-        <div className="w-full md:w-3/4 space-y-8 mt-20 md:mt-0">
+        <div className="w-full space-y-8 mt-20 md:mt-0">
           {!isLoading ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full pt-7">
               {courseList.map((course) => (
