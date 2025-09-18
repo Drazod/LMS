@@ -30,30 +30,33 @@ const PrevButton = styled(Button)(({ theme }) => ({
     backgroundColor: grey[900],
   },
 }));
+// StudentStudy: Main component for tracking and displaying student course progress
 const StudentStudy = () => {
+  // Sidebar toggle
   const [menuToggle, setMenuToggle] = useState(true);
-  const [selectedSectionId, setSelectedSectionId] = useState(null);
-  const [position, setPosition] = useState(null);
-  const [onEnd, setOnEnd] = useState(false);
-  const handleMenuToggle = () => {
-    setMenuToggle(!menuToggle);
-  };
-  const handleOnEnd = () => {
-    setOnEnd(true);
-  };
+  // The section the student is currently viewing
+  const [currentSectionId, setCurrentSectionId] = useState(null);
+  // Is the course completed?
+  const [isCourseCompleted, setIsCourseCompleted] = useState(false);
+  // Toggle sidebar menu
+  const handleMenuToggle = () => setMenuToggle(!menuToggle);
+  // Mark course as completed (if needed)
+  const handleCourseComplete = () => setIsCourseCompleted(true);
 
   const { courseId } = useParams();
 
+  // Fetch all sections for this course (the course "list")
   const {
-    data: sections,
-    isLoading: isLoadingCourseList,
-    isError: isErrorCourseList,
+    data: courseSectionList,
+    isLoading: isLoadingSectionList,
+    isError: isErrorSectionList,
   } = useGetCourseListQuery(courseId);
 
+  // Fetch the student's current progress in this course (the course "detail")
   const {
-    data: courseDetails,
-    isLoading: isLoadingCourseDetails,
-    isError: isErrorCourseDetails,
+    data: studentCourseProgress,
+    isLoading: isLoadingStudentProgress,
+    isError: isErrorStudentProgress,
   } = useGetCourseDetailsQuery(courseId);
 
   const {
@@ -61,59 +64,64 @@ const StudentStudy = () => {
     isLoading: isLoadingSection,
     isError: isErrorSection,
     refetch: refetchSection,
-  } = useGetSectionQuery(selectedSectionId, {
-    skip: !selectedSectionId,
+  } = useGetSectionQuery(currentSectionId, {
+    skip: !currentSectionId,
   });
-
+  // Set the current section based on student progress
   useEffect(() => {
-    if (courseDetails?.payload.courseCompleted === true) {
-      setSelectedSectionId(
-        sections?.payload.sections[sections?.payload.sections.length - 1]
-          .sectionId
+    if (studentCourseProgress?.payload.courseCompleted === true) {
+      setCurrentSectionId(
+        courseSectionList?.payload.sections[courseSectionList?.payload.sections.length - 1]?.sectionId
       );
-    } else if (courseDetails) {
-      setSelectedSectionId(courseDetails.payload.sectionId);
+      setIsCourseCompleted(true);
+    } else if (studentCourseProgress) {
+      setCurrentSectionId(studentCourseProgress.payload.sectionId);
+      setIsCourseCompleted(false);
     }
-  }, [courseDetails, sections]);
+  }, [studentCourseProgress, courseSectionList]);
 
+  // When a section is clicked in the sidebar
   const handleItemClick = (sectionId) => {
-    setSelectedSectionId(sectionId);
+    setCurrentSectionId(sectionId);
     refetchSection();
   };
 
   const [updateCompletedSection, { isLoading: isUpdated, error: updateError }] =
     useUpdateCompletedSectionMutation();
-  if (isLoadingCourseDetails || isLoadingCourseList || isLoadingSection)
+  // Show loading or error states
+  if (isLoadingStudentProgress || isLoadingSectionList || isLoadingSection)
     return <Loader />;
-  if (isErrorCourseDetails || isErrorCourseList || isErrorSection)
+  if (isErrorStudentProgress || isErrorSectionList || isErrorSection)
     return <div>Error</div>;
+  // Go to the next section and update progress if needed
   const handleNextSection = async () => {
     const nextSection =
-      sections?.payload.sections.find(
-        (section) => section.sectionId === selectedSectionId
-      ).position + 1;
+      courseSectionList?.payload.sections.find(
+        (section) => section.sectionId === currentSectionId
+      )?.position + 1;
     if (
-      nextSection > courseDetails.payload.position &&
-      courseDetails.payload.courseCompleted === false
+      nextSection > studentCourseProgress.payload.position &&
+      studentCourseProgress.payload.courseCompleted === false
     ) {
-      await updateCompletedSection(selectedSectionId);
+      await updateCompletedSection(currentSectionId);
     } else {
-      setSelectedSectionId(
-        sections?.payload.sections.find(
+      setCurrentSectionId(
+        courseSectionList?.payload.sections.find(
           (section) => section.position === nextSection
-        ).sectionId
+        )?.sectionId
       );
     }
   };
+  // Go to the previous section
   const handlePreviousSection = () => {
     const previousSection =
-      sections?.payload.sections.find(
-        (section) => section.sectionId === selectedSectionId
+      courseSectionList?.payload.sections.find(
+        (section) => section.sectionId === currentSectionId
       )?.position - 1;
-    setSelectedSectionId(
-      sections?.payload.sections.find(
+    setCurrentSectionId(
+      courseSectionList?.payload.sections.find(
         (section) => section.position === previousSection
-      ).sectionId
+      )?.sectionId
     );
   };
   // const List_sections = sections?.payload.sections?.map((section, index) => ({
@@ -150,20 +158,29 @@ const StudentStudy = () => {
             onClose={handleMenuToggle}
             // sidebar={List_sections}
             position={
-              courseDetails.payload.courseCompleted === true
-                ? sections.payload.sections.length
-                : courseDetails.payload.position
+              isCourseCompleted
+                ? courseSectionList.payload.sections.length
+                : studentCourseProgress.payload.position
             }
             select={
-              selectedSectionId
-                ? selectedSectionId
-                : sections.payload.sections[
-                    sections.payload.sections.length - 1
+              currentSectionId
+                ? currentSectionId
+                : courseSectionList.payload.sections[
+                    courseSectionList.payload.sections.length - 1
                   ].sectionId
             }
-            sections={sections}
+            sections={courseSectionList}
             onItemClick={handleItemClick}
           />
+          {/* Progress Indicator */}
+          <div className="mb-4 flex items-center gap-4">
+            <div className="font-semibold text-lg">
+              Progress: Section {courseSectionList?.payload?.sections?.findIndex(s => s.sectionId === currentSectionId) + 1} / {courseSectionList?.payload?.sections?.length}
+            </div>
+            {isCourseCompleted && (
+              <span className="text-green-600 font-bold">Course Completed!</span>
+            )}
+          </div>
         </div>
         <div className="w-full h-full p-9 overflow-y-auto">
           <div className="mt-5 mb-15">
@@ -209,8 +226,8 @@ const StudentStudy = () => {
             variant="contained"
             color="warning"
             disabled={
-              sections.payload.sections.find(
-                (section) => section.sectionId === selectedSectionId
+              courseSectionList.payload.sections.find(
+                (section) => section.sectionId === currentSectionId
               )?.position === 0
             }
             className="!rounded-lg"
@@ -236,10 +253,10 @@ const StudentStudy = () => {
             className="!rounded-lg"
             onClick={handleNextSection}
             disabled={
-              sections?.payload.sections?.find(
-                (section) => section.sectionId === selectedSectionId
+              courseSectionList?.payload.sections?.find(
+                (section) => section.sectionId === currentSectionId
               )?.position ===
-              sections?.payload.sections[sections.payload.sections.length - 1]
+              courseSectionList?.payload.sections[courseSectionList.payload.sections.length - 1]
                 ?.position
             }
           >

@@ -42,7 +42,7 @@ import AdminCourseView from "@/pages/AdminCourseView";
 import StudentDashboardpage from "@/pages/StudentDashboardpage";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import InstructorDashboardpage from "@/pages/InstructorDashboardpage";
-// import StudentStudy from "@/components/Student/StudentStudy";
+import StudentStudy from "@/components/Student/StudentStudy";
 import AdminDashboardLayout from "@/layouts/AdminDashboardLayout";
 import CreateCourse from "@/pages/CreateCourse";
 import Section from "@/pages/Section";
@@ -90,7 +90,7 @@ const App = () => {
             <Route path="instructor" element={<InstructorDashboardpage />} />
           </Route>
         </Route> */}
-        {/* <Route path="/student/:courseId" element={<StudentStudy />} /> */}
+        <Route path="/student/:courseId" element={<StudentStudy />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           {/* <Route path="/course" element={<OurCourse />} /> */}
