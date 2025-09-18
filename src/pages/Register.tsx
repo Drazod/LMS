@@ -5,6 +5,7 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { api } from "@/lib/api";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -50,15 +51,12 @@ export default function Register() {
 
   const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
     try {
-      const response = await axios.post(
-        `${base_url}api/v1/auth/register`,
-        values
-      );
+      const { data } = await api.post("/v1/auth/register", values);
 
-      localStorage.setItem('userId', response.data.payload.userId);
-      localStorage.setItem('role', response.data.payload.userRole);
-      localStorage.setItem('name', response.data.payload.name);
-      localStorage.setItem('avtUrl', response.data.payload.avtUrl);
+      localStorage.setItem('userId', data.payload.userId);
+      localStorage.setItem('role', data.payload.userRole);
+      localStorage.setItem('name', data.payload.name);
+      localStorage.setItem('avtUrl', data.payload.avtUrl);
 
       navigate('/');
     } catch (error) {

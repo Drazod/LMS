@@ -1,7 +1,7 @@
 
 import { Input, Textarea, IconButton} from "@material-tailwind/react";
 import { Button} from '@mui/joy';
-import {InputFileUpload} from "./addSession";
+// import {InputFileUpload} from "./addSession";
 
 const AddVideo = () =>{
 
@@ -47,7 +47,7 @@ const AddVideo = () =>{
                                 <Textarea label="Description"/>
                             </div>
                         </div>
-                        <div className="ml-6 mt-1">
+                        {/* <div className="ml-6 mt-1">
                             <p className="text-base mr-0 font-semibold">Upload</p>
                             <div className="ml-6 text-base mt-3 ">
                             <div className="my-3 text-base font-semibold">
@@ -65,7 +65,7 @@ const AddVideo = () =>{
                                 </div>
                                 <InputFileUpload/>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="ml-10 mb-16 mt-10">
                         <Button>Submit</Button>

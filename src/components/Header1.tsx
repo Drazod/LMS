@@ -24,7 +24,7 @@ import Logo from "@/assets/logo-white.png";
 
 export const Header = () => {
   const [color, setColor] = useState(false);
-
+  const [dashboardUrl, setDashboardUrl] = useState(""); 
   const [name, setName] = useState("");
   const navigate = useNavigate();
 
@@ -50,19 +50,18 @@ export const Header = () => {
     }
   };
 
-  const getDashboardUrl = () => {
+  useEffect(() => {
     const role = localStorage.getItem("role");
     if (role === "S") {
-      return "/dashboard/student";
+      setDashboardUrl("/dashboard/student");
     } else if (role === "I") {
-      return "/dashboard/instructor";
+      setDashboardUrl("/dashboard/instructor");
     } else if (role === "A") {
-      return "/admin";
+      setDashboardUrl("/admin");
     } else {
-      return "/dashboard"; // default or error route
+      setDashboardUrl("/dashboard"); // default or error route
     }
-  };
-  const dashboardUrl = getDashboardUrl();
+  }, []);
 
   window.addEventListener("scroll", changeColor);
 
@@ -100,12 +99,16 @@ export const Header = () => {
             </div>
           ) : (
             <div className="flex flex-row justify-center items-center">
-              <Button variant="ghost" className="flex items-center gap-1">
-                Sign In
-              </Button>
-              <Button variant="ghost" className="flex items-center gap-1">
-                Register
-              </Button>
+              <a href="/auth/login">
+                <Button variant="ghost" className="flex items-center gap-1">
+                  Sign In
+                </Button>
+              </a>
+              <a href="/auth/register">
+                <Button variant="ghost" className="flex items-center gap-1">
+                  Register
+                </Button>
+              </a>
             </div>
           )}
         </div>
@@ -142,7 +145,7 @@ export const Header = () => {
                       : `group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent text-background px-4 py-2 text-normal font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:hover:bg-accent data-[state=open]:focus:bg-accent`
                   }
                 >
-                  <Link to="/dashboard">DASHBOARD</Link>
+                  <Link to={dashboardUrl}>DASHBOARD</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>

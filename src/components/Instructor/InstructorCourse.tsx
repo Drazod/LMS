@@ -16,13 +16,18 @@ import {
   styled,
   Typography,
 } from "@mui/material";
+// @ts-ignore
 import BreadCrumbsDashboard from "../BreadCrumbsDashboard";
-import useOpen from "@/hooks/useOpen";
+// @ts-ignore
+// import useOpen from "@/hooks/useOpen";
+import { AddSession } from "@/components/create_course/addSession";
+// @ts-ignore
 import { Toast } from "@/configs/SweetAlert";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { setSelectedIndex } from "@/features/slices/selectedIndex";
 import { useGetInstructorCoursesQuery, useDeleteInstructorCourseMutation } from "@/apis/InstructorDashboardApi";
+// @ts-ignore
 import Loader from "../Loader";
 import { useGetCourseListQuery } from "@/apis/CourseApi";
 import { red } from "@mui/material/colors";
@@ -76,9 +81,13 @@ const CreateButton = styled(Button)(({ theme }) => ({
   },
 }));
 
+type Section = { id: number; name: string; description?: string };
+
 const InstructorCourse: React.FC = () => {
   const dispatch = useDispatch();
-
+  const [openAddSession, setOpenAddSession] = useState<boolean>(false);
+  const [addSessionCourseId, setAddSessionCourseId] = useState<number | null>(null);
+  // (Removed unused sections state for cleaner code)
   const [deleteCourse, { isLoading: isDeleting }] = useDeleteInstructorCourseMutation();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isTablet, setIsTablet] = useState(
@@ -142,14 +151,13 @@ const onDeleteCourse = async (courseId: number) => {
   };
 
   // main list
-  const {
-    data: coursesRes,
-    isLoading,
-    isError,
-  } = useGetInstructorCoursesQuery<{ page: number; size: number }, CoursesResponse>({
+  const instructorCoursesQuery = useGetInstructorCoursesQuery({
     page: activePage - 1,
     size: pageSize,
-  } as any); // loosen typing if your hook isn't generically typed
+  } as any);
+  const coursesRes = (instructorCoursesQuery as any).data;
+  const isLoading = (instructorCoursesQuery as any).isLoading;
+  const isError = (instructorCoursesQuery as any).isError;
 
   const courseList: Course[] = (coursesRes as CoursesResponse | undefined)?.payload?.content ?? [];
   const totalItems = (coursesRes as CoursesResponse | undefined)?.metadata?.pagination?.totalItems ?? 0;
@@ -161,9 +169,8 @@ const onDeleteCourse = async (courseId: number) => {
     [courseList, id]
   );
 
-  const { data: sectionsRes } = useGetCourseListQuery<SectionsResponse>(id as number, {
-    skip: !id,
-  });
+  const sectionsQuery = useGetCourseListQuery(id as number, { skip: !id });
+  const sectionsRes = (sectionsQuery as any).data;
 
   // students sub-paging inside dialog
   const [subActivePage, setSubActivePage] = useState<number>(1);
@@ -182,9 +189,10 @@ const onDeleteCourse = async (courseId: number) => {
   if (isError) return <div>Error</div>;
 
   return (
+    
     <div className="mt-5">
       <BreadCrumbsDashboard name="Course" />
-
+      
       <Card className="my-5">
         <CardContent>
           <div className="flex justify-between gap-8">
@@ -233,9 +241,16 @@ const onDeleteCourse = async (courseId: number) => {
                   />
                 </div>
                 <div className="w-full flex flex-row gap-2 mt-4">
-                  <SaveButton className="w-full text-sm px-3 py-2 rounded-full">
-                    Create Section
+                  <SaveButton
+                    type="button"
+                    onClick={() => {
+                      setAddSessionCourseId(course.courseId);
+                      setOpenAddSession(true);
+                    }}
+                  >
+                    Add New Section
                   </SaveButton>
+                  
                   <DeleteButton
                     className="w-full text-sm px-3 py-2 rounded-full"
                     onClick={() => onDeleteCourse(course.courseId)}
@@ -244,6 +259,7 @@ const onDeleteCourse = async (courseId: number) => {
                     {isDeleting ? "Deleting..." : "Delete Course"}
                   </DeleteButton>
                 </div>
+               
               </div>
 
               <div className="flex flex-col w-full">
@@ -283,6 +299,25 @@ const onDeleteCourse = async (courseId: number) => {
                 </div>
               </div>
             </div>
+            {/* AddSession Dialog for this course */}
+            {openAddSession && addSessionCourseId === course.courseId && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                <div className="bg-white rounded-lg shadow-lg p-4 max-w-lg w-full relative">
+                  <button
+                    className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl font-bold"
+                    onClick={() => setOpenAddSession(false)}
+                  >
+                    ×
+                  </button>
+                  <AddSession
+                    name={""}
+                    setFunc={() => setOpenAddSession(false)}
+                    index={Date.now()} // Use timestamp as unique id for new section
+                    courseId={course.courseId}
+                  />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}

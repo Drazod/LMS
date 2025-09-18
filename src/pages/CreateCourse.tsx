@@ -284,6 +284,8 @@ const CreateCourse = () => {
             </div>
           </div>
         </form>
+
+
       </div>
     </div>
   );
