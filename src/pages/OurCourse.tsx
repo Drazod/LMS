@@ -1,26 +1,14 @@
 // src/pages/OurCourse.tsx
-import { useEffect, useRef, useState, ChangeEvent, KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 
 import {
-  CaretRightIcon,
   MagnifyingGlassIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
-import OutlinedInput from "@mui/material/OutlinedInput";
 import Pagination from "@mui/material/Pagination";
-// import Button from "@mui/material/Button";
-import SearchIcon from "@mui/icons-material/Search";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import CourseCard from "@/components/OurCourse/CourseCard";
@@ -211,23 +199,7 @@ const OurCourse: React.FC = () => {
     <div className="w-full" ref={myRef}>
       <div className="bg-course-banner h-96 relative">
         <div className="h-full pt-32 bg-purple-900 opacity-80 text-center flex items-center">
-          <p className="text-white m-auto font-bold text-4xl">Our Course</p>
-        </div>
-      </div>
-
-      <div className="border-t-[1px] border-b-[1px]">
-        <div className="container mx-auto px-14 flex gap-1 items-center p-4 text-sm">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator><CaretRightIcon weight="bold" /></BreadcrumbSeparator>
-              <BreadcrumbItem>
-                <BreadcrumbPage>Course</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <p className="text-white m-auto font-bold text-7xl">Our Course</p>
         </div>
       </div>
 
@@ -274,7 +246,7 @@ const OurCourse: React.FC = () => {
         {/* Right panel */}
         <div className="w-full space-y-8 mt-20 md:mt-0">
           {!isLoading ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full pt-7">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
               {courseList.map((course) => (
                 <CourseCard
                   key={course.courseId}

@@ -1,4 +1,3 @@
-import React from "react";
 import { useSwiper } from "swiper/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 

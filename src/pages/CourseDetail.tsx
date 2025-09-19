@@ -3,8 +3,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import PageEntry from "@/components/PageEntry";
 import Page_trace from "@/components/Page_trace";
-import Course_info from "@/components/Course_info";
-import Course_des from "@/components/Course_des";
+import CourseInfo from "@/components/Course_info";
+import CourseDescription from "@/components/Course_des";
 import Curriculum from "@/components/Curriculum";
 import Instructor from "@/components/Instructor";
 import Reviews from "@/components/Reviews";
@@ -67,7 +67,7 @@ const CourseDetail: React.FC = () => {
         // Adjust endpoints if your backend differs
         const [courseRes] = await Promise.all([
           api.get<ApiResponse<CourseDetail>>(`/courses/details/${courseId}`),
-        
+
         ]);
 
         if (!alive) return;
@@ -126,46 +126,39 @@ const CourseDetail: React.FC = () => {
 
   return (
     <div className="scroll-smooth bg-white">
-      <PageEntry course={course} />
-      <Page_trace />
-
-      <div className="my-8 grid grid-cols-1 md:grid-cols-10 gap-6">
-        <div className="md:row-start-1 md:col-start-8 md:col-span-2">
+      <div className="bg-course-banner h-96 relative">
+        <div className="h-full pt-32 bg-purple-900 opacity-80 text-center flex items-center">
+          <p className="text-white m-auto font-bold text-7xl">Couse Details</p>
+        </div>
+      </div>
+      <div className="container mx-auto p-14 flex flex-row-reverse gap-6">
+        <div className="w-1/5">
           <div className="sticky top-24 mb-8 mx-4 md:mx-0">
             <CourseDetailBox course={course} courseId={String(courseId)} />
           </div>
         </div>
-
-        <div className="ml-4 md:row-start-1 md:col-start-2 md:col-span-6 mr-4 md:mr-0">
+        <div className="w-4/5">
           <div
             className="h-[200px] md:h-[500px] bg-cover bg-center w-full md:w-auto text-left rounded-md overflow-hidden object-fill"
             style={{ backgroundImage: `url("${course.courseThumbnail ?? ""}")` }}
           />
-          <Course_info course={course} />
-
-          <div className="md:grid md:grid-cols-5 md:gap-24">
-            <div className="col-start-1 col-span-2">
-              <div className="sticky top-24 mb-8">
-                <Overview course={mockdata} />
-              </div>
+          <CourseInfo course={course} />
+          <div className="flex flex-row items-start gap-10">
+            <section id="overview" className="sticky top-24 self-start mb-8">
+              <Overview course={mockdata} />
+            </section>
+            <div>
+              <section id="description" className="min-w-0">
+                <CourseDescription tempcourse={mockdata} course={course} />
+              </section>
+              <section id="curriculum">
+                <Curriculum curriculumData={course.sections} />
+              </section>
+              <section id="instructor">
+                <Instructor course={course} />
+              </section>
             </div>
-
-            <div id="overview" className="my-29 col-start-3 col-span-3">
-              <Course_des tempcourse={mockdata} course={course} />
-            </div>
           </div>
-
-          <div id="curriculum">
-            <Curriculum curriculumData={course.sections} />
-          </div>
-
-          <div id="instructor">
-            <Instructor course={course} />
-          </div>
-
-          {/* <div>
-            <Reviews course={rating} />
-          </div> */}
         </div>
       </div>
     </div>
