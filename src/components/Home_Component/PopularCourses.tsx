@@ -69,7 +69,7 @@ const PopularCourses = () => {
 
   useEffect(() => {
     axios
-     .get("http://localhost:8080/api/courses?page=1&size=10")
+     .get("https://lmsbe-production.up.railway.app/api/courses?page=1&size=10")
       .then((res) => {
         setCourses(res.data.payload);
       })

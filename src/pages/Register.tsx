@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 
-import axios from "axios";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -27,7 +26,6 @@ import {
 import { FacebookLogoIcon, GoogleLogoIcon } from "@phosphor-icons/react";
 import imgUrl2 from "../assets/auth/logo-white-2.png";
 
-const base_url = "https://localhost:8080/"; // TO BE CHANGED LATER
 
 export default function Register() {
   const navigate = useNavigate();
@@ -51,13 +49,23 @@ export default function Register() {
 
   const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
     try {
+      // Align endpoint with login (remove leading 'api/')
       const { data } = await api.post("/v1/auth/register", values);
 
-      localStorage.setItem('userId', data.payload.userId);
-      localStorage.setItem('role', data.payload.userRole);
-      localStorage.setItem('name', data.payload.name);
-      localStorage.setItem('avtUrl', data.payload.avtUrl);
-
+      // If backend returns tokens on registration, handle like login
+      if (data.payload && data.payload.tokens && data.payload.tokens.access_token) {
+        localStorage.setItem('userId', data.payload.userId);
+        localStorage.setItem('role', data.payload.userRole);
+        localStorage.setItem('name', data.payload.name);
+        localStorage.setItem('avtUrl', data.payload.avtUrl);
+        localStorage.setItem('access_token', data.payload.tokens.access_token);
+      } else {
+        // Fallback: store user info if no tokens
+        localStorage.setItem('userId', data.payload.userId);
+        localStorage.setItem('role', data.payload.userRole);
+        localStorage.setItem('name', data.payload.name);
+        localStorage.setItem('avtUrl', data.payload.avtUrl);
+      }
       navigate('/');
     } catch (error) {
       console.log("Registration error:", error);
@@ -101,8 +109,9 @@ export default function Register() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="student">Student</SelectItem>
-                            <SelectItem value="instructor">Instructor</SelectItem>
+                            <SelectItem value="S">Student</SelectItem>
+                            <SelectItem value="I">Instructor</SelectItem>
+                            <SelectItem value="A">Admin</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormItem>
