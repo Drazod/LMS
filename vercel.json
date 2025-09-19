@@ -1,16 +1,5 @@
 {
-    "rewrites": [
-      {
-        "source": "/dashboard/student",
-        "destination": "/dashboard/student"
-      },
-      {
-        "source": "/dashboard/instructor",
-        "destination": "/dashboard/instructor"
-      },
-      {
-        "source": "/(.*)",
-        "destination": "/"
-      }
-    ]
-  }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}
