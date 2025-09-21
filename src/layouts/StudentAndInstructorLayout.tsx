@@ -39,7 +39,7 @@ const StudentAndInstructorLayout = () => {
       <SidebarProvider open={open} onOpenChange={setOpen}>
         <DashboardSidebar />
         <div className={`${open ? "ml-64" : ""} transition-all flex-1 max-h-dvh`}>
-          <header className="fixed flex h-16 w-full bg-background shrink-0 items-center gap-2 border-b px-4">
+          <header className="fixed z-999 flex h-16 w-full bg-background shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger />
             <h1 className="text-lg font-medium">{sectionName}</h1>
           </header>

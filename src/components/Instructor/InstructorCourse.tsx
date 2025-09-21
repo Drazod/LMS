@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Button,
-  Card,
-  CardContent,
+  // Button,
+  // Card,
+  // CardContent,
   Container,
   Dialog,
   DialogContent,
@@ -26,6 +26,24 @@ import { useGetInstructorCoursesQuery, useDeleteInstructorCourseMutation } from 
 import Loader from "../Loader";
 import { useGetCourseListQuery } from "@/apis/CourseApi";
 import { red } from "@mui/material/colors";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+import {
+  RowsPlusBottomIcon,
+  TrashIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 type Student = { id?: number; name: string };
 type Course = {
@@ -107,7 +125,7 @@ const InstructorCourse: React.FC = () => {
     setId(null);
   };
 
-const onDeleteCourse = async (courseId: number) => {
+  const onDeleteCourse = async (courseId: number) => {
     const { isConfirmed } = await Swal.fire({
       title: "Bạn có chắc chắn muốn xóa?",
       text: "Hành động này không thể hoàn tác.",
@@ -123,6 +141,7 @@ const onDeleteCourse = async (courseId: number) => {
     try {
       await deleteCourse(courseId).unwrap();
       Toast.fire({ icon: "success", title: "Xóa khóa học thành công" });
+      refetch();
     } catch (err: any) {
       const msg =
         err?.data?.message ||
@@ -146,7 +165,8 @@ const onDeleteCourse = async (courseId: number) => {
     data: coursesRes,
     isLoading,
     isError,
-  } = useGetInstructorCoursesQuery<{ page: number; size: number }, CoursesResponse>({
+    refetch,
+  } = useGetInstructorCoursesQuery({
     page: activePage - 1,
     size: pageSize,
   } as any); // loosen typing if your hook isn't generically typed
@@ -154,6 +174,8 @@ const onDeleteCourse = async (courseId: number) => {
   const courseList: Course[] = (coursesRes as CoursesResponse | undefined)?.payload?.content ?? [];
   const totalItems = (coursesRes as CoursesResponse | undefined)?.metadata?.pagination?.totalItems ?? 0;
   const totalPages = (coursesRes as CoursesResponse | undefined)?.metadata?.pagination?.totalPages ?? 0;
+
+  console.log(courseList);
 
   // selected course + sections
   const selectedCourse = useMemo(
@@ -182,110 +204,56 @@ const onDeleteCourse = async (courseId: number) => {
   if (isError) return <div>Error</div>;
 
   return (
-    <div className="mt-5">
-      <BreadCrumbsDashboard name="Course" />
+    <div>
+      <p>Total courses: <span className="font-bold">{totalItems} courses</span></p>
 
-      <Card className="my-5">
-        <CardContent>
-          <div className="flex justify-between gap-8">
-            {!isMobile && (
-              <div className="flex my-auto gap-8">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 24 24" strokeWidth={1.5}
-                  stroke="currentColor" className="size-6 my-auto">
-                  <path strokeLinecap="round" strokeLinejoin="round"
-                        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                </svg>
-                <Typography variant={isTablet ? "h6" : "h5"} className="my-auto">
-                  Jump Into Course Creation
-                </Typography>
-              </div>
-            )}
-            <CreateButton
-              className="w-full md:w-1/2 lg:w-1/5"
-              onClick={() => dispatch(setSelectedIndex(2))}
-            >
-              Create Your Course
-            </CreateButton>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-between my-auto mt-5">
-        <Typography variant="body2" className="!my-auto">
-          {totalItems} courses
-        </Typography>
-      </div>
-
-      {courseList.map((course) => (
-        <Card key={course.courseId} className="my-5">
-          <CardContent>
-            <div className="flex flex-col md:flex-row gap-5 items-center text-center md:text-left md:items-start">
-              <div>
-                <div
-                  className="w-full min-w-60 h-60 box-border overflow-hidden rounded-md cursor-pointer"
-                  onClick={() => handleClickOpen(course.courseId)}
-                >
-                  <img
-                    src={course.courseThumbnail || "/placeholder.jpg"}
-                    className="w-full h-60 object-cover"
-                    alt={course.title}
-                  />
-                </div>
-                <div className="w-full flex flex-row gap-2 mt-4">
-                  <SaveButton className="w-full text-sm px-3 py-2 rounded-full">
-                    Create Section
-                  </SaveButton>
-                  <DeleteButton
-                    className="w-full text-sm px-3 py-2 rounded-full"
-                    onClick={() => onDeleteCourse(course.courseId)}
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? "Deleting..." : "Delete Course"}
-                  </DeleteButton>
-                </div>
-              </div>
-
-              <div className="flex flex-col w-full">
-                <div className="flex flex-col gap-4 w-full md:min-h-60">
-                  <div
-                    className="text-xl font-semibold cursor-pointer"
-                    onClick={() => handleClickOpen(course.courseId)}
-                  >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 mt-5">
+        {courseList.map((course) => (
+          <Card className='pt-0 pb-6 overflow-clip hover:bg-accent/10 transition-colors duration-50 ease-in-out'>
+            <div className='flex flex-col flex-1 gap-2'>
+              <CardHeader onClick={() => handleClickOpen(course.courseId)} className='px-0 hover:cursor-pointer'>
+                <img src={course.courseThumbnail || "/placeholder.jpg"} className='w-full h-52 object-cover rounded-t-md' />
+                <div className='px-6 mt-3 w-full overflow-hidden'>
+                  <p className='flex gap-4 justify-between items-baseline text-xl font-semibold text-ellipsis'>
                     {course.title}
-                  </div>
-
-                  <div className="grid grid-col-1 md:flex md:flex-wrap md:justify-around md:gap-20 md:items-center gap-4">
-                    <div className="flex flex-col">
-                      <div className="text-xs font-medium text-gray-500">Created at:</div>
-                      <div className="text-base font-medium">
-                        {course.createDate ?? course.createdAt ?? "—"}
-                      </div>
-                    </div>
-
-                    <button className="rounded-full bg-teal-400 text-white text-sm px-2 py-1 w-1/5 md:w-1/12 mx-auto">
-                      {course.status ?? "—"}
-                    </button>
-
-                    <div className="flex flex-col md:ml-auto">
-                      <div className="text-lg font-semibold">
-                        {Number(course.price ?? 0).toLocaleString("en-US")} đ
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <div className="text-base font-semibold">Course Description</div>
-                    <p className="text-sm max-h-[150px] overflow-auto">
-                      {course.description ?? "—"}
-                    </p>
+                  </p>
+                  {Number(course.price ?? 0).toLocaleString("en-US")} đ
+                </div>
+              </CardHeader>
+              <CardContent className='flex flex-col gap-4'>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="line-clamp-3 text-left" dangerouslySetInnerHTML={{ __html: course.description ?? "No description." }} />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-md">
+                    <div className="text-base" dangerouslySetInnerHTML={{ __html: course.description ?? "No description." }} />
+                  </TooltipContent>
+                </Tooltip>
+              </CardContent>
+            </div>
+            <CardFooter className="flex flex-col items-start gap-3">
+                <div className="flex flex-col">
+                  <div className="text-xs font-medium text-gray-500">Created at:</div>
+                  <div className="text-base font-medium">
+                    {course.createDate ?? course.createdAt ?? "—"}
                   </div>
                 </div>
+              <div className='flex flex-row gap-1.5'>
+                <Button>
+                  <RowsPlusBottomIcon className="!size-5" weight="duotone" /> Create section
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => onDeleteCourse(course.courseId)}
+                  disabled={isDeleting}
+                >
+                  <TrashIcon className="!size-5" weight="duotone" /> {isDeleting ? "Deleting..." : "Delete"}
+                </Button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
 
       <div className="flex justify-between w-full mt-3">
         {totalPages > 1 && (
