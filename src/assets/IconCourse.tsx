@@ -1,5 +1,5 @@
-import React from "react";
-import "./IconCourse.css";
+import "@/assets/IconCourse.css";
+
 function IconCourse() {
   return (
     <svg

@@ -1,5 +1,5 @@
-import React from "react";
-import "./IconLearningHours.css";
+import "@/assets/IconLearningHours.css";
+
 function IconLearningHours() {
   return (
     <svg

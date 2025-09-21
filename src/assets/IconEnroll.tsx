@@ -1,5 +1,5 @@
-import React from "react";
-import "./IconEnroll.css";
+import "@/assets/IconEnroll.css";
+
 function IconEnroll() {
   return (
     <svg

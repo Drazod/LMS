@@ -1,22 +1,26 @@
 import { useSwiper } from "swiper/react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import {
+  CaretRightIcon,
+  CaretLeftIcon
+} from "@phosphor-icons/react/dist/ssr";
+import { Button } from "@/components/ui/button";
 
 const SwiperButton = () => {
   const swiper = useSwiper();
   return (
-    <div className=" relative float-right mr-10">
-      <button
-        className="bg-orange-500 text-black mt-4 hover:bg-purple-800 p-2 rounded-2xl mr-2 h-8 w-8"
+    <div className="relative float-right mt-3 space-x-1">
+      <Button
+        variant="secondary" size="icon"
         onClick={() => swiper.slidePrev()}
       >
-        <ChevronLeftIcon />
-      </button>
-      <button
-        className="bg-orange-500 text-black mt-4 hover:bg-purple-800 p-2 rounded-2xl h-8 w-8"
+        <CaretLeftIcon weight="bold" className="!size-5"/>
+      </Button>
+      <Button
+        variant="secondary" size="icon"
         onClick={() => swiper.slideNext()}
       >
-        <ChevronRightIcon />
-      </button>
+        <CaretRightIcon weight="bold" className="!size-5"/>
+      </Button>
     </div>
   );
 };

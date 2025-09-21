@@ -1,5 +1,5 @@
-import React from "react";
-import "./IconSale.css";
+import "@/assets/IconSale.css";
+
 function IconSale() {
   return (
     <svg
