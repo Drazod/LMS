@@ -2,7 +2,6 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal, stateOfModal } from "../slices/modalSlice";
 import {
-  Button,
   Card,
   Input,
   Typography,
@@ -15,6 +14,8 @@ import {
 } from "@heroicons/react/24/outline";
 import VNPay from "../assets/Cart/VNPAY.png";
 import CreditCard from "../assets/Cart/CreditCard.png";
+
+import { Button } from "@/components/ui/button";
 
 type CheckoutModalProps = {
   price: number; // total selected price before discount
@@ -57,11 +58,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = React.memo((props) => {
 
   return (
     <div className="fixed z-50 inset-0 flex items-center justify-center bg-black/50">
-      <div className="flex-col bg-white w-5/6 h-full rounded-lg shadow-lg overflow-y-auto">
+      <div className="flex-col bg-white w-5/6 h-[600px] rounded-lg shadow-lg overflow-y-auto">
         <Button
           className="flex mr-auto mt-6 ml-6 text-gray-600"
           onClick={handleCloseModal}
-          variant="text"
         >
           <ArrowLeftIcon className="w-4 h-4" />
           <span className="text-sm ml-3">Back to Cart</span>

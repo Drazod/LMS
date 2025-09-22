@@ -1,15 +1,32 @@
 import React, { useMemo } from "react";
-import { Button, Card, CardContent, Typography, styled } from "@mui/material";
-import { Line } from "react-chartjs-2";
-import "chart.js/auto";
 
-import IconLearningHours from "../../assets/IconLearningHours";
-import IconCourse from "../../assets/IconCourse";
-import BreadCrumbsDashboard from "../BreadCrumbsDashboard";
-import IconSale from "../../assets/IconSale";
-import IconEnroll from "../../assets/IconEnroll";
-import { useDispatch } from "react-redux";
-import { setSelectedIndex } from "@/features/slices/selectedIndex";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/ui/card";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+
+import {
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  LabelList,
+  Line,
+  LineChart
+} from "recharts";
+
+import IconLearningHours from "@/assets/IconLearningHours";
+import IconCourse from "@/assets/IconCourse";
+import IconSale from "@/assets/IconSale";
+import IconEnroll from "@/assets/IconEnroll";
+
+// import { useDispatch } from "react-redux";
 
 import {
   useGetCoursesPerYearQuery,
@@ -21,23 +38,24 @@ import {
 } from "@/apis/InstructorDashboardApi";
 import Loader from "../Loader";
 
-// ---- helpers
-const CreateButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.getContrastText("#d8a409"),
-  backgroundColor: "#d8a409",
-  "&:hover": {
-    color: theme.palette.getContrastText("#4d0a91"),
-    backgroundColor: "#4d0a91",
-  },
-}));
-
 const formatCurrency = (v: unknown) =>
   typeof v === "number"
     ? `${v.toLocaleString("en-US")} đ`
     : `${Number(v ?? 0).toLocaleString("en-US")} đ`;
 
+const chartConfig = {
+  total_course: {
+    label: "Total courses",
+    color: "var(--chart-1)",
+  },
+  total_revenue: {
+    label: "Total revenue",
+    color: "var(--chart-2)",
+  },
+} satisfies ChartConfig;
+
 const InstructorDashboard: React.FC = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   // RTK Query hooks
   const { data: totalUsersBuy, isLoading: isLoadingTotalUsersBuy } =
@@ -59,46 +77,22 @@ const InstructorDashboard: React.FC = () => {
   const coursesMap =
     (coursesPerYear?.payload as Record<string, number> | undefined) ?? {};
 
-  // Build chart data only when inputs change
-  const courseData = useMemo(
-    () => ({
-      labels: Object.keys(revenueMap),
-      datasets: [
-        {
-          label: "Total Revenue",
-          data: Object.values(revenueMap).map(Number),
-          fill: false,
-          // colors left to Chart.js defaults; customize if you want
-        },
-      ],
-    }),
+  const revenueChartData = useMemo(
+    () =>
+      Object.entries(revenueMap).map(([year, total_revenue]) => ({
+        year,
+        total_revenue,
+      })),
     [revenueMap]
   );
 
-  const hoursData = useMemo(
-    () => ({
-      labels: Object.keys(coursesMap),
-      datasets: [
-        {
-          label: "Tổng số khóa học",
-          data: Object.values(coursesMap).map(Number),
-          fill: false,
-        },
-      ],
-    }),
+  const courseChartData = useMemo(
+    () =>
+      Object.entries(coursesMap).map(([year, total_course]) => ({
+        year,
+        total_course,
+      })),
     [coursesMap]
-  );
-
-  const chartOptions = useMemo(
-    () => ({
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-      // maintainAspectRatio: false, // uncomment if you want responsive height
-    }),
-    []
   );
 
   // show loader while any piece is fetching
@@ -115,20 +109,20 @@ const InstructorDashboard: React.FC = () => {
 
   return (
     <div className="mt-5">
-      <BreadCrumbsDashboard name="Dashboard" />
+      {/* <BreadCrumbsDashboard name="Dashboard" /> */}
 
       <div className="grid grid-cols-1 md:grid-cols-4 mt-5 gap-4">
         {/* Total Sales */}
         <Card>
+          <CardHeader>
+            Total Sales
+          </CardHeader>
           <CardContent>
-            <div className="flex justify-between">
-              <div className="flex flex-col gap-4">
-                <Typography className="!font-bold">Total Sales</Typography>
-                <Typography variant="h5" className="!font-bold">
-                  {formatCurrency(totalRevenue?.payload)}
-                </Typography>
-              </div>
-              <div className="w-20 h-20 my-auto mx-auto">
+            <div className="flex justify-between items-start">
+              <p className="font-bold text-6xl">
+                {formatCurrency(totalRevenue?.payload)}
+              </p>
+              <div className="w-32 h-auto">
                 <IconSale />
               </div>
             </div>
@@ -137,15 +131,15 @@ const InstructorDashboard: React.FC = () => {
 
         {/* Total Enroll */}
         <Card>
+          <CardHeader>
+            Total Enrollments
+          </CardHeader>
           <CardContent>
-            <div className="flex justify-between">
-              <div className="flex flex-col gap-4">
-                <Typography className="!font-bold">Total Enroll</Typography>
-                <Typography variant="h5" className="!font-bold">
-                  {Number(totalUsersBuy?.payload ?? 0)}
-                </Typography>
-              </div>
-              <div className="w-20 h-20 my-auto mx-auto">
+            <div className="flex justify-between items-start">
+              <p className="font-bold text-6xl">
+                {Number(totalUsersBuy?.payload ?? 0)}
+              </p>
+              <div className="w-32 h-auto">
                 <IconEnroll />
               </div>
             </div>
@@ -154,15 +148,15 @@ const InstructorDashboard: React.FC = () => {
 
         {/* Total Courses */}
         <Card>
+          <CardHeader>
+            Total Courses
+          </CardHeader>
           <CardContent>
-            <div className="flex justify-between">
-              <div className="flex flex-col gap-4">
-                <Typography className="!font-bold">Total Courses</Typography>
-                <Typography variant="h5" className="!font-bold">
-                  {Number(totalCourses?.payload ?? 0)}
-                </Typography>
-              </div>
-              <div className="w-20 h-20 my-auto mx-auto">
+            <div className="flex justify-between items-start">
+              <p className="font-bold text-6xl">
+                {Number(totalCourses?.payload ?? 0)}
+              </p>
+              <div className="w-32 h-auto">
                 <IconCourse />
               </div>
             </div>
@@ -171,15 +165,15 @@ const InstructorDashboard: React.FC = () => {
 
         {/* Top Course */}
         <Card>
+          <CardHeader>
+            Top Course
+          </CardHeader>
           <CardContent>
-            <div className="flex justify-between">
-              <div className="flex flex-col gap-4">
-                <Typography className="!font-bold">Top Course</Typography>
-                <Typography variant="h5" className="!font-bold">
-                  ID: {topCourse?.payload?.courseId ?? "No Course"}
-                </Typography>
-              </div>
-              <div className="w-20 h-20 my-auto mx-auto">
+            <div className="flex justify-between items-start">
+              <p className="font-bold text-6xl">
+                ID: {topCourse?.payload?.courseId ?? "No Course"}
+              </p>
+              <div className="w-32 h-auto">
                 <IconLearningHours />
               </div>
             </div>
@@ -188,50 +182,116 @@ const InstructorDashboard: React.FC = () => {
 
         {/* Revenue chart */}
         <Card className="md:col-span-2">
+          <CardHeader>
+            Total Revenue Overview
+          </CardHeader>
           <CardContent>
-            <Typography className="!font-bold">Total Revenue Overview</Typography>
-            <Line data={courseData} options={chartOptions} />
+            <ChartContainer config={chartConfig}>
+              <LineChart
+                accessibilityLayer
+                data={revenueChartData}
+                margin={{
+                  left: -20,
+                  right: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="year"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickCount={3}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="line" />}
+                />
+                <Line
+                  dataKey="total_revenue"
+                  type="linear"
+                  stroke="var(--chart-2)"
+                  strokeWidth={2}
+                  dot={{
+                    fill: "var(--chart-2)",
+                  }}
+                  activeDot={{
+                    r: 6,
+                  }}
+                >
+                  <LabelList
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                </Line>
+              </LineChart>
+            </ChartContainer>
           </CardContent>
         </Card>
 
         {/* Courses chart */}
         <Card className="md:col-span-2">
+          <CardHeader>
+            Total Courses Overview
+          </CardHeader>
           <CardContent>
-            <Typography className="!font-bold">Total Courses Overview</Typography>
-            <Line data={hoursData} options={chartOptions} />
+            <ChartContainer config={chartConfig}>
+              <LineChart
+                accessibilityLayer
+                data={courseChartData}
+                margin={{
+                  left: -20,
+                  right: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="year"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickCount={3}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="line" />}
+                />
+                <Line
+                  dataKey="total_course"
+                  type="linear"
+                  stroke="var(--chart-1)"
+                  strokeWidth={2}
+                  dot={{
+                    fill: "var(--chart-1)",
+                  }}
+                  activeDot={{
+                    r: 6,
+                  }}
+                >
+                  <LabelList
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                </Line>
+              </LineChart>
+            </ChartContainer>
           </CardContent>
         </Card>
       </div>
-
-      {/* CTA */}
-      <Card className="mt-2">
-        <CardContent>
-          <div className="flex justify-between">
-            <div className="flex my-auto gap-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6 my-auto"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-                />
-              </svg>
-              <Typography variant="h5" className="my-auto">
-                Jump Into Course Creation
-              </Typography>
-            </div>
-            <CreateButton onClick={() => dispatch(setSelectedIndex(2))}>
-              Create Your Course
-            </CreateButton>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };

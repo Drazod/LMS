@@ -1,11 +1,14 @@
 // src/pages/OurCourse.tsx
-import { useEffect, useRef, useState, ChangeEvent, KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
-import OutlinedInput from "@mui/material/OutlinedInput";
+import { Button } from "@/components/ui/button";
+
+import {
+  MagnifyingGlassIcon,
+} from "@phosphor-icons/react/dist/ssr";
+
 import Pagination from "@mui/material/Pagination";
-import Button from "@mui/material/Button";
-import SearchIcon from "@mui/icons-material/Search";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import CourseCard from "@/components/OurCourse/CourseCard";
@@ -14,6 +17,7 @@ import Category from "@/components/OurCourse/Category";
 import AdvImg from "@/assets/courses/adv.jpg";
 
 import api from "@/lib/api";
+import { Input } from "@/components/ui/input";
 
 // ===== Types (align with your backend payloads) =====
 type InstructorMini = {
@@ -53,6 +57,21 @@ type ApiResponse<T> = {
   };
   // plus your other fields like code/message if present
 };
+
+const receentCourses = [
+  {
+    title: "Introduction to EduChamp",
+    oldPrice: 199,
+    newPrice: 159,
+    amountReview: 100,
+  },
+  {
+    title: "English for a Better Tommorow",
+    oldPrice: 99,
+    newPrice: "Free",
+    amountReview: 200,
+  },
+];
 
 // ===== Component =====
 const OurCourse: React.FC = () => {
@@ -180,58 +199,24 @@ const OurCourse: React.FC = () => {
     <div className="w-full" ref={myRef}>
       <div className="bg-course-banner h-96 relative">
         <div className="h-full pt-32 bg-purple-900 opacity-80 text-center flex items-center">
-          <p className="text-white m-auto font-bold text-4xl">Our Course</p>
+          <p className="text-white m-auto font-bold text-7xl">Our Course</p>
         </div>
       </div>
 
-      <div className="border-t-[1px] border-b-[1px]">
-        <div className="flex gap-1 items-center p-4 text-sm max-w-[500px] md:max-w-[1180px] mx-auto">
-          <Link to={"/"}>Home</Link>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="size-3"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-          </svg>
-          <p>Our Course</p>
-        </div>
-      </div>
-
-      <div className="md:flex md:gap-8 p-4 max-w-[500px] md:max-w-[1180px] mx-auto mt-16 mb-12">
+      <div className="container mx-auto md:flex md:gap-8 p-14">
         {/* Left panel */}
-        <div className="h-full md:w-1/4 w-full space-y-12">
-          <div className="w-full flex gap-1">
-            <OutlinedInput
-              fullWidth
-              sx={{
-                "& input": {
-                  paddingTop: "7px",
-                  paddingBottom: "7px",
-                },
-                borderRight: 0,
-              }}
-              onChange={handleOutlineInputChange}
+        <div className="h-full md:w-1/5 w-full space-y-12">
+          <div className="w-full flex items-center gap-2">
+            <Input
+              placeholder="Search courses..."
               value={titleSearch}
-              onKeyUp={handleSearchKeyUp}
-            />
+              onChange={handleOutlineInputChange}
+              onKeyUp={handleSearchKeyUp} />
             <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#f7b204",
-                color: "#000",
-                padding: "1px",
-                "&:hover": {
-                  backgroundColor: "#4c1864",
-                  color: "#fff",
-                },
-              }}
+              variant="secondary" className="size-9"
               onClick={handleSearchButtonClick}
             >
-              <SearchIcon />
+              <MagnifyingGlassIcon className="!size-6" weight="duotone" />
             </Button>
           </div>
 
@@ -246,17 +231,22 @@ const OurCourse: React.FC = () => {
             </Link>
           </div>
 
-          <div>
+          <div className="flex flex-col gap-3">
             <h4 className="font-semibold text-lg">RECENT COURSES</h4>
-            <BriefCourseCard title={"Introduction Educhamp"} oldPrice={190} newPrice={120} amountReview={3} />
-            <BriefCourseCard title={"English For Tommorow"} oldPrice={"free"} newPrice={"free"} amountReview={7} />
+            <div className="flex flex-col gap-3">
+              {
+                receentCourses.map((course) => (
+                  <BriefCourseCard title={course.title} oldPrice={course.oldPrice} newPrice={course.newPrice} amountReview={course.amountReview} />
+                ))
+              }
+            </div>
           </div>
         </div>
 
         {/* Right panel */}
-        <div className="w-full md:w-3/4 space-y-8 mt-20 md:mt-0">
+        <div className="w-full space-y-8 mt-20 md:mt-0">
           {!isLoading ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full pt-7">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
               {courseList.map((course) => (
                 <CourseCard
                   key={course.courseId}

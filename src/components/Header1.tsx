@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -9,11 +10,16 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+
+import {
   QuestionIcon,
   EnvelopeIcon,
-  FacebookLogoIcon,
-  GoogleLogoIcon,
-  LinkedinLogoIcon,
+  SignOutIcon,
+  UserSquareIcon,
   ShoppingCartIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
@@ -26,6 +32,7 @@ export const Header = () => {
   const [color, setColor] = useState(false);
   const [dashboardUrl, setDashboardUrl] = useState(""); 
   const [name, setName] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -84,31 +91,38 @@ export const Header = () => {
             <p>Contact Support</p>
           </Button>
         </div>
-        <div className="sm:flex items-center sm:text-right">
+        <div className="sm:flex items-center sm:text-right gap-4">
           <SelectLanguage />
           {name ? (
-            <div>
-              <div className="inline-block mr-4">
-                <span>Hello, {name}</span>
-              </div>
-              <div className="inline-block">
-                <button className="text-white" onClick={handleLogout}>
-                  Logout
-                </button>
-              </div>
-            </div>
+            <HoverCard>
+              <HoverCardTrigger>
+                <Badge variant="secondary" className="h-9 bg-transparent text-sm hover:cursor-grab">
+                  <UserSquareIcon weight="duotone" className="!size-6 mr-2" />
+                  {name}
+                </Badge>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-fit h-fit p-1">
+                <Button
+                  onClick={handleLogout}
+                  variant="destructive"
+                  className="hover:cursor-pointer"
+                >
+                  <SignOutIcon weight="duotone" className="!size-5" /> Log out
+                </Button>
+
+              </HoverCardContent>
+            </HoverCard>
           ) : (
             <div className="flex flex-row justify-center items-center">
-              <a href="/auth/login">
-                <Button variant="ghost" className="flex items-center gap-1">
-                  Sign In
-                </Button>
-              </a>
-              <a href="/auth/register">
-                <Button variant="ghost" className="flex items-center gap-1">
-                  Register
-                </Button>
-              </a>
+              <Button
+                onClick={() => navigate("/auth/login")}
+                variant="ghost"
+                className="flex items-center gap-1 hover:cursor-pointer">
+                Sign In
+              </Button>
+              <Button variant="ghost" className="flex items-center gap-1">
+                Register
+              </Button>
             </div>
           )}
         </div>
@@ -135,7 +149,7 @@ export const Header = () => {
                       : `group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent text-background px-4 py-2 text-normal font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:hover:bg-accent data-[state=open]:focus:bg-accent`
                   }
                 >
-                  <Link to="/courses">COURSES</Link>
+                  <Link to="/course">COURSES</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
