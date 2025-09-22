@@ -139,7 +139,7 @@ const CourseDetail: React.FC = () => {
         </div>
         <div className="w-4/5">
           <div
-            className="h-[200px] md:h-[500px] bg-cover bg-center w-full md:w-auto text-left rounded-md overflow-hidden object-fill"
+            className="aspect-3/2 bg-cover bg-center w-full md:w-auto text-left rounded-md overflow-hidden object-fill"
             style={{ backgroundImage: `url("${course.courseThumbnail ?? ""}")` }}
           />
           <CourseInfo course={course} />

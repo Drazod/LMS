@@ -73,11 +73,11 @@ const App = () => {
               </RequireAuth>
             } />
         </Route>
-        <Route path="/create/" element={<AdminDashboardLayout />}>
+        {/* <Route path="/create/" element={<AdminDashboardLayout />}>
           <Route path="course" element={<CreateCourse />} />
           <Route path="lession/:lessionId" element={<Section />} />
           <Route path="video" element={<AddVideo />} />
-        </Route>
+        </Route> */}
         <Route path="/dashboard/student" element={<StudentAndInstructorLayout />}>
           <Route element={<PrivateRoute allowedRoles={['S']} />}>
             {mapChildren(
