@@ -141,6 +141,7 @@ const InstructorCourse: React.FC = () => {
   };
 
   // main list
+
   const {
     data: coursesRes,
     isLoading,
@@ -149,14 +150,11 @@ const InstructorCourse: React.FC = () => {
   } = useGetInstructorCoursesQuery({
     page: activePage - 1,
     size: pageSize,
-  } as any);
-  const coursesRes = (instructorCoursesQuery as any).data;
-  const isLoading = (instructorCoursesQuery as any).isLoading;
-  const isError = (instructorCoursesQuery as any).isError;
+  });
 
-  const courseList: Course[] = (coursesRes as CoursesResponse | undefined)?.payload?.content ?? [];
-  const totalItems = (coursesRes as CoursesResponse | undefined)?.metadata?.pagination?.totalItems ?? 0;
-  const totalPages = (coursesRes as CoursesResponse | undefined)?.metadata?.pagination?.totalPages ?? 0;
+  const courseList: Course[] = coursesRes?.payload?.content ?? [];
+  const totalItems = coursesRes?.metadata?.pagination?.totalItems ?? 0;
+  const totalPages = coursesRes?.metadata?.pagination?.totalPages ?? 0;
 
   console.log(courseList);
 
@@ -166,8 +164,7 @@ const InstructorCourse: React.FC = () => {
     [courseList, id]
   );
 
-  const sectionsQuery = useGetCourseListQuery(id as number, { skip: !id });
-  const sectionsRes = (sectionsQuery as any).data;
+  const { data: sectionsRes } = useGetCourseListQuery(id as number, { skip: !id });
 
   // students sub-paging inside dialog
   const [subActivePage, setSubActivePage] = useState<number>(1);
