@@ -64,6 +64,7 @@ const CreateCourse = () => {
       fd.append("price", String(data.price));
       fd.append("categoryId", String(data.categoryId));
       fd.append("courseThumbnail", data.courseThumbnail);
+      console.log(data.courseThumbnail);
 
       const { data: responseData } = await api.post("/courses/create", fd);
       console.log("Course created successfully:", responseData);
