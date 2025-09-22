@@ -150,9 +150,7 @@ const OurCourse: React.FC = () => {
         }
 
         // Backend pages are 0-based, UI is 1-based
-        const res = await api.get<ApiResponse<CourseItem[]>>("/courses", {
-          params: { page: page - 1, size: 9 }, // adjust size as you wish
-        });
+        const res = await api.get<ApiResponse<CourseItem[]>>("/courses");
 
         if (!alive) return;
 
