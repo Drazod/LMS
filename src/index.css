@@ -168,6 +168,35 @@ body {
     @apply border-border outline-ring/50;
   }
 
+  /* Gradient border + white inner background */
+  .ai-gradient-border {
+    --ai-border: linear-gradient(90deg, #34A853, #4285F4, #FBBC04, #EA4335);
+    --ai-inner: #fff;
+    /* inner fill (white) */
+    border: 3px solid transparent;
+    border-radius: 0.5rem;
+    background:
+      linear-gradient(var(--ai-inner), var(--ai-inner)) padding-box,
+      var(--ai-border) border-box;
+    color: var(--foreground);
+    transition: background 1s ease-in-out;
+  }
+
+  .ai-gradient-border:hover {
+    --ai-border: linear-gradient(135deg, #34A853, #FBBC04, #EA4335, #4285F4);
+  }
+
+  .dark .ai-gradient-border {
+    --ai-inner: #111;
+    /* optional different inner in dark mode */
+  }
+
+  /* Optional focus ring */
+  .ai-gradient-border:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #4285F4;
+  }
+
   body {
     @apply bg-background text-foreground;
   }

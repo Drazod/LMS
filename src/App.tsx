@@ -48,6 +48,10 @@ import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentFailed from "@/pages/PaymentFailed";
 import { student_sidebar, instructor_sidebar } from "./constants/sidebar";
 
+import MockStudentStudyLayout from "@/layouts/MockStudentStudyLayout";
+import MockStudentStudy from "@/components/Student/MockStudentStudy";
+import MockStudentStudySection from "./components/Student/MockStudentStudySection";
+
 const App = () => {
   const mapChildren = (items: { path: string; ele: React.ReactNode }[]) =>
     items.map((it, i) =>
@@ -105,6 +109,11 @@ const App = () => {
             <Route path="instructor" element={<InstructorDashboardpage />} />
           </Route>
         </Route> */}
+        <Route path="/mock/student" element={<MockStudentStudyLayout />}>
+          <Route path=":courseId" element={<MockStudentStudy />}>
+            <Route path=":sectionId" element={<MockStudentStudySection />} />
+          </Route>
+        </Route>
         <Route path="/student/:courseId" element={<StudentStudy />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />

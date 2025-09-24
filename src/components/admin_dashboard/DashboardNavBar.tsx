@@ -32,9 +32,9 @@ const DashboardNavBar = ({ menuToggle, handleMenuToggle }) => {
         open={menuToggle}
         onClick={handleMenuToggle}
       />
-      <Link to="/" className="flex items-center justify-center">
+      {/* <Link to="/" className="flex items-center justify-center">
         <img src={logo_white} className="w-40"></img>
-      </Link>
+      </Link> */}
       <div className="flex flex-row mx-4 gap-8 text-white text-sm font-bold">
         <Link to="/" className="text-white flex-grow flex items-center">
           HOME

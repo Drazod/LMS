@@ -150,9 +150,15 @@ const InstructorCourse: React.FC = () => {
   } = useGetInstructorCoursesQuery({
     page: activePage - 1,
     size: pageSize,
-  });
+  },
+    { refetchOnMountOrArgChange: true }
+  );
 
-  const courseList: Course[] = coursesRes?.payload?.content ?? [];
+  const courseList: Course[] =
+    (coursesRes as any)?.payload?.content ??
+    (coursesRes as any)?.data?.payload?.content ??
+    (coursesRes as any)?.content ??
+    [];
   const totalItems = coursesRes?.metadata?.pagination?.totalItems ?? 0;
   const totalPages = coursesRes?.metadata?.pagination?.totalPages ?? 0;
 
