@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { H3, H4 } from "@/components/ui/typography"
 import { Label } from "@/components/ui/label"
 import {
@@ -5,6 +6,8 @@ import {
   RadioGroupItem,
 } from "@/components/ui/radio-group"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { RecordIcon, DotsThreeOutlineVerticalIcon } from "@phosphor-icons/react/dist/ssr"
+import { Button } from "../ui/button"
 
 const questionItems = [
   {
@@ -108,10 +111,10 @@ const questionItems = [
   },
 ]
 
-export default function MockStudentStudySection() {
+export function MockStudentStudySectionListening() {
   return (
     <div className="py-5 flex flex-col gap-4 flex-grow">
-      <H3>Phần 1: Kỹ năng nói</H3>
+      <H3>Phần 2: Kỹ năng nghe</H3>
       <main>
         <section>
           <H4 id="activity-1">Hoạt động 1</H4>
@@ -119,10 +122,10 @@ export default function MockStudentStudySection() {
           <iframe
             className="aspect-16/9 p-10"
             src="https://www.youtube-nocookie.com/embed/y_xmMWaNsbg?si=RwD3gKrhI2Al-7F6"
-            title="YouTube video player" frameborder="0"
+            title="YouTube video player" frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
           ></iframe>
           <div className="grid grid-cols-3 gap-3">
             {
@@ -145,6 +148,116 @@ export default function MockStudentStudySection() {
                 </Card>
               ))
             }
+          </div>
+        </section>
+      </main>
+    </div>
+  )
+}
+
+export function MockStudentStudySectionSpeaking() {
+  const [isRecording, setIsRecording] = useState(false);
+  const debateTopics = [
+    "Giới trẻ lựa chọn nghề nghiệp dựa trên nhu cầu của thị trường lao động",
+    "Văn hóa đọc của học sinh trung học đang có xu hướng giảm",
+    "Học sinh được phép sử dụng trí tuệ nhân tạo khi làm bài kiểm tra hoặc bài tập",
+    "Học sinh “hóng hớt drama” trên các nền tảng mạng xã hội",
+    "Người nổi tiếng, người có sức ảnh hưởng quảng cáo thông tin sai lệch đến người tiêu dùng",
+    "Vấn nạn tin giả và vai trò của giới trẻ trong việc xác thực thông tin",
+  ]
+  const feedback = {
+    "topic": "Văn hóa đọc của học sinh trung học đang có xu hướng giảm",
+    "feedback": {
+      "strengths": {
+        "content": "Chủ đề thời sự, gần gũi với lứa tuổi học sinh. Bạn đã nêu được thực trạng rõ ràng và đưa ra các số liệu minh họa thuyết phục.",
+        "argument": "Bài nói có bố cục hợp lý (mở - thân - kết), lý giải nguyên nhân và đề xuất giải pháp cụ thể như xây dựng góc đọc, tổ chức câu lạc bộ sách.",
+        "language": "Sử dụng từ ngữ trong sáng, dễ hiểu, có một số câu nhấn mạnh mang tính gợi mở, giúp người nghe suy nghĩ.",
+        "nonVerbal": "Giọng nói rõ ràng, âm lượng ổn định; ánh mắt giao tiếp với khán giả tốt, tạo cảm giác tự tin."
+      },
+      "suggestions": {
+        "speedAndEmphasis": "Ở vài đoạn giải pháp, bạn nói hơi nhanh, khiến người nghe khó theo kịp.",
+        "gestures": "Tay hơi ít động tác, có thể sử dụng thêm những cử chỉ minh họa để tăng sức thuyết phục.",
+        "conclusion": "Phần kết cần thêm câu kêu gọi hành động mạnh mẽ hơn, chẳng hạn khuyến khích các bạn cùng chung tay xây dựng thói quen đọc."
+      },
+      "overall": "Bài thuyết trình của bạn đã thể hiện sự chuẩn bị nghiêm túc, lập luận mạch lạc và tạo được sự quan tâm của người nghe. Chỉ cần điều chỉnh nhịp độ, bổ sung cử chỉ minh họa và câu kết ấn tượng hơn, bài nói sẽ hoàn thiện và cuốn hút hơn nữa."
+    }
+  }
+
+
+  return (
+    <div className="py-5 flex flex-col gap-4 flex-grow">
+      <H3>Phần 1: Kỹ năng nói</H3>
+      <main>
+        <section>
+          <H4 id="activity-1">Hoạt động 1</H4>
+          <Card className="mt-2 mb-4">
+            <CardContent className="flex flex-col gap-4">
+              <p>
+                <span className="font-bold">Tình huống:</span> Trường em tổ chức một cuộc thi hùng biện, tranh luận để tìm kiếm đại diện tham gia cuộc thi Trường Teen 2025.
+              </p>
+              <div className="flex flex-col gap-2">
+                <p>
+                  <span className="font-bold">Yêu cầu:</span> Để tham gia cuộc thi cấp Trường, em cần lựa chọn một trong những vấn đề xã hội bên dưới và thực hiện thuyết trình có sử dụng kết hợp phương tiện ngôn ngữ và giao tiếp phi ngôn ngữ.
+                </p>
+                <ul className="list-disc list-inside">
+                  {debateTopics.map((topic, idx) => (
+                    // change right margin of li::marker to 0px
+                    <li className="ml-6 list-item" key={idx}>{topic}</li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+          <div className="mb-4">
+            <Card>
+              <CardContent className="flex flex-col gap-4 items-center justify-center">
+                <img src="/src/assets/waveform.jpg" alt="Recording" className={`${isRecording ? 'block' : 'hidden'}`} />
+                <div className="flex w-full justify-between gap-3">
+                  <Button>Nộp bản ghi âm</Button>
+                  <Button
+                    size={"icon"}
+                    variant={isRecording ? "destructive" : "outline"}
+                    onClick={() => setIsRecording(!isRecording)}
+                  >
+                    <RecordIcon className="!size-7" weight="duotone" />
+                  </Button>
+                  <Button size={"icon"} variant="outline">
+                    <DotsThreeOutlineVerticalIcon className="!size-7" weight="duotone" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-3">
+            {/* Feedback Card */}
+            <Card className="flex flex-col gap-3 bg-gradient-to-r from-amber-100 to-yellow-200">
+              <CardHeader>
+                <CardTitle>Chủ đề đã chọn</CardTitle>
+                <CardDescription>{feedback.topic}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <h5 className="font-semibold">Điểm mạnh:</h5>
+                  <ul className="list-disc list-inside">
+                    {Object.entries(feedback.feedback.strengths).map(([key, value], idx) => (
+                      <li className="ml-6 list-item" key={idx}>{value}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <h5 className="font-semibold">Gợi ý cải thiện:</h5>
+                  <ul className="list-disc list-inside">
+                    {Object.entries(feedback.feedback.suggestions).map(([key, value], idx) => (
+                      <li className="ml-6 list-item" key={idx}>{value}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <h5 className="font-semibold">Tổng quan:</h5>
+                  <p>{feedback.feedback.overall}</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       </main>

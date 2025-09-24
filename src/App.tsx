@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
 import { RequireAuth } from "react-auth-kit";
 
 import AuthLayout from "@/layouts/AuthLayout";
@@ -50,7 +50,15 @@ import { student_sidebar, instructor_sidebar } from "./constants/sidebar";
 
 import MockStudentStudyLayout from "@/layouts/MockStudentStudyLayout";
 import MockStudentStudy from "@/components/Student/MockStudentStudy";
-import MockStudentStudySection from "./components/Student/MockStudentStudySection";
+import { MockStudentStudySectionListening, MockStudentStudySectionSpeaking } from "@/components/Student/MockStudentStudySection";
+
+function MockSectionSwitch() {
+  const { sectionId } = useParams();
+  if (!sectionId) return null;
+  return sectionId.includes("ky-nang-nghe")
+    ? <MockStudentStudySectionListening />
+    : <MockStudentStudySectionSpeaking />;
+}
 
 const App = () => {
   const mapChildren = (items: { path: string; ele: React.ReactNode }[]) =>
@@ -63,91 +71,60 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public site */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="course" element={<OurCourse />} />
           <Route path="course/search" element={<CourseSearch />} />
-          <Route path="/course/:courseId" element={<CourseDetail />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/payment-failed" element={<PaymentFailed />} />
+          <Route path="course/:courseId" element={<CourseDetail />} />
+          <Route path="payment-success" element={<PaymentSuccess />} />
+          <Route path="payment-failed" element={<PaymentFailed />} />
           <Route
-            path="/cart/"
-            element={
-              <RequireAuth loginPath="/auth/login">
-                <StudentCart />
-              </RequireAuth>
-            } />
-        </Route>
-        {/* <Route path="/create/" element={<AdminDashboardLayout />}>
-          <Route path="course" element={<CreateCourse />} />
-          <Route path="lession/:lessionId" element={<Section />} />
-          <Route path="video" element={<AddVideo />} />
-        </Route> */}
-        <Route path="/dashboard/student" element={<StudentAndInstructorLayout />}>
-          <Route element={<PrivateRoute allowedRoles={['S']} />}>
-            {mapChildren(
-              student_sidebar.map((it) => ({ ...it, path: it.path?.replace(/^\/+/, "") }))
-            ).map((routeProps, idx) => (
-              <Route key={idx} {...routeProps} />
-            ))}
-          </Route>
-        </Route>
-        <Route path="/dashboard/instructor" element={<StudentAndInstructorLayout />}>
-          <Route element={<PrivateRoute allowedRoles={['I']} />}>
-            {mapChildren(
-              instructor_sidebar.map((it) => ({ ...it, path: it.path?.replace(/^\/+/, "") }))
-            ).map((routeProps, idx) => (
-              <Route key={idx} {...routeProps} />
-            ))}
-          </Route>
-        </Route>
-        {/* <Route path="/dashboard/" element={<StudentAndInstructorLayout />}>
-          <Route element={<PrivateRoute allowedRoles={['S']} />}>
-            <Route path="student" element={<StudentDashboardpage />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={['I']} />}>
-            <Route path="instructor" element={<InstructorDashboardpage />} />
-          </Route>
-        </Route> */}
-        <Route path="/mock/student" element={<MockStudentStudyLayout />}>
-          <Route path=":courseId" element={<MockStudentStudy />}>
-            <Route path=":sectionId" element={<MockStudentStudySection />} />
-          </Route>
-        </Route>
-        <Route path="/student/:courseId" element={<StudentStudy />} />
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          {/* <Route path="/course" element={<OurCourse />} /> */}
-          {/* <Route path="/course/search" element={<CourseSearch />} /> */}
-          {/* <Route path="/course/:courseId" element={<CourseDetail />} /> */}
-          {/* <Route path="/payment-success" element={<PaymentSuccess />} /> */}
-          {/* <Route path="/payment-failed" element={<PaymentFailed />} /> */}
-          {/* <Route
-            path="/cart/"
+            path="cart"
             element={
               <RequireAuth loginPath="/auth/login">
                 <StudentCart />
               </RequireAuth>
             }
-          /> */}
+          />
         </Route>
-        {/* <Route path="/create/" element={<AdminDashboardLayout />}>
-          <Route path="course" element={<CreateCourse />} />
-          <Route path="lession/:lessionId" element={<Section />} />
-          <Route path="video" element={<AddVideo />} />
-        </Route> */}
-        {/* <Route element={<PrivateRoute allowedRoles={['A']} />}>
-          <Route path="/admin/" element={<AdminDashboardLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="course" element={<AdminCourseView />} />
+
+        {/* Dashboards */}
+        <Route path="/dashboard/student" element={<StudentAndInstructorLayout />}>
+          <Route element={<PrivateRoute allowedRoles={['S']} />}>
+            {mapChildren(
+              student_sidebar.map(it => ({ ...it, path: it.path.replace(/^\/+/, "") }))
+            ).map((rp, i) => <Route key={i} {...rp} />)}
           </Route>
-        </Route> */}
-        <Route path="/auth/" element={<AuthLayout />}>
+        </Route>
+
+        <Route path="/dashboard/instructor" element={<StudentAndInstructorLayout />}>
+          <Route element={<PrivateRoute allowedRoles={['I']} />}>
+            {mapChildren(
+              instructor_sidebar.map(it => ({ ...it, path: it.path.replace(/^\/+/, "") }))
+            ).map((rp, i) => <Route key={i} {...rp} />)}
+          </Route>
+        </Route>
+
+        {/* Mock study (dynamic sections) */}
+        <Route path="/mock/student" element={<MockStudentStudyLayout />}>
+          <Route path=":courseId" element={<MockStudentStudy />}>
+            <Route path=":sectionId" element={<MockSectionSwitch />} />
+          </Route>
+        </Route>
+
+        {/* Legacy / direct study route */}
+        <Route path="/student/:courseId" element={<StudentStudy />} />
+
+        {/* Auth */}
+        <Route path="/auth" element={<AuthLayout />}>
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<Register />} />
           <Route path="forget-password" element={<ForgetPassword />} />
         </Route>
+
+        {/* (Optional) 404 */}
+        {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
     </BrowserRouter>
   );

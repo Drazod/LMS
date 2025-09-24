@@ -23,8 +23,8 @@ function Content() {
       <header className="h-14 flex items-center gap-2 border-b mb-4">
         <SidebarTrigger />
         <H4 className="font-bold">
-          Bài 1. Giới thiệu, đánh giá về nội dung
-          và nghệ thuật của một truyện kể
+          Bài 1. Trình bày ý kiến về một sự việc có tính thời sự;
+          Nghe và nhận biết tính thuyết phục của ý kiến
         </H4>
       </header>
       <Outlet />
