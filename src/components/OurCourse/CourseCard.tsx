@@ -50,7 +50,7 @@ const CourseCard = ({
       <Card className='pt-0 pb-6 overflow-clip hover:bg-accent/10 transition-colors duration-50 ease-in-out'>
         <div className='flex flex-col flex-1 gap-2'>
           <CardHeader className='px-0'>
-            <img src={thumbnail} className='w-full h-52 object-cover rounded-t-md' />
+            <img src={thumbnail} className='aspect-3/2 object-contain object-center rounded-t-md' />
             <div className='px-6 mt-3 w-full overflow-hidden'>
               <p className='flex gap-4 justify-between items-baseline text-xl font-semibold text-ellipsis'>
                 {title}

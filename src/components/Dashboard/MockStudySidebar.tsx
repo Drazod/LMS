@@ -2,6 +2,7 @@ import { Link, useParams, useLocation } from "react-router-dom"
 import { FileTextIcon, UserSoundIcon, HeadphonesIcon } from "@phosphor-icons/react/dist/ssr"
 import {
   Sidebar,
+  SidebarHeader,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
@@ -10,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import logo from '/hoctiengvietai_white.svg';
 
 const items = [
   { id: "1", title: "Phần 1: Kỹ năng nói", url: "phan-1-ky-nang-noi", icon: UserSoundIcon },
@@ -22,7 +24,10 @@ export function MockStudySidebar() {
   const location = useLocation()
 
   return (
-    <Sidebar collapsible="none">
+    <Sidebar variant="floating" collapsible="icon" className="w-64 sm:w-64">
+      <SidebarHeader>
+        <img src={logo} className="px-2 invert w-fit h-10 object-contain" />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Phần</SidebarGroupLabel>

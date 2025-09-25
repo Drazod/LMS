@@ -16,7 +16,7 @@ import {
   instructor_sidebar
 } from "@/constants/sidebar";
 import { SignOutIcon } from "@phosphor-icons/react/dist/ssr";
-import Logo from "@/assets/logo-white.png";
+import logo from '/hoctiengvietai_white.svg';
 import { Button } from "@/components/ui/button";
 
 export function DashboardSidebar() {
@@ -32,7 +32,7 @@ export function DashboardSidebar() {
   return (
     <Sidebar variant="floating" collapsible="icon" className="w-64 sm:w-64">
       <SidebarHeader>
-        <img src={Logo} className="px-2 invert w-fit h-10 object-contain" />
+        <img src={logo} className="px-2 invert w-fit h-10 object-contain" />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

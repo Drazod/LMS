@@ -29,7 +29,7 @@ interface StudySidebarProps {
 
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedIndex } from "../../features/slices/selectedIndex";
-import logo from "../../assets/logo.png";
+import logo from '/hoctiengvietai_white.svg';
 const StudySidebar = ({
   open,
   onClose,

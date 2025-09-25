@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/radio-group"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { RecordIcon, DotsThreeOutlineVerticalIcon } from "@phosphor-icons/react/dist/ssr"
-import { Button } from "../ui/button"
+import { Button } from "@/components/ui/button"
 
 const questionItems = [
   {
@@ -230,7 +230,7 @@ export function MockStudentStudySectionSpeaking() {
           </div>
           <div className="grid gap-3">
             {/* Feedback Card */}
-            <Card className="flex flex-col gap-3 bg-gradient-to-r from-amber-100 to-yellow-200">
+            <Card className="flex flex-col gap-3 bg-[url(/src/assets/ai-background-gradient.jpg)]">
               <CardHeader>
                 <CardTitle>Chủ đề đã chọn</CardTitle>
                 <CardDescription>{feedback.topic}</CardDescription>

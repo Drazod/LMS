@@ -11,7 +11,7 @@ import {
   LinkedinLogoIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
-import Logo from "@/assets/logo-white.png";
+import logo from '/hoctiengvietai_black.svg';
 
 export const Footer = () => {
   return (
@@ -20,8 +20,8 @@ export const Footer = () => {
         <div className="flex justify-between">
           <a href="/">
             <img
-              src={Logo}
-              className="invert w-28 sm:w-fit object-cover mr-12 my-5 sm:my-0"
+              src={logo}
+              className="h-20 object-cover mr-12 my-5 sm:my-0 hover:opacity-50 duration-75 ease-in-out transition"
             ></img>
           </a>
           <div className="flex items-center gap-4">

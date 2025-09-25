@@ -1,11 +1,22 @@
+import { useState } from "react";
 import { MockStudySidebar } from "@/components/Dashboard/MockStudySidebar";
 import {
   SidebarProvider,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { H1, H2, H3, H4 } from "@/components/ui/typography";
+import { Button } from "@/components/ui/button";
+import { SidebarIcon } from "@phosphor-icons/react/dist/ssr";
+import { H4 } from "@/components/ui/typography";
 import { Outlet } from "react-router-dom";
+
+function SidebarTrigger() {
+  const { toggleSidebar } = useSidebar();
+  return (
+    <Button variant="ghost" onClick={toggleSidebar} className="!p-4">
+      <SidebarIcon className="!size-8" weight="duotone" />
+    </Button>
+  )
+}
 
 function Content() {
   const { state } = useSidebar();
@@ -33,10 +44,16 @@ function Content() {
 }
 
 export default function MockStudentStudyLayout() {
+  const [open, setOpen] = useState(true);
+
   return (
-    <SidebarProvider>
-      <MockStudySidebar />
-      <Content />
-    </SidebarProvider>
+    <div className="min-h-screen bg-background">
+      <SidebarProvider open={open} onOpenChange={setOpen}>
+        <MockStudySidebar />
+        <div className={`${open ? "ml-64" : ""} transition-all flex-1 max-h-dvh`}>
+          <Content />
+        </div>
+      </SidebarProvider>
+    </div>
   );
 }
