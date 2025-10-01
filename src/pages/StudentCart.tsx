@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Breadcrumbs,
-  Input,
   Button,
   Dialog,
   DialogHeader,
@@ -18,8 +17,8 @@ import {
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import CartItem from "@/components/CartItem";
-import CheckoutModal from  "@/components/CheckoutModal";
+import CartItem from "@/components/shopping/CartItem";
+import CheckoutModal from  "@/components/shopping/CheckoutModal";
 import { useDispatch } from "react-redux";
 import { openModal } from "../slices/modalSlice";
 

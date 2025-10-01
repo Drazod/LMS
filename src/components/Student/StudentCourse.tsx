@@ -18,18 +18,9 @@ import {
   styled,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import IconCourse from "../../assets/IconCourse";
-import IconLearningHours from "../../assets/IconLearningHours";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import BreadCrumbsDashboard from "../BreadCrumbsDashboard";
+import BreadCrumbsDashboard from "../common/BreadcrumbsDashboard";
 import { useGetStudentCoursesQuery } from "@/apis/StudentDashboardApi";
-import Loader from "../Loader";
+import Loader from "../common/Loader";
 import { Star } from "@mui/icons-material";
 import test_img from "../../assets/courses/pic1.jpg";
 import test_ppl_img from "../../assets/test_profile_img/pic3.jpg";

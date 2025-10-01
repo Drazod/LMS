@@ -1,12 +1,12 @@
 // src/pages/CourseDetail.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import CourseInfo from "@/components/Course_info";
-import CourseDescription from "@/components/Course_des";
-import Curriculum from "@/components/Curriculum";
-import Instructor from "@/components/Instructor";
-import CourseDetailBox from "@/components/CourseDetailBox";
-import Overview from "@/components/Overview";
+import CourseInfo from "@/components/course/CourseInfo";
+import CourseDescription from "@/components/course/CourseDescription";
+import Curriculum from "@/components/course/Curriculum";
+import Instructor from "@/components/course/Instructor";
+import CourseDetailBox from "@/components/course/CourseDetailBox";
+import Overview from "@/components/course/Overview";
 import { templatedata } from "@/constants/mockdata";
 import "../configs/style.css";
 import { CircularProgress } from "@mui/material";
@@ -45,7 +45,6 @@ const CourseDetail: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
 
   const [course, setCourse] = useState<CourseDetail | null>(null);
-  const [rating, setRating] = useState<RatingSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

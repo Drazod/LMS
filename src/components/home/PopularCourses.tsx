@@ -6,7 +6,7 @@ import "swiper/css/pagination";
 
 import CourseCard from "@/components/OurCourse/CourseCard";
 
-import SwiperButton from "@/components/Home_Component/SwiperButton";
+import SwiperButton from "@/components/home/SwiperButton";
 import { useEffect, useState } from "react";
 import axios from "axios";
 

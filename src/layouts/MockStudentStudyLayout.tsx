@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MockStudySidebar } from "@/components/Dashboard/MockStudySidebar";
+import { MockStudySidebar } from "@/components/layout/MockStudySidebar";
 import {
   SidebarProvider,
   useSidebar,

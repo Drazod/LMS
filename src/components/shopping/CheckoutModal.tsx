@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { closeModal, stateOfModal } from "../slices/modalSlice";
+import { closeModal, stateOfModal } from "../../slices/modalSlice";
 import {
   Card,
   Input,
@@ -12,8 +12,8 @@ import {
   LockClosedIcon,
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
-import VNPay from "../assets/Cart/VNPAY.png";
-import CreditCard from "../assets/Cart/CreditCard.png";
+import VNPay from "../../assets/Cart/VNPAY.png";
+import CreditCard from "../../assets/Cart/CreditCard.png";
 
 import { Button } from "@/components/ui/button";
 

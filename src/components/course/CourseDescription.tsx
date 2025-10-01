@@ -1,4 +1,4 @@
-import '../configs/style.css';
+import '../../configs/style.css';
 
 const CourseDescription = ({ tempcourse, course }) => {
 	return (

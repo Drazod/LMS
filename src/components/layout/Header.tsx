@@ -28,8 +28,8 @@ import {
   ShoppingCartIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
-import SelectLanguage from "./Home_Component/DropLang1";
-import { SearchHeader } from "@/components/Home_Component/SearchHeader";
+import SelectLanguage from "../home/DropLang1";
+import { SearchHeader } from "@/components/home/SearchHeader";
 
 import logo from '/hoctiengvietai_white.svg';
 

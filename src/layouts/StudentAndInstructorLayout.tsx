@@ -5,7 +5,7 @@ import {
   useSidebar
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { DashboardSidebar } from "@/components/Dashboard/DashboardSidebar";
+import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
 import { SidebarIcon } from "@phosphor-icons/react/dist/ssr";
 import { student_sidebar, instructor_sidebar } from "@/constants/sidebar";
 

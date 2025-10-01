@@ -7,7 +7,7 @@ import { useGetStudentStatsQuery } from "@/apis/StudentDashboardApi";
 import Loader from "../Loader";
 import IconCourse from "../../assets/IconCourse";
 import IconLearningHours from "../../assets/IconLearningHours";
-import BreadCrumbsDashboard from "../BreadCrumbsDashboard";
+import BreadCrumbsDashboard from "../common/BreadcrumbsDashboard";
 
 // Mock dependencies
 jest.mock("@/apis/StudentDashboardApi");
@@ -16,7 +16,7 @@ jest.mock("../../assets/IconCourse", () => () => <div>IconCourse</div>);
 jest.mock("../../assets/IconLearningHours", () => () => (
   <div>IconLearningHours</div>
 ));
-jest.mock("../BreadCrumbsDashboard", () => () => (
+jest.mock("../common/BreadcrumbsDashboard", () => () => (
   <div>BreadCrumbsDashboard</div>
 ));
 

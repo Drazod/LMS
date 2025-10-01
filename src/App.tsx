@@ -13,7 +13,7 @@ import Home from "@/pages/Home";
 import CourseDetail from "@/pages/CourseDetail";
 import StudentCart from "@/pages/StudentCart";
 
-import PrivateRoute from "@/components/PrivateRoute";
+import PrivateRoute from "@/components/common/PrivateRoute";
 import StudentAndInstructorLayout from "@/layouts/StudentAndInstructorLayout";
 
 import NewStudentStudy from "@/components/Student/NewStudentStudy";

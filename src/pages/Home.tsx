@@ -1,7 +1,7 @@
-import SliderComponent from "@/components/Home_Component/swiper";
-import Sections from "@/components/Home_Component/Section";
-import PopularCourses from "@/components/Home_Component/PopularCourses";
-import OnlineCourse from "@/components/Home_Component/OnlineCourse";
+import SliderComponent from "@/components/home/HeroSlider";
+import Sections from "@/components/home/Section";
+import PopularCourses from "@/components/home/PopularCourses";
+import OnlineCourse from "@/components/home/OnlineCourse";
 
 const Home = () => {
   return (

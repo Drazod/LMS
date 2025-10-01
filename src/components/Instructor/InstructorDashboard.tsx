@@ -36,7 +36,7 @@ import {
   useGetTotalRevenueQuery,
   useGetTotalUsersBuyQuery,
 } from "@/apis/InstructorDashboardApi";
-import Loader from "../Loader";
+import Loader from "@/components/common/Loader";
 
 const formatCurrency = (v: unknown) =>
   typeof v === "number"

@@ -35,18 +35,7 @@ import {
   CardContent,
   CardHeader
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import Loader from "@/components/Loader";
-import { ImageUpload } from "@/components/ImageUpload";
+import { ImageUpload } from "@/components/common/ImageUpload";
 
 import {
   useGetStudentQuery,
@@ -54,8 +43,6 @@ import {
   useUpdateStudentPasswordMutation,
   useUpdateStudentProfileMutation,
 } from "@/apis/StudentDashboardApi";
-import { handleDelete } from "@/utils/deleteImage";
-
 import { FloppyDiskIcon } from "@phosphor-icons/react/dist/ssr";
 
 const StudentProfile = () => {

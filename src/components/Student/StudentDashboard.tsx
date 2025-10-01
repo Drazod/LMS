@@ -1,8 +1,8 @@
 import IconLearningHours from "../../assets/IconLearningHours";
 import IconCourse from "../../assets/IconCourse";
-import BreadCrumbsDashboard from "../BreadCrumbsDashboard";
+import BreadCrumbsDashboard from "../common/BreadcrumbsDashboard";
 import { useGetStudentStatsQuery } from "@/apis/StudentDashboardApi";
-import Loader from "../Loader";
+import Loader from "../common/Loader";
 
 import {
   Area,

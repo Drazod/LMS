@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { grey } from "@mui/material/colors";
-import BreadCrumbsDashboard from "../BreadCrumbsDashboard";
+import BreadCrumbsDashboard from "../common/BreadcrumbsDashboard";
 import {
   useGetInstructorQuery,
   useUpdateInstructorAddressMutation,
@@ -23,8 +23,8 @@ import {
 } from "@/apis/InstructorDashboardApi";
 import { Toast } from "@/configs/SweetAlert";
 import { handleDelete } from "@/utils/deleteImage";
-import {ImageUpload} from "../ImageUpload";
-import Loader from "../Loader";
+import {ImageUpload} from "@/components/common/ImageUpload";
+import Loader from "@/components/common/Loader";
 const SaveButton = styled(Button)(({ theme }) => ({
   color: theme.palette.getContrastText("#d8a409"),
   backgroundColor: "#d8a409",

@@ -1,4 +1,4 @@
-import BuyNowButton from "@/components/BuyNowButton";
+import BuyNowButton from "@/components/shopping/BuyNowButton";
 import {
 	Card,
 	CardHeader,

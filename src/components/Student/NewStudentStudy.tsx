@@ -33,7 +33,7 @@ import {
   ArrowRightIcon,
   CheckCircleIcon
 } from "@phosphor-icons/react";
-import Loader from "@/components/Loader";
+import Loader from "@/components/common/Loader";
 import logo from '/hoctiengvietai_white.svg';
 
 // Types for the actual API data structure

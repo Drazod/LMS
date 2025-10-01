@@ -17,7 +17,7 @@ import { AddSession } from "@/components/create_course/addSession";
 import { Toast } from "@/configs/SweetAlert";
 import Swal from "sweetalert2";
 import { useGetInstructorCoursesQuery, useDeleteInstructorCourseMutation } from "@/apis/InstructorDashboardApi";
-import Loader from "../Loader";
+import Loader from "../common/Loader";
 import { useGetCourseListQuery } from "@/apis/CourseApi";
 
 import { Button } from "@/components/ui/button";
