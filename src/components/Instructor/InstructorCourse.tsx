@@ -1,8 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
-  // Button,
-  // Card,
-  // CardContent,
   Container,
   Dialog,
   DialogContent,
@@ -13,24 +10,15 @@ import {
   Pagination,
   Select,
   MenuItem,
-  styled,
   Typography,
 } from "@mui/material";
-// @ts-ignore
-import BreadCrumbsDashboard from "../BreadCrumbsDashboard";
-// @ts-ignore
-// import useOpen from "@/hooks/useOpen";
 import { AddSession } from "@/components/create_course/addSession";
 // @ts-ignore
 import { Toast } from "@/configs/SweetAlert";
 import Swal from "sweetalert2";
-import { useDispatch } from "react-redux";
-import { setSelectedIndex } from "@/features/slices/selectedIndex";
 import { useGetInstructorCoursesQuery, useDeleteInstructorCourseMutation } from "@/apis/InstructorDashboardApi";
-// @ts-ignore
 import Loader from "../Loader";
 import { useGetCourseListQuery } from "@/apis/CourseApi";
-import { red } from "@mui/material/colors";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -64,36 +52,17 @@ type Course = {
   studentList?: Student[];
 };
 
-type CoursesResponse = {
-  payload: { content: Course[] };
-  metadata: { pagination: { totalPages: number; totalItems: number } };
-};
-
 type SectionsResponse = {
   payload: { sections: { sectionId: number; sectionName: string }[] };
 };
 
 const InstructorCourse: React.FC = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const [deleteCourse, { isLoading: isDeleting }] = useDeleteInstructorCourseMutation();
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [isTablet, setIsTablet] = useState(
-    window.innerWidth < 1024 && window.innerWidth >= 768
-  );
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      setIsTablet(window.innerWidth < 1024 && window.innerWidth >= 768);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // dialogs + selection
   const [open, setOpen] = useState(false);
+  const [addSessionOpen, setAddSessionOpen] = useState(false);
   const [id, setId] = useState<number | null>(null);
 
   const handleClickOpen = (courseId: number) => {
@@ -102,6 +71,15 @@ const InstructorCourse: React.FC = () => {
   };
   const handleClose = () => {
     setOpen(false);
+    setId(null);
+  };
+
+  const handleAddSessionOpen = (courseId: number) => {
+    setId(courseId);
+    setAddSessionOpen(true);
+  };
+  const handleAddSessionClose = () => {
+    setAddSessionOpen(false);
     setId(null);
   };
 
@@ -154,11 +132,7 @@ const InstructorCourse: React.FC = () => {
     { refetchOnMountOrArgChange: true }
   );
 
-  const courseList: Course[] =
-    (coursesRes as any)?.payload?.content ??
-    (coursesRes as any)?.data?.payload?.content ??
-    (coursesRes as any)?.content ??
-    [];
+  const courseList: Course[] = coursesRes?.payload?.content ?? [];
   const totalItems = coursesRes?.metadata?.pagination?.totalItems ?? 0;
   const totalPages = coursesRes?.metadata?.pagination?.totalPages ?? 0;
 
@@ -237,7 +211,7 @@ const InstructorCourse: React.FC = () => {
                   </div>
                 </div>
                 <div className='flex flex-row gap-1.5'>
-                  <Button>
+                  <Button onClick={() => handleAddSessionOpen(course.courseId)}>
                     <RowsPlusBottomIcon className="!size-5" weight="duotone" /> Create section
                   </Button>
                   <Button
@@ -391,6 +365,33 @@ const InstructorCourse: React.FC = () => {
                   </div>
                 </Container>
               </DialogContentText>
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {/* Add Session Dialog */}
+        {id && (
+          <Dialog
+            open={addSessionOpen}
+            onClose={handleAddSessionClose}
+            aria-labelledby="add-session-dialog-title"
+            maxWidth="lg"
+            fullWidth
+          >
+            <DialogTitle id="add-session-dialog-title">
+              Add New Section
+            </DialogTitle>
+            <DialogContent>
+              <AddSession
+                name=""
+                setFunc={() => {
+                  // Refresh the course data after adding session
+                  refetch();
+                  handleAddSessionClose();
+                }}
+                index={0}
+                courseId={id}
+              />
             </DialogContent>
           </Dialog>
         )}

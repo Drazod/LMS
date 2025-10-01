@@ -111,7 +111,6 @@ export default function Register() {
                           <SelectContent>
                             <SelectItem value="S">Student</SelectItem>
                             <SelectItem value="I">Instructor</SelectItem>
-                            <SelectItem value="A">Admin</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormItem>

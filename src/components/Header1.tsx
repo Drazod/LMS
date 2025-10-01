@@ -73,8 +73,6 @@ export const Header = () => {
       setDashboardUrl("/dashboard/student");
     } else if (role === "I") {
       setDashboardUrl("/dashboard/instructor");
-    } else if (role === "A") {
-      setDashboardUrl("/admin");
     } else {
       setDashboardUrl("/dashboard"); // default or error route
     }

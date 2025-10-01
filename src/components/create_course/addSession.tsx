@@ -1,30 +1,21 @@
 
 import { useState } from "react";
 import API from "@/apis/instance";
-import { Textarea, IconButton, Input, Collapse, Card, Typography, Tooltip } from "@material-tailwind/react";
-import { Button } from "@mui/joy";
-import { CircularProgress } from "@mui/material";
-import { FaRegStickyNote, FaMinusCircle, FaPlusCircle, FaFileUpload } from "react-icons/fa";
-import { MdDescription } from "react-icons/md";
-import { IoMdSave } from "react-icons/io";
-import "react-quill/dist/quill.snow.css";
-
-// Function to handle file upload input
-function InputFileUpload({ handleFile }: { handleFile: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
-  return (
-    <label className="flex items-center gap-2 cursor-pointer">
-      <Tooltip content="Upload file">
-        <span className="text-blue-600 hover:text-blue-800 transition-colors">
-          <FaFileUpload size={22} />
-        </span>
-      </Tooltip>
-      <input type="file" onChange={handleFile} accept="image/*" className="hidden" />
-      <span className="text-sm font-medium">Choose file</span>
-    </label>
-  );
-
-}
-
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  FileTextIcon, 
+  MinusCircleIcon, 
+  PlusCircleIcon, 
+  FloppyDiskIcon,
+  ImageIcon,
+  VideoIcon
+} from "@phosphor-icons/react";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import { Loader2 } from "lucide-react";
 
 export function AddSession({ name, setFunc, index, courseId }: {
   name: string;
@@ -32,211 +23,324 @@ export function AddSession({ name, setFunc, index, courseId }: {
   index: number;
   courseId: number;
 }) {
-  const [text, setText] = useState(name);
-  const [count, setCount] = useState(1);
-  const [down, setDown] = useState(true);
-  const [note, setNote] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [description, setDescription] = useState("");
+  const [formData, setFormData] = useState({
+    courseId: courseId.toString(),
+    sectionName: name,
+    title: '',
+    description: '',
+    sessionType: 'LISTEN'
+  });
+
+  const [textContents, setTextContents] = useState([
+    { contentType: 'TEXT', content: '' }
+  ]);
+
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [videoFiles, setVideoFiles] = useState<File[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value);
-  const handleDescriptionChange = (value: string) => setDescription(value);
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    if (!e.target.files || e.target.files.length === 0) {
-      setFile(null);
-    } else {
-      setFile(e.target.files[0]);
+  const handleFormDataChange = (field: string, value: string) => {
+    console.log('Form data change:', field, value); // Debug log
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleTextContentChange = (index: number, field: string, value: string) => {
+    const newContents = [...textContents];
+    newContents[index] = { ...newContents[index], [field]: value };
+    setTextContents(newContents);
+  };
+
+  const addTextContent = () => {
+    setTextContents(prev => [...prev, { contentType: 'TEXT', content: '' }]);
+  };
+
+  const removeTextContent = (index: number) => {
+    if (textContents.length > 1) {
+      setTextContents(prev => prev.filter((_, i) => i !== index));
     }
   };
+
+  const handleImageFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setImageFiles(Array.from(e.target.files));
+    }
+  };
+
+  const handleVideoFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setVideoFiles(Array.from(e.target.files));
+    }
+  };
+
+  // File upload components
+  const ImageUpload = () => (
+    <div className="space-y-2">
+      <label className="flex items-center gap-2 cursor-pointer hover:bg-accent rounded-lg p-2 transition-colors">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ImageIcon size={20} className="text-muted-foreground" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Upload images</p>
+          </TooltipContent>
+        </Tooltip>
+        <input 
+          type="file" 
+          multiple
+          accept="image/*"
+          onChange={handleImageFiles} 
+          className="hidden" 
+        />
+        <span className="text-sm font-medium">Choose Images ({imageFiles.length} selected)</span>
+      </label>
+    </div>
+  );
+
+  const VideoUpload = () => (
+    <div className="space-y-2">
+      <label className="flex items-center gap-2 cursor-pointer hover:bg-accent rounded-lg p-2 transition-colors">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <VideoIcon size={20} className="text-muted-foreground" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Upload videos</p>
+          </TooltipContent>
+        </Tooltip>
+        <input 
+          type="file" 
+          multiple
+          accept="video/*"
+          onChange={handleVideoFiles} 
+          className="hidden" 
+        />
+        <span className="text-sm font-medium">Choose Videos ({videoFiles.length} selected)</span>
+      </label>
+    </div>
+  );
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // 1. Create the section first (without file)
-      const payload = {
-        courseId,
-        sectionName: text,
-        position: index,
-      };
-      const sectionRes = await API.post("/courses/addSection", payload);
-      console.log("Section creation response:", sectionRes);
-      const sectionId = sectionRes.data.payload?.sectionId;
+      const data = new FormData();
+      
+      // Append basic fields
+      Object.keys(formData).forEach(key => {
+        data.append(key, formData[key as keyof typeof formData]);
+      });
+      
+      // Append text contents
+      data.append('textContents', JSON.stringify(textContents));
+      
+      // Append files
+      imageFiles.forEach(file => data.append('imageFiles', file));
+      videoFiles.forEach(file => data.append('videoFiles', file));
+      
+      // File positions (place files after each text content)
+      const filePositions: number[] = [];
+      let currentPos = 1;
+      
+      // Add positions for images
+      imageFiles.forEach(() => {
+        currentPos++;
+        filePositions.push(currentPos);
+      });
+      
+      // Add positions for videos
+      videoFiles.forEach(() => {
+        currentPos++;
+        filePositions.push(currentPos);
+      });
+      
+      data.append('filePositions', JSON.stringify(filePositions));
 
-      // 2. If file is present, upload it with sectionId
-      let contentUrl = "";
-      if (file && sectionId) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("sectionId", sectionId);
-        const uploadRes = await API.post("/courses/addContent/video", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
-
+      const response = await API.post('/courses/createSessionWithFiles', data);
+      console.log('Session created:', response.data);
+      
+      // Reset form and close dialog
       setFunc((prev: any[]) => {
         const updatedFunc = [...prev];
         updatedFunc.map((i) => {
           if (i.id === index) {
-            i.name = text;
-            i.description = description;
+            i.name = formData.sectionName;
+            i.description = formData.description;
           }
         });
         return updatedFunc;
       });
-      setText("");
-      setDescription("");
-      setFile(null);
-      setDown(false);
-    } catch (error) {
-      console.error("Error saving session:", error);
+      
+      // Reset form
+      setFormData({
+        courseId: courseId.toString(),
+        sectionName: '',
+        title: '',
+        description: '',
+        sessionType: 'LISTEN'
+      });
+      setTextContents([{ contentType: 'TEXT', content: '' }]);
+      setImageFiles([]);
+      setVideoFiles([]);
+      
+    } catch (error: any) {
+      console.error('Error creating session:', error.response?.data || error.message);
     } finally {
       setIsSaving(false);
     }
   };
 
-  // const handleDown = () => setDown((prev) => !prev);
-  const handleNote = () => setNote((prev) => !prev);
-  const counting = () => setCount((prev) => prev + 1);
-  const minusCounting = () => setCount((prev) => (prev > 1 ? prev - 1 : 1));
 
-  // File upload component
-  const UploadFile = () => (
-    <div className="flex flex-col gap-2 bg-gray-50 rounded-lg p-4 mt-4 shadow-sm border border-gray-200 w-full max-w-md">
-      <div className="flex items-center gap-3">
-        <InputFileUpload handleFile={handleFile} />
-        <Tooltip content="Add note">
-          {(
-            <IconButton
-              id="add-note-btn"
-              name="add-note-btn"
-              title="Add note"
-              variant="text"
-              className="rounded-full ml-1"
-              size="sm"
-              onClick={handleNote}
-              ripple={false}
-              type="button"
-            >
-              <FaRegStickyNote size={18} className="text-gray-600 hover:text-blue-600 transition-colors" />
-            </IconButton>
-          ) as any}
-        </Tooltip>
-        <Tooltip content="Remove upload">
-          {(
-            <IconButton
-              id="remove-upload-btn"
-              name="remove-upload-btn"
-              title="Remove upload"
-              variant="text"
-              className="rounded-full"
-              size="sm"
-              onClick={minusCounting}
-              disabled={count === 1}
-              ripple={false}
-              type="button"
-            >
-              <FaMinusCircle size={18} className={count === 1 ? "text-gray-300" : "text-red-500 hover:text-red-700 transition-colors"} />
-            </IconButton>
-          ) as any}
-        </Tooltip>
-      </div>
-      {(
-        <Collapse open={note}>
-          <div className="mt-2 w-full">
-            <Input
-              id="note-input"
-              name="note-input"
-              title="Note something"
-              variant="outlined"
-              label="Note something"
-              className="text-sm"
-              type="text"
-            />
-          </div>
-        </Collapse>
-      ) as any}
-    </div>
-  );
+
+
 
   return (
-    <div className="flex justify-center items-center min-h-[60vh]">
-      {(
-        <Card className="w-full max-w-2xl p-8 shadow-xl border border-gray-200 bg-white" id="add-session-card" title="Add Session Card">
-          <Typography variant="h4" color="blue-gray" className="mb-2 flex items-center gap-2" id="add-session-title" title="Session Details">
-            <MdDescription className="text-blue-500" size={28} />
-            Session Details
-          </Typography>
-          <div className="my-6 border-t" />
-          <div className="mb-6">
-            <label className="block text-gray-700 font-semibold mb-1" htmlFor="session-title">Title</label>
-            {(
+    <TooltipProvider>
+      <div className="p-4">
+        <Card className="w-full max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileTextIcon size={24} className="text-primary" />
+            Create New Session
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Basic Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Section Name</label>
               <Input
-                id="session-title"
-                name="session-title"
-                title="Session Title"
-                variant="outlined"
-                value={text}
-                onChange={handleChange}
-                className="w-full text-base"
-                placeholder="Enter session title"
-                type="text"
+                value={formData.sectionName}
+                onChange={(e) => handleFormDataChange('sectionName', e.target.value)}
+                placeholder="Enter section name"
+                required
               />
-            ) as any}
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Title</label>
+              <Input
+                value={formData.title}
+                onChange={(e) => handleFormDataChange('title', e.target.value)}
+                placeholder="Enter session title"
+                required
+              />
+            </div>
           </div>
-          {(
-            <Collapse open={down}>
-              <div className="mb-6">
-                <label className="block text-gray-700 font-semibold mb-1" htmlFor="session-description">Description</label>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Description</label>
+            <Textarea
+              value={formData.description}
+              onChange={(e) => handleFormDataChange('description', e.target.value)}
+              placeholder="Describe this session..."
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Session Type</label>
+            <Select value={formData.sessionType} onValueChange={(value) => handleFormDataChange('sessionType', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select session type" />
+              </SelectTrigger>
+              <SelectContent className="z-[9999]">
+                <SelectItem value="LISTEN">Listen</SelectItem>
+                <SelectItem value="READING">Reading</SelectItem>
+                <SelectItem value="SPEAKING">Speaking</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Text Contents */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Text Contents</span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={addTextContent}
+                    className="h-8 w-8 p-0"
+                  >
+                    <PlusCircleIcon size={16} className="text-primary" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Add text content</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            
+            {textContents.map((content, index) => (
+              <div key={index} className="bg-muted/30 rounded-lg p-4 border space-y-3">
+                <div className="flex items-center gap-2">
+                  <Select 
+                    value={content.contentType} 
+                    onValueChange={(value) => handleTextContentChange(index, 'contentType', value)}
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="z-[9999]">
+                      <SelectItem value="TEXT">Text</SelectItem>
+                      <SelectItem value="DOCUMENT">Document</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  {textContents.length > 1 && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeTextContent(index)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <MinusCircleIcon size={16} className="text-destructive" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Remove content</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
+                
                 <Textarea
-                  id="session-description"
-                  name="session-description"
-                  title="Session Description"
-                  value={description}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleDescriptionChange(e.target.value)}
-                  className="w-full text-base"
-                  placeholder="Describe this session..."
-                  rows={4}
+                  value={content.content}
+                  onChange={(e) => handleTextContentChange(index, 'content', e.target.value)}
+                  placeholder="Enter text content"
+                  rows={3}
                 />
               </div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-base font-semibold text-gray-700">Upload</span>
-                <Tooltip content="Add upload">
-                  {(
-                    <IconButton
-                      id="add-upload-btn"
-                      name="add-upload-btn"
-                      title="Add upload"
-                      variant="text"
-                      className="rounded-full"
-                      size="sm"
-                      onClick={counting}
-                      ripple={false}
-                      type="button"
-                    >
-                      <FaPlusCircle size={18} className="text-green-600 hover:text-green-800 transition-colors" />
-                    </IconButton>
-                  ) as any}
-                </Tooltip>
+            ))}
+          </div>
+
+          {/* File Uploads */}
+          <div className="space-y-4">
+            <span className="text-sm font-medium">File Uploads</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-muted/30 rounded-lg p-4 border">
+                <ImageUpload />
               </div>
-              {Array.from(Array(count), (_, idx) => <UploadFile key={idx} />)}
-            </Collapse>
-          ) as any}
-          <div className="my-6 border-t" />
-          <div className="flex justify-end">
-            <Button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 px-6 py-2 rounded shadow-md transition-all"
-              // @ts-ignore
-              startDecorator={<IoMdSave size={20} />}
-            >
-              {isSaving ? <CircularProgress size={20} className="mr-2" /> : "Save Session"}
+              <div className="bg-muted/30 rounded-lg p-4 border">
+                <VideoUpload />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-4 border-t">
+            <Button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2">
+              {isSaving ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <FloppyDiskIcon size={16} />
+              )}
+              {isSaving ? "Creating Session..." : "Create Session"}
             </Button>
           </div>
-        </Card>
-      ) as any}
-    </div>
+        </CardContent>
+      </Card>
+      </div>
+    </TooltipProvider>
   );
 }

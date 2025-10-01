@@ -1,13 +1,10 @@
 // src/pages/CourseDetail.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import PageEntry from "@/components/PageEntry";
-import Page_trace from "@/components/Page_trace";
 import CourseInfo from "@/components/Course_info";
 import CourseDescription from "@/components/Course_des";
 import Curriculum from "@/components/Curriculum";
 import Instructor from "@/components/Instructor";
-import Reviews from "@/components/Reviews";
 import CourseDetailBox from "@/components/CourseDetailBox";
 import Overview from "@/components/Overview";
 import { templatedata } from "@/constants/mockdata";

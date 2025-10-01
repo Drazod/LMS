@@ -16,33 +16,7 @@ import StudentCart from "@/pages/StudentCart";
 import PrivateRoute from "@/components/PrivateRoute";
 import StudentAndInstructorLayout from "@/layouts/StudentAndInstructorLayout";
 
-// import RegisterPage from "../pages/Registerpage";
-// import { Dashboard } from "@mui/icons-material";
-// import CourseSelectionPage from "../pages/MockCourseSelect";
-
-// import AdminDashboardLayout from "../layouts/AdminDashboardLayout";
-// import AdminDashboard from "../pages/AdminDashboard";
-// import AdminCourseView from "../pages/AdminCourseView";
-// import CourseSearch from "@/pages/CourseSearch";
-// import Section from "@/pages/Section";
-// import AddVideo from "@/components/create_course/Video";
-// import OurCourse from "../pages/OurCourse";
-// import OurCourse from "../pages/MockCourseSelect";
-// import CourseDetail from "@/pages/CourseDetail";
-// import StudentAndInstructorLayout from "@/layouts/StudentAndInstructorLayout";
-// import StudentCart from "../pages/StudentCart";
-// import StudentStudy from "@/components/Student/StudentStudy";
-// import CreateCourse from "@/pages/CreateCourse";
-// import OurCourse from "../pages/MockCourseSelect";
-import AdminDashboard from "@/pages/AdminDashboard";
-import AdminCourseView from "@/pages/AdminCourseView";
-import DashboardLayout from "@/layouts/DashboardLayout";
-import InstructorDashboardpage from "@/pages/InstructorDashboardpage";
-import StudentStudy from "@/components/Student/StudentStudy";
-import AdminDashboardLayout from "@/layouts/AdminDashboardLayout";
-import CreateCourse from "@/pages/CreateCourse";
-import Section from "@/pages/Section";
-import AddVideo from "@/components/create_course/Video";
+import NewStudentStudy from "@/components/Student/NewStudentStudy";
 
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentFailed from "@/pages/PaymentFailed";
@@ -111,10 +85,9 @@ const App = () => {
           <Route path=":courseId" element={<MockStudentStudy />}>
             <Route path=":sectionId" element={<MockSectionSwitch />} />
           </Route>
-        </Route>
-
-        {/* Legacy / direct study route */}
-        <Route path="/student/:courseId" element={<StudentStudy />} />
+        </Route>        
+        {/* New enhanced study route with modern layout */}
+        <Route path="/student/:courseId" element={<NewStudentStudy />} />
 
         {/* Auth */}
         <Route path="/auth" element={<AuthLayout />}>
