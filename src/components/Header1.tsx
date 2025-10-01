@@ -14,6 +14,11 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage
+} from "@/components/ui/avatar"
 
 import {
   QuestionIcon,
@@ -26,12 +31,13 @@ import {
 import SelectLanguage from "./Home_Component/DropLang1";
 import { SearchHeader } from "@/components/Home_Component/SearchHeader";
 
-import Logo from "@/assets/logo-white.png";
+import logo from '/hoctiengvietai_white.svg';
 
 export const Header = () => {
   const [color, setColor] = useState(false);
-  const [dashboardUrl, setDashboardUrl] = useState(""); 
+  const [dashboardUrl, setDashboardUrl] = useState("");
   const [name, setName] = useState("");
+  const [avtUrl, setAvtUrl] = useState("");
 
   const navigate = useNavigate();
 
@@ -39,6 +45,10 @@ export const Header = () => {
     const storedName = localStorage.getItem("name");
     if (storedName) {
       setName(storedName);
+    }
+    const storedAvtUrl = localStorage.getItem("avtUrl");
+    if (storedAvtUrl) {
+      setAvtUrl(storedAvtUrl);
     }
   }, []);
 
@@ -97,7 +107,10 @@ export const Header = () => {
             <HoverCard>
               <HoverCardTrigger>
                 <Badge variant="secondary" className="h-9 bg-transparent text-sm hover:cursor-grab">
-                  <UserSquareIcon weight="duotone" className="!size-6 mr-2" />
+                  <Avatar className="size-7 mr-2.5 border border-background">
+                    <AvatarImage src={avtUrl} />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
                   {name}
                 </Badge>
               </HoverCardTrigger>
@@ -129,7 +142,7 @@ export const Header = () => {
       </div>
       <div className="container mx-auto px-14 h-20 flex items-center justify-between ">
         <div className="flex items-center gap-6">
-          <img src={Logo} className={`${color ? "invert" : ""} w-28 sm:w-fit object-cover`}></img>
+          <img src={logo} className={`${color ? "invert" : ""} h-12 sm:w-fit object-cover`}></img>
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>

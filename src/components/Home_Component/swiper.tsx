@@ -29,7 +29,7 @@ const SliderComponent = () => {
           >
             {/* <div className="absolute inset-0 bg-black/50"></div> */}
             <div className="flex flex-col items-center justify-center h-full bg-black/70">
-              <h1 className="text-5xl font-bold text-white">Welcome To EduChamp</h1>
+              <h1 className="text-5xl font-bold text-white">Welcome To Học Tiếng Việt.AI</h1>
               <p className="mt-3 text-white text-center max-w-sm">
                 Choose from over 220,000 online video courses with new additions published every month
               </p>

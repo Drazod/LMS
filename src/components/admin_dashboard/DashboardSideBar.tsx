@@ -1,7 +1,7 @@
 import { Collapse } from "@mui/material";
 // import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-import logo from "../../assets/logo.png"
+import logo from '/hoctiengvietai_white.svg';
 import { useEffect, useState } from "react";
 import { ArrowUpward, ArrowBack } from "@mui/icons-material";
 
