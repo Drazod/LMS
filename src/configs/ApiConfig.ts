@@ -4,4 +4,5 @@ const API_ROUTES = {
   instructor: "instructors/",
   instuctorStat: "statisticInstructor/",
 };
+//d
 export { API_URL, API_ROUTES };
