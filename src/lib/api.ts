@@ -3,7 +3,7 @@ import axios from "axios";
 
 const api = axios.create({
   // put ONLY the host/port in the env; append /api/v1 here
-  baseURL: `${import.meta.env.VITE_API_BASE_URL}api`, // e.g. https://lmsbe-production.up.railway.app/api/v1
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}api`, // e.g. https://lmsbe-production-c3da.up.railway.app/api/v1
   headers: { "Content-Type": "application/json" },
   timeout: 10000,
 });

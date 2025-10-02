@@ -31,7 +31,7 @@ const PopularCourses = () => {
 
   useEffect(() => {
     axios
-     .get("https://lmsbe-production.up.railway.app/api/courses?page=1&size=10")
+     .get("https://lmsbe-production-c3da.up.railway.app/api/courses?page=1&size=10")
       .then((res) => {
         setCourses(res.data.payload);
       })
