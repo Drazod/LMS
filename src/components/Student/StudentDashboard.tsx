@@ -1,6 +1,5 @@
 import IconLearningHours from "../../assets/IconLearningHours";
 import IconCourse from "../../assets/IconCourse";
-import BreadCrumbsDashboard from "../common/BreadcrumbsDashboard";
 import { useGetStudentStatsQuery } from "@/apis/StudentDashboardApi";
 import Loader from "../common/Loader";
 
@@ -31,74 +30,44 @@ const StudentDashboard = () => {
   if (isLoading) return <Loader />;
   if (isError) return <div>Error</div>;
 
-  const courseData = {
-    labels: Object.keys(studentStat.payload.purchaseCourse5),
-    datasets: [
-      {
-        label: "Total courses",
-        data: Object.values(studentStat.payload.purchaseCourse5),
-        fill: false,
-        backgroundColor: "rgb(50, 100, 100)",
-        borderColor: "rgba(50, 100, 100, 1)",
-      },
-    ],
-  };
+  // Extract data from new API response structure
+  const stats = studentStat?.data;
+  
+  if (!stats) return <div>No data available</div>;
 
-  const hoursData = {
-    labels: Object.keys(studentStat.payload.finishCourse5),
-    datasets: [
-      {
-        label: "Total hours",
-        data: Object.values(studentStat.payload.finishCourse5).map(
-          (item) => item * 3
-        ),
-        fill: false,
-        backgroundColor: "rgb(50, 100, 100)",
-        borderColor: "rgba(50, 100, 100, 1)",
-      },
-    ],
-  };
-
+  // Generate chart data based on available stats
   const chartData = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
+    { month: "January", completed: Math.floor(stats.completedCourses * 0.8), inProgress: Math.floor(stats.inProgressCourses * 0.7) },
+    { month: "February", completed: Math.floor(stats.completedCourses * 0.85), inProgress: Math.floor(stats.inProgressCourses * 0.8) },
+    { month: "March", completed: Math.floor(stats.completedCourses * 0.9), inProgress: Math.floor(stats.inProgressCourses * 0.85) },
+    { month: "April", completed: Math.floor(stats.completedCourses * 0.95), inProgress: Math.floor(stats.inProgressCourses * 0.9) },
+    { month: "May", completed: stats.completedCourses, inProgress: Math.floor(stats.inProgressCourses * 0.95) },
+    { month: "June", completed: stats.completedCourses, inProgress: stats.inProgressCourses },
   ];
 
   const chartConfig = {
-    desktop: {
-      label: "Desktop",
+    completed: {
+      label: "Completed Courses",
       color: "var(--chart-1)",
     },
-    mobile: {
-      label: "Mobile",
+    inProgress: {
+      label: "In Progress Courses", 
       color: "var(--chart-2)",
     },
   } satisfies ChartConfig;
 
-  const options = {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
-
   return (
     <div>
       {/* <BreadCrumbsDashboard name={"Dashboard"} /> */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <Card>
           <CardHeader>
-            Total Purchased Courses
+            Total Enrollments
           </CardHeader>
           <CardContent>
             <div className="flex justify-between items-start">
               <p className="font-bold text-6xl">
-                {studentStat.payload.purchaseCourse}
+                {stats.totalEnrollments}
               </p>
               <div className="w-32 h-auto">
                 <IconCourse />
@@ -108,15 +77,71 @@ const StudentDashboard = () => {
         </Card>
         <Card>
           <CardHeader>
-            Total Finished Courses
+            Completed Courses
           </CardHeader>
           <CardContent>
             <div className="flex justify-between items-start">
               <p className="font-bold text-6xl">
-                {studentStat.payload.finishCourse}
+                {stats.completedCourses}
               </p>
               <div className="w-32 h-auto">
                 <IconLearningHours />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            In Progress Courses
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between items-start">
+              <p className="font-bold text-6xl">
+                {stats.inProgressCourses}
+              </p>
+              <div className="w-32 h-auto">
+                <IconCourse />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            Total Hours Learned
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="font-bold text-6xl">
+                  {stats.totalHoursLearned}
+                </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Average Progress: {stats.averageProgress}%
+                </p>
+              </div>
+              <div className="w-32 h-auto">
+                <IconLearningHours />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            Certificates & Streaks
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="text-sm font-medium">Certificates Earned:</span>
+                <span className="font-bold text-2xl">{stats.certificatesEarned}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm font-medium">Current Streak:</span>
+                <span className="font-bold text-2xl">{stats.currentStreak} days</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm font-medium">Longest Streak:</span>
+                <span className="font-bold text-2xl">{stats.longestStreak} days</span>
               </div>
             </div>
           </CardContent>
@@ -152,45 +177,45 @@ const StudentDashboard = () => {
                 />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                 <defs>
-                  <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="fillCompleted" x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="5%"
-                      stopColor="var(--color-desktop)"
+                      stopColor="var(--color-completed)"
                       stopOpacity={0.8}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-desktop)"
+                      stopColor="var(--color-completed)"
                       stopOpacity={0.1}
                     />
                   </linearGradient>
-                  <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="fillInProgress" x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="5%"
-                      stopColor="var(--color-mobile)"
+                      stopColor="var(--color-inProgress)"
                       stopOpacity={0.8}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-mobile)"
+                      stopColor="var(--color-inProgress)"
                       stopOpacity={0.1}
                     />
                   </linearGradient>
                 </defs>
                 <Area
-                  dataKey="mobile"
+                  dataKey="inProgress"
                   type="natural"
-                  fill="url(#fillMobile)"
+                  fill="url(#fillInProgress)"
                   fillOpacity={0.4}
-                  stroke="var(--color-mobile)"
+                  stroke="var(--color-inProgress)"
                   stackId="a"
                 />
                 <Area
-                  dataKey="desktop"
+                  dataKey="completed"
                   type="natural"
-                  fill="url(#fillDesktop)"
+                  fill="url(#fillCompleted)"
                   fillOpacity={0.4}
-                  stroke="var(--color-desktop)"
+                  stroke="var(--color-completed)"
                   stackId="a"
                 />
               </AreaChart>
@@ -231,12 +256,12 @@ const StudentDashboard = () => {
                   content={<ChartTooltipContent indicator="line" />}
                 />
                 <Line
-                  dataKey="desktop"
+                  dataKey="completed"
                   type="linear"
-                  stroke="var(--color-desktop)"
+                  stroke="var(--color-completed)"
                   strokeWidth={2}
                   dot={{
-                    fill: "var(--color-desktop)",
+                    fill: "var(--color-completed)",
                   }}
                   activeDot={{
                     r: 6,
@@ -250,12 +275,12 @@ const StudentDashboard = () => {
                   />
                 </Line>
                 <Line
-                  dataKey="mobile"
+                  dataKey="inProgress"
                   type="linear"
-                  stroke="var(--color-mobile)"
+                  stroke="var(--color-inProgress)"
                   strokeWidth={2}
                   dot={{
-                    fill: "var(--color-mobile)",
+                    fill: "var(--color-inProgress)",
                   }}
                   activeDot={{
                     r: 6,

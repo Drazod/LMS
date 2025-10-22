@@ -9,7 +9,7 @@ export const Register = (email: string, password: string) =>
   api.post("/auth/register", { email, password });
 
 /** ---------- Cart / Orders ---------- */
-// baseURL should be something like: https://lmsbe-production-c3da.up.railway.app/api
+// baseURL should be something like: https://lmsaibe-production.up.railway.app/api
 // so DON'T prefix paths below with /api again
 
 export const getListCoursesInCart = (studentId: string | number) =>

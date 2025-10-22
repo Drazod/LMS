@@ -13,7 +13,7 @@ export const instuctorApi = createApi({
     baseUrl: API_URL, // or: import.meta.env.VITE_API_BASE_URL
     prepareHeaders: (headers) => {
       // Get token from localStorage first; fallback to react-auth-kit cookies
-      const token = localStorage.getItem("token") || getCookie("_auth");
+      const token = localStorage.getItem("accessToken") || getCookie("_auth");
       const tokenType =
         localStorage.getItem("token_type") || getCookie("_auth_type") || "Bearer";
 
@@ -173,7 +173,7 @@ export const instuctorApi = createApi({
         url: `courses/${courseId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["instuctor"],
+      invalidatesTags: ["instructor"],
     }),
     getCoursesPerYear: builder.query<any, void>({
       query: () => {

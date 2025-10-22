@@ -2,24 +2,23 @@ import BuyNowButton from "@/components/shopping/BuyNowButton";
 import {
 	Card,
 	CardHeader,
-	CardFooter,
 	CardContent
 } from "@/components/ui/card";
 
 type CourseDetail = {
-	courseId: number;
+	courseId: string;
 	title: string;
 	description: string;
 	price: number;
 	instructor: {
-		firstName: string;
-		lastName: string;
-		avtUrl?: string;
+		userId: string;
+		name: string;
 	};
 	category: {
-		categoryName: string;
+		categoryId: string;
+		name: string;
 	};
-	totalReviews: number;
+	totalRating: string;
 };
 
 const CourseDetailBox = ({ course, courseId }: { course: CourseDetail; courseId: number }) => {
@@ -31,15 +30,19 @@ const CourseDetailBox = ({ course, courseId }: { course: CourseDetail; courseId:
 			</CardHeader>
 			<CardContent className="flex items-center flex-col">
 				<div className='flex items-center gap-4'>
-					<img src={course.instructor.avtUrl || ""} alt="Instructor Avatar" className="w-12 h-12 rounded-full object-cover" />
+					<div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+						<span className="text-purple-600 font-semibold text-lg">
+							{course.instructor.name.charAt(0).toUpperCase()}
+						</span>
+					</div>
 					<div className='flex flex-col gap-0.5'>
-						<h5>{course.instructor.firstName} {course.instructor.lastName}</h5>
-						<span className='text-xs text-gray-600'>{course.category.categoryName} Teacher</span>
+						<h5>{course.instructor.name}</h5>
+						<span className='text-xs text-gray-600'>{course.category.name} Teacher</span>
 					</div>
 				</div>
 				<div className="flex w-full flex-row justify-between mt-6">
 					<div className='flex flex-col gap-0.5'>
-						<span className='text-xs'>{course.totalReviews} Review</span>
+						<span className='text-xs'>{course.totalRating} Review{parseInt(course.totalRating) !== 1 ? 's' : ''}</span>
 						<ul className="flex space-x-1">
 							<li className="inline-block text-yellow-700 text-[10px] md:text-[13px]">★</li>
 							<li className="inline-block text-yellow-700 text-[10px] md:text-[13px]">★</li>
@@ -50,7 +53,7 @@ const CourseDetailBox = ({ course, courseId }: { course: CourseDetail; courseId:
 					</div>
 					<div className="text-right flex flex-col gap-0.5">
 						<span className="text-xs">Categories</span>
-						<h5 className="text-purple-900">{course.category.categoryName}</h5>
+						<h5 className="text-purple-900">{course.category.name}</h5>
 					</div>
 				</div>
 			</CardContent>

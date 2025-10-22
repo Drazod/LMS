@@ -8,13 +8,42 @@ import {
   DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
+
+// TypeScript interfaces for new API response structure
+interface CartCourse {
+  courseId: string;
+  title: string;
+  description: string;
+  price: number;
+  courseThumbnail: string;
+  avgRating: number;
+  totalRating: string;
+  status: string;
+  createdAt: string;
+  instructor: {
+    userId: string;
+    name: string;
+    email: string;
+    avtUrl: string;
+  };
+  category: {
+    categoryId: string;
+    name: string;
+  };
+}
+
+interface MappedCartItem extends Omit<CartCourse, 'courseId'> {
+  courseId: number; // converted to number for component compatibility
+  categoryName: string;
+  instructorName: string;
+}
 import {
   HomeIcon,
   ChevronRightIcon,
   ShoppingCartIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { ToastContainer, toast, Bounce } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import CartItem from "@/components/shopping/CartItem";
@@ -24,7 +53,7 @@ import { openModal } from "../slices/modalSlice";
 
 import {
   getListCoursesInCart,
-  getListVouchers,
+  // getListVouchers, // Voucher functionality disabled
   deleteCourse,
   deleteAllCourse,
   deleteListCourse,
@@ -40,8 +69,8 @@ const StudentCart: React.FC = () => {
 
   const [cartInfo, setCartInfo] = useState<number | null>(null);
   const [totalPrice, setTotalPrice] = useState<number>(0);
-  const [listCartItem, setListCartItem] = useState<any[]>([]);
-  const [voucherList, setVoucherList] = useState<any[]>([]);
+  const [listCartItem, setListCartItem] = useState<MappedCartItem[]>([]);
+  // const [voucherList, setVoucherList] = useState<any[]>([]); // Voucher functionality disabled
   const [voucherCode, setVoucherCode] = useState<string>("");
   const [discount, setDiscount] = useState<{ id: number | null; value: number }>({
     id: null,
@@ -97,46 +126,7 @@ const StudentCart: React.FC = () => {
     setRenderKey((k) => k + 1);
   };
 
-  const handleVoucherCodeInput = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    setVoucherCode(target.value);
-  };
 
-  const handleApplyVoucherCode = () => {
-    if (totalPrice === 0) {
-      toast.error("Please select course first!", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-        transition: Bounce,
-      });
-      return;
-    }
-    const voucherTarget = voucherList.find(
-      (v) => v.discount?.code && v.discount.code === voucherCode
-    );
-    if (voucherTarget) {
-      setDiscount({
-        id: voucherTarget.discount.discountId,
-        value: Number(voucherTarget.discount.value) || 0,
-      });
-      setShowCoupon(true);
-    } else {
-      toast.error("Voucher Code does not exist!", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-        transition: Bounce,
-      });
-    }
-  };
 
   const handleCancelVoucherCode = () => {
     setVoucherCode("");
@@ -216,21 +206,30 @@ const StudentCart: React.FC = () => {
       try {
         const items = await getListCoursesInCart(userId);
         if (items) {
-          setListCartItem(items.data?.payload ?? []);
+          // Handle new API response structure with proper field mapping
+          const cartItems: MappedCartItem[] = (items.data?.data ?? []).map((item: CartCourse) => ({
+            ...item,
+            courseId: parseInt(item.courseId), // Ensure courseId is number for component compatibility
+            categoryName: item.category?.name || 'No Category',
+            instructorName: item.instructor?.name || 'Unknown Instructor',
+            courseThumbnail: item.courseThumbnail || ''
+          }));
+          setListCartItem(cartItems);
         }
 
         const data = await getCartInfo(userId);
-        setCartInfo(data?.data?.payload ?? null);
+        setCartInfo(data?.data?.data ?? null);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
 
-      try {
-        const vouchers = await getListVouchers(userId);
-        setVoucherList(vouchers?.data?.payload ?? []);
-      } catch {
-        setVoucherList([]);
-      }
+      // Voucher functionality disabled for now
+      // try {
+      //   const vouchers = await getListVouchers(userId);
+      //   setVoucherList(vouchers?.data?.data ?? []);
+      // } catch {
+      //   setVoucherList([]);
+      // }
     };
     fetchData();
   }, [userId, renderKey]);
@@ -251,6 +250,7 @@ const StudentCart: React.FC = () => {
       <div className="container mx-auto px-14 flex flex-col h-full w-full">
         <div className="flex items-center">
           <div className="w-5/6 flex flex-row ">
+            {/* @ts-ignore Material Tailwind type issues */}
             <Breadcrumbs
               separator={<ChevronRightIcon className="h-4 w-4 text-black" strokeWidth={2.5} />}
               className="bg-white pb-1"
@@ -296,16 +296,22 @@ const StudentCart: React.FC = () => {
                     : `(${selectedItems.length} item)`}
                 </button>
 
+                {/* @ts-ignore Material Tailwind type issues */}
                 <Dialog open={open} handler={handleOpen} size="xs">
+                  {/* @ts-ignore */}
                   <DialogHeader>Remove Confirmation</DialogHeader>
+                  {/* @ts-ignore */}
                   <DialogBody>
                     Are you sure you want to remove the {selectedItems.length}{" "}
                     course(s) from your cart? This process cannot be undone.
                   </DialogBody>
+                  {/* @ts-ignore */}
                   <DialogFooter>
+                    {/* @ts-ignore */}
                     <Button variant="text" color="red" onClick={handleOpen} className="mr-1">
                       <span>Cancel</span>
                     </Button>
+                    {/* @ts-ignore */}
                     <Button
                       className="bg-indigo-600"
                       onClick={
@@ -406,6 +412,7 @@ const StudentCart: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* @ts-ignore */}
                   <Button
                     className="flex w-full items-center justify-center bg-indigo-600 rounded-lg mt-3 font-bold text-base text-white transition-all hover:bg-indigo-700"
                     onClick={handleOpenModal}
@@ -422,6 +429,7 @@ const StudentCart: React.FC = () => {
           // ✅ empty cart state
           <div className="flex flex-col items-center w-11/12 mx-auto mt-10">
             Your cart is empty. Keep shopping to find a course!
+            {/* @ts-ignore */}
             <Button className="bg-purple-700 my-10" onClick={() => navigate("/course")}>
               Keep shopping
             </Button>

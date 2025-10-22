@@ -73,9 +73,9 @@ const InstructorDashboard: React.FC = () => {
 
   // short hands to payloads with safe defaults
   const revenueMap =
-    (revenuePerYear?.payload as Record<string, number> | undefined) ?? {};
+    (revenuePerYear?.data as Record<string, number> | undefined) ?? {};
   const coursesMap =
-    (coursesPerYear?.payload as Record<string, number> | undefined) ?? {};
+    (coursesPerYear?.data as Record<string, number> | undefined) ?? {};
 
   const revenueChartData = useMemo(
     () =>
@@ -120,7 +120,7 @@ const InstructorDashboard: React.FC = () => {
           <CardContent>
             <div className="flex justify-between items-start">
               <p className="font-bold text-6xl">
-                {formatCurrency(totalRevenue?.payload)}
+                {formatCurrency(totalRevenue?.data)}
               </p>
               <div className="w-32 h-auto">
                 <IconSale />
@@ -137,7 +137,7 @@ const InstructorDashboard: React.FC = () => {
           <CardContent>
             <div className="flex justify-between items-start">
               <p className="font-bold text-6xl">
-                {Number(totalUsersBuy?.payload ?? 0)}
+                {Number(totalUsersBuy?.data ?? 0)}
               </p>
               <div className="w-32 h-auto">
                 <IconEnroll />
@@ -154,7 +154,7 @@ const InstructorDashboard: React.FC = () => {
           <CardContent>
             <div className="flex justify-between items-start">
               <p className="font-bold text-6xl">
-                {Number(totalCourses?.payload ?? 0)}
+                {Number(totalCourses?.data ?? 0)}
               </p>
               <div className="w-32 h-auto">
                 <IconCourse />
@@ -171,7 +171,7 @@ const InstructorDashboard: React.FC = () => {
           <CardContent>
             <div className="flex justify-between items-start">
               <p className="font-bold text-6xl">
-                ID: {topCourse?.payload?.courseId ?? "No Course"}
+                ID: {topCourse?.data?.courseId ?? "No Course"}
               </p>
               <div className="w-32 h-auto">
                 <IconLearningHours />

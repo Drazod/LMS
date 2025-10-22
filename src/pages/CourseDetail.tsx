@@ -1,45 +1,52 @@
 // src/pages/CourseDetail.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
+
 import CourseInfo from "@/components/course/CourseInfo";
 import CourseDescription from "@/components/course/CourseDescription";
 import Curriculum from "@/components/course/Curriculum";
 import Instructor from "@/components/course/Instructor";
 import CourseDetailBox from "@/components/course/CourseDetailBox";
 import Overview from "@/components/course/Overview";
-import { templatedata } from "@/constants/mockdata";
-import "../configs/style.css";
-import { CircularProgress } from "@mui/material";
 import api from "@/lib/api";
+import "../configs/style.css";
 
-// ---- types (adjust to your backend if needed)
-type ApiResponse<T> = { payload: T; metadata?: any; message?: string };
-
-type InstructorPublic = {
-  name: string;
-  avtUrl?: string;
+// ---- Types (aligned with new API response structure) ----
+type ApiResponse<T> = { 
+  success: boolean; 
+  data: T; 
+  message?: string; 
 };
 
 type Section = {
-  sectionId: number;
-  sectionName: string;
-  // add fields you actually render
+  sectionId: string;
+  title: string;
+  description: string;
+  orderIndex: string;
+  contents: any[];
 };
 
 type CourseDetail = {
-  courseId: number;
+  courseId: string;
   title: string;
   description: string;
-  categoryName?: string;
-  price?: number;
-  courseThumbnail?: string;
-  createdAt?: string;
-  instructor: InstructorPublic;
+  price: number;
+  courseThumbnail: string;
+  avgRating: number;
+  totalRating: string;
+  status: string;
+  createdAt: string;
+  instructor: {
+    userId: string;
+    name: string;
+  };
+  category: {
+    categoryId: string;
+    name: string;
+  };
   sections: Section[];
-  // add other fields you use in children
 };
-
-type RatingSummary = any; // replace with your real type that <Reviews /> expects
 
 const CourseDetail: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -48,8 +55,7 @@ const CourseDetail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // mock data (for the Overview box)
-  const mockdata = useMemo(() => templatedata[0], []);
+
 
   useEffect(() => {
     if (!courseId) return;
@@ -60,24 +66,28 @@ const CourseDetail: React.FC = () => {
 
     (async () => {
       try {
-        // Adjust endpoints if your backend differs
-        const [courseRes] = await Promise.all([
-          api.get<ApiResponse<CourseDetail>>(`/courses/details/${courseId}`),
-
-        ]);
+        // Fetch course details using new API structure
+        const courseRes = await api.get<ApiResponse<CourseDetail>>(`/courses/${courseId}`);
 
         if (!alive) return;
 
-        const coursePayload = courseRes.data?.payload;
-        // const ratingPayload = ratingRes.data?.payload;
+        // Handle new API response structure
+        const courseData = courseRes.data?.data;
+        
+        if (!courseData) {
+          throw new Error("Course not found");
+        }
 
-        if (!coursePayload) throw new Error("Course not found");
-        // if (!ratingPayload) throw new Error("Rating not found");
+        // Ensure sections is always an array
+        const processedCourseData = {
+          ...courseData,
+          sections: courseData.sections || []
+        };
 
-        setCourse(coursePayload);
-        // setRating(ratingPayload);
+        setCourse(processedCourseData);
       } catch (e: any) {
-        setError(e?.message || "Failed to fetch course details");
+        console.error("Failed to fetch course details:", e);
+        setError(e?.response?.data?.message || e?.message || "Failed to fetch course details");
       } finally {
         if (alive) setIsLoading(false);
       }
@@ -130,7 +140,7 @@ const CourseDetail: React.FC = () => {
       <div className="container mx-auto p-14 flex flex-row-reverse gap-6">
         <div className="w-1/5">
           <div className="sticky top-24 mb-8 mx-4 md:mx-0">
-            <CourseDetailBox course={course} courseId={String(courseId)} />
+            <CourseDetailBox course={course} courseId={parseInt(course.courseId)} />
           </div>
         </div>
         <div className="w-4/5">
@@ -141,11 +151,11 @@ const CourseDetail: React.FC = () => {
           <CourseInfo course={course} />
           <div className="flex flex-row items-start gap-10">
             <section id="overview" className="sticky top-24 self-start mb-8">
-              <Overview course={mockdata} />
+              <Overview course={course} />
             </section>
             <div>
               <section id="description" className="min-w-0">
-                <CourseDescription tempcourse={mockdata} course={course} />
+                <CourseDescription course={course} />
               </section>
               <section id="curriculum">
                 <Curriculum curriculumData={course.sections} />

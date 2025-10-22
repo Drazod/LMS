@@ -4,8 +4,8 @@ import { API_URL, API_ROUTES } from "@/configs/ApiConfig";
 
 // ---- shared API shapes (adjust to your backend if needed)
 type ApiResponse<T> = {
-  payload: T;
-  metadata?: any;
+  success: boolean;
+  data: T;
   message?: string;
 };
 
@@ -24,9 +24,64 @@ type StudentProfile = {
   avt?: string; // URL or base64 depending on your app
 };
 
-type StudentStats = Record<string, number>;
-type StudentCourse = any; // replace with your real course type
-type StudentCoursesResponse = StudentCourse[];
+type StudentStats = {
+  studentId: number | null;
+  totalEnrollments: number;
+  completedCourses: number;
+  inProgressCourses: number;
+  totalHoursLearned: number;
+  averageProgress: number;
+  certificatesEarned: number;
+  currentStreak: number;
+  longestStreak: number;
+};
+
+type StudentEnrollment = {
+  enrollmentId: string;
+  enrollmentDate: string;
+  progress: number;
+  status: string;
+  student: {
+    userId: string;
+    name: string;
+    email: string;
+    role: string;
+    activated: boolean;
+  };
+  course: {
+    courseId: string;
+    title: string;
+    description: string;
+    price: number;
+    courseThumbnail: string;
+    status: string;
+    createdAt: string;
+    instructor: {
+      userId: string;
+      name: string;
+    };
+    category: {
+      categoryId: string;
+      name: string;
+    };
+  };
+};
+
+type StudentCoursesResponse = {
+  data: StudentEnrollment[];
+  metadata: {
+    pagination: {
+      totalElements: number;
+      totalPages: number;
+      currentPage: number;
+      size: number;
+      next: string | null;
+      previous: string | null;
+      last: string;
+      first: string;
+    };
+  };
+};
 
 // ---- small helper
 const getUserId = () => Number(localStorage.getItem("userId"));
@@ -36,7 +91,7 @@ export const studentApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${API_URL}${API_ROUTES.student}`, // e.g. https://api.../api/student/
     prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("accessToken");
       if (token) headers.set("authorization", `Bearer ${token}`);
       return headers;
     },
@@ -47,16 +102,18 @@ export const studentApi = createApi({
     getStudentStats: builder.query<ApiResponse<StudentStats>, { userId?: number } | void>({
       query: (arg) => {
         const userId = (arg as any)?.userId ?? getUserId();
-        return `${userId}/statistic`;
+        return `${userId}/statistics`;
       },
       providesTags: ["student"],
     }),
 
     // GET /{userId}/courses
-    getStudentCourses: builder.query<ApiResponse<StudentCoursesResponse>, { userId?: number } | void>({
+    getStudentCourses: builder.query<StudentCoursesResponse, { userId?: number; page?: number; size?: number } | void>({
       query: (arg) => {
         const userId = (arg as any)?.userId ?? getUserId();
-        return `${userId}/courses`;
+        const page = (arg as any)?.page ?? 0;
+        const size = (arg as any)?.size ?? 10;
+        return `${userId}/courses?page=${page}&size=${size}`;
       },
       providesTags: ["student"],
     }),

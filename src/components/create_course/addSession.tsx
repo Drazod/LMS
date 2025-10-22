@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import API from "@/apis/instance";
+import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -154,7 +154,7 @@ export function AddSession({ name, setFunc, index, courseId }: {
       
       data.append('filePositions', JSON.stringify(filePositions));
 
-      const response = await API.post('/courses/createSessionWithFiles', data);
+      const response = await api.post(`/courses/${courseId}/sections`, data);
       console.log('Session created:', response.data);
       
       // Reset form and close dialog

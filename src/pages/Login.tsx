@@ -1,12 +1,9 @@
 import { useSignIn } from "react-auth-kit";
 import { useNavigate } from "react-router-dom";
-
 import { api } from "@/lib/api";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -41,21 +38,29 @@ export default function LoginPage() {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
-      const { data } = await api.post("/v1/auth/authenticate", values);
-      console.log("dRAZOD", data);
+      const { data } = await api.post("/auth/login", values);
+      console.log("Login response:", data);
+      
+      // Handle the new response structure
+      const loginData = data.data;
+      const user = loginData.user;
+      
       signIn({
-        token: data.payload.tokens.access_token,
-        expiresIn: 3600,
+        token: loginData.accessToken,
+        expiresIn: 3600, // Convert from "24h" to seconds if needed
         tokenType: "Bearer",
-        authState: { email: data.payload.email },
+        authState: { email: user.email },
       });
 
-      localStorage.setItem('userId', data.payload.userId);
-      localStorage.setItem('role', data.payload.userRole);
-      localStorage.setItem('name', data.payload.name);
-      localStorage.setItem('avtUrl', data.payload.avtUrl);
+      // Store user data with new structure
+      localStorage.setItem('userId', user.userId);
+      localStorage.setItem('role', user.role);
+      localStorage.setItem('name', user.name);
+      localStorage.setItem('email', user.email);
+      localStorage.setItem('accessToken', loginData.accessToken);
+      localStorage.setItem('refreshToken', loginData.refreshToken);
 
-      console.log(data.payload.tokens.access_token);
+      console.log("Access token:", loginData.accessToken);
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);

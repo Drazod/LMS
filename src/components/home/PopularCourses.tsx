@@ -12,18 +12,23 @@ import axios from "axios";
 
 
 type CourseItem = {
-  courseId: number;
+  courseId: string;
   title: string;
+  description: string;
+  price: number;
+  courseThumbnail: string;
+  avgRating: number;
+  totalRating: string;
+  status: string;
+  createdAt: string;
   instructor: {
+    userId: string;
     name: string;
-    avtUrl: string;
   };
-  courseThumbnail: string | null;
-  avgRating: number | null;
-  categoryName: string;
-  totalReviews: number;
-  prePrice: number | "free" | null;
-  aftPrice: number | "free" | null;
+  category: {
+    categoryId: number;
+    name: string;
+  };
 };
 
 const PopularCourses = () => {
@@ -31,15 +36,23 @@ const PopularCourses = () => {
 
   useEffect(() => {
     axios
-     .get("https://lmsbe-production-c3da.up.railway.app/api/courses?page=1&size=10")
+     .get("https://lmsaibe-production.up.railway.app/api/courses?page=1&size=10")
       .then((res) => {
-        setCourses(res.data.payload);
+        // Make sure data exists and is an array
+        const coursesData = res.data?.data;
+        if (Array.isArray(coursesData)) {
+          setCourses(coursesData);
+        } else {
+          console.error("Expected courses array but got:", coursesData);
+          setCourses([]);
+        }
       })
       .catch((err) => {
-        console.log(err);
+        console.error("Failed to fetch courses:", err);
+        setCourses([]); // Set empty array on error
       });
   }, []);
-
+  console.log(courses);
   return (
     <div className="container mx-auto px-14 py-20 flex flex-col gap-10">
       <div className="text-center flex flex-col gap-3">
@@ -60,22 +73,26 @@ const PopularCourses = () => {
           className="w-full h-full "
         >
           <SwiperButton />
-          {courses.map((course) => (
+          {courses && courses.length > 0 ? courses.map((course) => (
             <SwiperSlide key={course.courseId} className="h-full">
               <CourseCard
                 courseId={course.courseId}
                 instructorName={course.instructor?.name}
-                instructorImage={course.instructor?.avtUrl}
+                instructorImage="" // API doesn't provide instructor image
                 thumbnail={course.courseThumbnail}
                 score={course.avgRating}
                 title={course.title}
-                category={course.categoryName}
-                amountReview={course.totalReviews}
-                oldPrice={course.prePrice}
-                newPrice={course.aftPrice}
+                category={course.category?.name}
+                amountReview={parseInt(course.totalRating)}
+                oldPrice={null} // API doesn't provide old price
+                newPrice={course.price}
               />
             </SwiperSlide>
-          ))}
+          )) : (
+            <div className="flex justify-center items-center min-h-[200px]">
+              <p className="text-gray-500">No courses available</p>
+            </div>
+          )}
         </Swiper>
       </div>
     </div>

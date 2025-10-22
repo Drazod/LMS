@@ -53,7 +53,7 @@ type Course = {
 };
 
 type SectionsResponse = {
-  payload: { sections: { sectionId: number; sectionName: string }[] };
+  data: { sections: { sectionId: number; sectionName: string }[] };
 };
 
 const InstructorCourse: React.FC = () => {
@@ -126,17 +126,18 @@ const InstructorCourse: React.FC = () => {
     isError,
     refetch,
   } = useGetInstructorCoursesQuery({
-    page: activePage - 1,
+    page: 0,
     size: pageSize,
   },
     { refetchOnMountOrArgChange: true }
   );
 
-  const courseList: Course[] = coursesRes?.payload?.content ?? [];
-  const totalItems = coursesRes?.metadata?.pagination?.totalItems ?? 0;
-  const totalPages = coursesRes?.metadata?.pagination?.totalPages ?? 0;
+  const courseList: Course[] = coursesRes?.data?.content ?? [];
+  const totalItems = coursesRes?.data?.totalElements ?? 0;
+  const totalPages = coursesRes?.data?.totalPages ?? 0;
 
-  console.log(courseList);
+  console.log("courseList", courseList);
+  console.log("coursesRes", coursesRes);
 
   // selected course + sections
   const selectedCourse = useMemo(
@@ -318,7 +319,7 @@ const InstructorCourse: React.FC = () => {
                       </Typography>
                     </div>
                     <div className="md:col-span-3">
-                      {(sectionsRes as SectionsResponse | undefined)?.payload?.sections?.map((section) => (
+                      {(sectionsRes as SectionsResponse | undefined)?.data?.sections?.map((section) => (
                         <div key={section.sectionId} className="grid grid-cols-1 md:grid-cols-2 text-center">
                           <Typography variant="body1" className="font-bold">
                             Lesson {section.sectionId}:

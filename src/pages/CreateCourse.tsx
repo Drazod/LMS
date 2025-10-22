@@ -66,7 +66,7 @@ const CreateCourse = () => {
       fd.append("courseThumbnail", data.courseThumbnail);
       console.log(data.courseThumbnail);
 
-      const { data: responseData } = await api.post("/courses/create", fd);
+      const { data: responseData } = await api.post("/courses", fd);
       console.log("Course created successfully:", responseData);
 
       form.reset({
@@ -91,7 +91,8 @@ const CreateCourse = () => {
     (async () => {
       try {
         const res = await api.get("categories");
-        const data = res.data?.payload ?? res.data;
+        const data = res.data.data;
+        console.log(data);
         if (alive) setCategoryList(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to load categories:", err);
@@ -155,7 +156,7 @@ const CreateCourse = () => {
                     <SelectContent>
                       {categoryList.map((cat) => (
                         <SelectItem key={cat.categoryId} value={String(cat.categoryId)}>
-                          {cat.categoryName}
+                          {cat.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

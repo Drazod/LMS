@@ -4,7 +4,6 @@ import {
   CardContent,
   Container,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
@@ -17,24 +16,15 @@ import {
   Typography,
   styled,
 } from "@mui/material";
+// Removed unused red import
 import React, { useEffect, useState } from "react";
 import BreadCrumbsDashboard from "../common/BreadcrumbsDashboard";
 import { useGetStudentCoursesQuery } from "@/apis/StudentDashboardApi";
 import Loader from "../common/Loader";
-import { Star } from "@mui/icons-material";
-import test_img from "../../assets/courses/pic1.jpg";
-import test_ppl_img from "../../assets/test_profile_img/pic3.jpg";
-import { array } from "yup";
 import { useNavigate } from "react-router-dom";
 import { useGetCourseListQuery } from "@/apis/CourseApi";
 
-const RatingStart = ({ point, index }) => {
-  return index <= point ? (
-    <Star sx={{ fontSize: 20, color: "#4c1864" }} />
-  ) : (
-    <Star sx={{ fontSize: 20, color: "#9e9e9e" }} />
-  );
-};
+// Removed unused RatingStart component
 // const rows = [
 //   {
 //     id: 1,
@@ -157,45 +147,44 @@ const SaveButton = styled(Button)(({ theme }) => ({
     backgroundColor: "#4d0a91",
   },
 }));
-const DeleteButton = styled(Button)(({ theme }) => ({
-  border: "1px solid",
-  borderColor: red[900],
-  borderRadius: "25px",
-  rounded: "true",
-  color: red[900],
-  backgroundColor: theme.palette.getContrastText(red[900]),
-  "&:hover": {
-    color: theme.palette.getContrastText(red[900]),
-    backgroundColor: red[900],
-  },
-}));
-const CreateButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.getContrastText("#d8a409"),
-  backgroundColor: "#d8a409",
-  "&:hover": {
-    color: theme.palette.getContrastText("#4d0a91"),
-    backgroundColor: "#4d0a91",
-  },
-}));
+// Removed unused DeleteButton and CreateButton components
+// Add proper TypeScript interfaces
+interface StudentEnrollment {
+  enrollmentId: string;
+  enrollmentDate: string;
+  progress: number;
+  status: string;
+  course: {
+    courseId: string;
+    title: string;
+    description: string;
+    price: number;
+    courseThumbnail: string;
+    instructor: {
+      name: string;
+    };
+    category: {
+      name: string;
+    };
+  };
+}
+
 const StudentCourse = () => {
-  const [id, setId] = React.useState(null);
+  const [id, setId] = React.useState<string | null>(null);
   const navigate = useNavigate();
-  const [course, setCourse] = React.useState(null);
-  const [open, setOpen] = React.useState(false);
-  const [filteredCourses, setFilteredCourses] = useState([]);
-  const [courseDetail, setCourseDetail] = React.useState(null);
+  const [course, setCourse] = React.useState<StudentEnrollment | null>(null);
+  const [open, setOpen] = React.useState<boolean>(false);
+  const [filteredCourses, setFilteredCourses] = useState<StudentEnrollment[]>([]);
+  const [courseDetail, setCourseDetail] = React.useState<any>(null);
   const handleClose = () => {
     setId(null);
     setOpen(false);
   };
-  const [filter, setFilter] = useState("all");
+  // Filter functionality disabled in UI
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue.props.value);
-  };
-  const [activePage, setActivePage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(5);
-  const handleActivePage = (event, value) => {
+  const [activePage, setActivePage] = React.useState<number>(1);
+  const [pageSize, setPageSize] = React.useState<number>(5);
+  const handleActivePage = (_event: any, value: number) => {
     setActivePage(value);
   };
   const {
@@ -206,38 +195,18 @@ const StudentCourse = () => {
   const {
     data: sections,
     isLoading: loadingSection,
-    isError: errorSection,
   } = useGetCourseListQuery(id, {
     skip: !id,
   });
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [isTablet, setIsTablet] = useState(
-    window.innerWidth < 1024 && window.innerWidth >= 768
-  );
-  // const [mobileOpen, setMobileOpen] = useState(false);
-
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      setIsTablet(window.innerWidth < 1024 && window.innerWidth >= 768);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-  useEffect(() => {
-    if (filter === "all") {
-      setFilteredCourses(studentCourses?.payload);
-    } else {
-      const filtered = studentCourses?.payload.filter(
-        (course) => course.isComplete === (filter === true)
-      );
-      setFilteredCourses(filtered);
-    }
-  }, [filter, studentCourses]);
+    // Always show all courses since filter is disabled
+    setFilteredCourses(studentCourses?.data || []);
+  }, [studentCourses]);
 
-  const handleFilterChange = (event) => {
-    setFilter(event.target.value);
-  };
+  // Filter change function (commented out in UI)
+  // const handleFilterChange = (event: any) => {
+  //   setFilter(event.target.value);
+  // };
   useEffect(() => {
     if (id) {
       setCourseDetail(sections);
@@ -248,16 +217,21 @@ const StudentCourse = () => {
   }, [sections, id]);
   if (isLoading) return <Loader />;
   if (isError) return <div>Error</div>;
-  const handleClickOpen = (id) => {
+  const handleClickOpen = (id: string) => {
+    console.log("Course details clicked with ID:", id);
     setId(id);
-    setCourse(
-      studentCourses?.payload.find((item) => item.course.courseId === id)
-    );
+    const foundCourse = studentCourses?.data?.find((item) => item.course.courseId === id);
+    setCourse(foundCourse || null);
   };
-  const handleStudyBtn = (id) => {
+  const handleStudyBtn = (id: string) => {
+    console.log("Study button clicked with ID:", id);
+    if (!id) {
+      console.error("Course ID is undefined or null");
+      return;
+    }
     navigate("/student/" + id);
   };
-  const handleTakeCertBtn = (link) => {
+  const handleTakeCertBtn = (link: string) => {
     window.open(link, "_blank");
   };
 
@@ -418,8 +392,8 @@ const StudentCourse = () => {
         </Table>
       </TableContainer> */}
       <div className="flex justify-between my-auto mt-5">
-        <Typography variant="small" className="!my-auto">
-          {studentCourses.metadata.pagination.totalItems} courses
+        <Typography variant="body2" className="!my-auto">
+          {studentCourses?.metadata?.pagination?.totalElements || 0} courses
         </Typography>
         {/* <FormControl className="w-1/5">
           <InputLabel id="demo-simple-select-label">Status</InputLabel>
@@ -444,37 +418,49 @@ const StudentCourse = () => {
         </FormControl> */}
       </div>
       <div className="flex flex-col gap-4 mt-4">
-        {filteredCourses?.map((course, index) => (
-          <Card key={course?.course?.courseId || index}>
+        {filteredCourses?.map((enrollment, index) => {
+          console.log("Enrollment data:", enrollment);
+          return (
+          <Card key={enrollment?.course?.courseId || index}>
             <CardContent>
               <div className="flex flex-col md:flex-row gap-5 justify-center items-center md:items-start">
                 <div>
                   <div
                     data-testid="img"
-                    className="w-full h-60 box-border overflow-hidden rounded-md"
-                    onClick={() => handleClickOpen(course?.course?.courseId)}
+                    className="w-full h-60 box-border overflow-hidden rounded-md cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleClickOpen(enrollment?.course?.courseId);
+                    }}
                   >
                     <img
-                      src={course?.course?.courseThumbnail}
+                      src={enrollment?.course?.courseThumbnail}
                       className="w-full h-60"
+                      alt={enrollment?.course?.title}
                     />
                   </div>
                   <div className="w-full flex flex-row justify-between gap-2 mt-4">
-                    {course.isComplete === true && (
+                    {enrollment.status === "COMPLETED" && (
                       <SaveButton
-                        className="text-sm px-3 py-2 w-full rounded-full border border-teal-400 text-teal-400 hover:bg-teal-400 hover:text-white break-all"
+                        className="text-sm px-3 py-2 w-full rounded-full border border-teal-400 text-teal-400 hover:bg-teal-400 hover:text-white break-all cursor-pointer z-10 relative"
                         data-testid="take-cert-btn"
-                        onClick={() =>
-                          handleTakeCertBtn(course?.certificateLink)
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log("Certificate button clicked");
+                          handleTakeCertBtn("#"); // Certificate link not available in new API
+                        }}
                       >
                         Certificate
                       </SaveButton>
                     )}
                     <button
-                      className="text-sm px-3 py-2 rounded-full w-full border border-teal-400 text-teal-400 hover:bg-teal-400 hover:text-white"
+                      className="text-sm px-3 py-2 rounded-full w-full border border-teal-400 text-teal-400 hover:bg-teal-400 hover:text-white cursor-pointer z-10 relative"
                       data-testid="study-btn"
-                      onClick={() => handleStudyBtn(course.course.courseId)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log("Enter Class button clicked");
+                        handleStudyBtn(enrollment.course.courseId);
+                      }}
                     >
                       Enter Class
                     </button>
@@ -485,10 +471,13 @@ const StudentCourse = () => {
                   <div className="flex flex-col gap-4 w-full md:min-h-60">
                     <div
                       data-testid="title"
-                      className="text-xl font-semibold"
-                      onClick={() => handleClickOpen(course?.course?.courseId)}
+                      className="text-xl font-semibold cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClickOpen(enrollment?.course?.courseId);
+                      }}
                     >
-                      {course?.course?.title}
+                      {enrollment?.course?.title}
                     </div>
                     <div className="grid grid-col-1 md:flex md:flex-wrap md:justify-around md:gap-20 md:items-center gap-4">
                       <div className="flex flex-row gap-3 items-center">
@@ -497,52 +486,62 @@ const StudentCourse = () => {
                             Teacher
                           </div>
                           <div className="text-base font-medium">
-                            {course?.course?.instructorName}
+                            {enrollment?.course?.instructor?.name}
                           </div>
                         </div>
                       </div>
                       <div className="flex flex-col">
                         <div className="text-xs font-medium text-gray-500">
-                          Catagories
+                          Categories
                         </div>
                         <div className="text-base font-medium">
-                          {course?.course?.categoryName}
+                          {enrollment?.course?.category?.name}
                         </div>
                       </div>
-                      {course.isComplete === true ? (
-                        <button className="rounded-full bg-teal-400 text-white text-sm px-2 py-1">
+                      <div className="flex flex-col">
+                        <div className="text-xs font-medium text-gray-500">
+                          Progress
+                        </div>
+                        <div className="text-base font-medium">
+                          {enrollment?.progress}%
+                        </div>
+                      </div>
+                      {enrollment.status === "COMPLETED" ? (
+                        <button className="rounded-full bg-green-500 text-white text-sm px-2 py-1">
                           Completed
                         </button>
                       ) : (
-                        <button className="rounded-full bg-teal-400 text-white text-sm px-2 py-1">
-                          On-going
+                        <button className="rounded-full bg-blue-500 text-white text-sm px-2 py-1">
+                          In Progress
                         </button>
                       )}
-                      {/* 
-                      <div className="flex flex-col ml-auto">
-                        <div className="text-xs line-through font-medium text-gray-500">
-                          $190
-                        </div>
-                        <div className="text-lg font-semibold">$120</div>
-                      </div> */}
                     </div>
                     <div className="flex flex-col gap-2">
                       <div className="text-base font-semibold ">
                         Course Description
                       </div>
                       <p className="text-sm h-[150px] overflow-auto">
-                        {course?.course?.description}
+                        {enrollment?.course?.description}
                       </p>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <div className="text-sm text-gray-600">
+                        Enrolled: {new Date(enrollment.enrollmentDate).toLocaleDateString()}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Price: {enrollment.course.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
-        ))}
+        );
+        })}
       </div>
       <div className="flex flex-col md:flex-row justify-between mt-5">
-        {studentCourses.metadata.pagination.totalPages > 1 && (
+        {(studentCourses?.metadata?.pagination?.totalPages || 0) > 1 && (
           <div className="flex w-60 md:w-72 my-auto ">
             <div className="my-auto">Page: {activePage}</div>
             <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
@@ -553,7 +552,7 @@ const StudentCourse = () => {
                 value={pageSize}
                 label="Page size"
                 autoWidth
-                onChange={(e) => setPageSize(e.target.value)}
+                onChange={(e) => setPageSize(e.target.value as number)}
               >
                 <MenuItem value={5}>5</MenuItem>
                 <MenuItem value={10}>10</MenuItem>
@@ -563,9 +562,9 @@ const StudentCourse = () => {
             </FormControl>
           </div>
         )}
-        {studentCourses.metadata.pagination.totalPages > 1 && (
+        {(studentCourses?.metadata?.pagination?.totalPages || 0) > 1 && (
           <Pagination
-            count={studentCourses.metadata.pagination.totalPages}
+            count={studentCourses?.metadata?.pagination?.totalPages || 1}
             page={activePage}
             onChange={handleActivePage}
           />
@@ -581,7 +580,7 @@ const StudentCourse = () => {
           fullWidth={true}
         >
           <DialogTitle id="alert-dialog-title" className="!font-bold !text-2xl">
-            {course.courseId}
+            {course?.course?.title}
           </DialogTitle>
           <DialogContent>
             {loadingSection ? (
@@ -597,19 +596,43 @@ const StudentCourse = () => {
                     </div>
                     <div className="md:col-span-3">
                       <div className="grid grid-cols-1 md:grid-cols-2 text-center">
-                        <Typography variant="medium" className="font-bold ">
+                        <Typography variant="body1" className="font-bold ">
                           Name:
                         </Typography>
-                        <Typography variant="small">
-                          {course.course.title}
+                        <Typography variant="body2">
+                          {course?.course?.title}
                         </Typography>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2  text-center">
-                        <Typography variant="medium" className="font-bold">
+                        <Typography variant="body1" className="font-bold">
                           Course Id:
                         </Typography>
-                        <Typography variant="small">
-                          {course.course.courseId}
+                        <Typography variant="body2">
+                          {course?.course?.courseId}
+                        </Typography>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2  text-center">
+                        <Typography variant="body1" className="font-bold">
+                          Instructor:
+                        </Typography>
+                        <Typography variant="body2">
+                          {course?.course?.instructor?.name}
+                        </Typography>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2  text-center">
+                        <Typography variant="body1" className="font-bold">
+                          Category:
+                        </Typography>
+                        <Typography variant="body2">
+                          {course?.course?.category?.name}
+                        </Typography>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2  text-center">
+                        <Typography variant="body1" className="font-bold">
+                          Price:
+                        </Typography>
+                        <Typography variant="body2">
+                          {course?.course?.price?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                         </Typography>
                       </div>
                       {/* <div className="grid grid-cols-1 md:grid-cols-2  text-center">
@@ -637,22 +660,36 @@ const StudentCourse = () => {
                       </Typography>
                     </div> */}
                       <div className="grid grid-cols-1 md:grid-cols-2  text-center">
-                        <Typography variant="medium" className="font-bold">
+                        <Typography variant="body1" className="font-bold">
                           Enrollment Id:
                         </Typography>
-                        <Typography variant="small">
-                          {course.enrollmentId}
+                        <Typography variant="body2">
+                          {course?.enrollmentId}
                         </Typography>
                       </div>
-                      <div className="md:col-span-3">
-                        <div className="grid grid-cols-1 md:grid-cols-2  text-center">
-                          <Typography variant="medium" className="font-bold">
-                            Enrollment Date
-                          </Typography>
-                          <Typography variant="small">
-                            {Date(course.enrollmentDate).slice(0, 15)}
-                          </Typography>
-                        </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2  text-center">
+                        <Typography variant="body1" className="font-bold">
+                          Enrollment Date:
+                        </Typography>
+                        <Typography variant="body2">
+                          {course?.enrollmentDate ? new Date(course.enrollmentDate).toLocaleDateString() : 'N/A'}
+                        </Typography>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2  text-center">
+                        <Typography variant="body1" className="font-bold">
+                          Progress:
+                        </Typography>
+                        <Typography variant="body2">
+                          {course?.progress}%
+                        </Typography>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2  text-center">
+                        <Typography variant="body1" className="font-bold">
+                          Status:
+                        </Typography>
+                        <Typography variant="body2">
+                          {course?.status}
+                        </Typography>
                       </div>
                     </div>
                     <Divider className="md:col-span-4" />
@@ -662,18 +699,24 @@ const StudentCourse = () => {
                       </Typography>
                     </div>
                     <div className="md:col-span-3">
-                      {courseDetail?.payload.sections.map((section, index) => (
-                        <div className="md:col-span-3">
+                      {courseDetail?.data?.sections?.map((section: any, index: number) => (
+                        <div key={index} className="md:col-span-3">
                           <div className="grid grid-cols-1 md:grid-cols-2  text-center">
-                            <Typography variant="medium" className="font-bold">
+                            <Typography variant="body1" className="font-bold">
                               Lesson {index + 1}:
                             </Typography>
-                            <Typography variant="small">
+                            <Typography variant="body2">
                               {section.sectionName}
                             </Typography>
                           </div>
                         </div>
-                      ))}
+                      )) || (
+                        <div className="md:col-span-3">
+                          <Typography variant="body2">
+                            No sections available
+                          </Typography>
+                        </div>
+                      )}
                     </div>
                     {/* <div className="h-full flex items-center border-b-2 mx-auto md:border-r-2 md:border-b-0 md:mx-4 text-left">
                     <Typography variant="h6" className="font-bold text-center ">

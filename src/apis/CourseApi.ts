@@ -3,14 +3,21 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const CourseApi = createApi({
   reducerPath: "CourseApi",
-  baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: API_URL,
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem("accessToken");
+      if (token) headers.set("authorization", `Bearer ${token}`);
+      return headers;
+    },
+  }),
   tagTypes: ["Course", "Course-Details"],
   endpoints: (build) => ({
     getCourseList: build.query({
       query: (courseId) => `courses/details/${courseId}`,
       providesTags: ["Course"],
     }),
-    getCourseDetails: build.query({
+    getCurrentSection: build.query({
       query: (courseId) =>
         `students/${
           localStorage.getItem("userId")
@@ -37,7 +44,7 @@ export const CourseApi = createApi({
 
 export const {
   useGetCourseListQuery,
-  useGetCourseDetailsQuery,
+  useGetCurrentSectionQuery,
   useUpdateCompletedSectionMutation,
   useGetSectionQuery,
 } = CourseApi;

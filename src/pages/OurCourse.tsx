@@ -1,40 +1,36 @@
-// src/pages/OurCourse.tsx
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-
-import { Button } from "@/components/ui/button";
-
-import {
-  MagnifyingGlassIcon,
-} from "@phosphor-icons/react/dist/ssr";
-
+import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr";
 import Pagination from "@mui/material/Pagination";
 import CircularProgress from "@mui/material/CircularProgress";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import CourseCard from "@/components/OurCourse/CourseCard";
 import BriefCourseCard from "@/components/OurCourse/BriefCourseCard";
 import Category from "@/components/OurCourse/Category";
 import AdvImg from "@/assets/courses/adv.jpg";
-
 import api from "@/lib/api";
-import { Input } from "@/components/ui/input";
 
-// ===== Types (align with your backend payloads) =====
-type InstructorMini = {
-  name: string;
-  avtUrl: string | null;
-};
-
+// ===== Types (aligned with new API response structure) =====
 type CourseItem = {
-  courseId: number;
+  courseId: string;
   title: string;
-  instructor: InstructorMini;
-  courseThumbnail: string | null;
-  avgRating: number | null;
-  categoryName: string;
-  totalReviews: number;
-  prePrice: number | "free" | null;
-  aftPrice: number | "free" | null;
+  description: string;
+  price: number;
+  courseThumbnail: string;
+  avgRating: number;
+  totalRating: string;
+  status: string;
+  createdAt: string;
+  instructor: {
+    userId: string;
+    name: string;
+  };
+  category: {
+    categoryId: number;
+    name: string;
+  };
 };
 
 type CategoryItem = {
@@ -42,23 +38,18 @@ type CategoryItem = {
   categoryName: string;
 };
 
-type PaginationMeta = {
-  totalPages: number;
-  totalElements: number;
-  size: number;
-  number: number;
-};
-
 type ApiResponse<T> = {
-  payload: T;
-  metadata?: {
-    pagination?: PaginationMeta;
-    [k: string]: unknown;
+  success: boolean;
+  data: T;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
   };
-  // plus your other fields like code/message if present
 };
 
-const receentCourses = [
+const recentCourses = [
   {
     title: "Introduction to EduChamp",
     oldPrice: 199,
@@ -66,7 +57,7 @@ const receentCourses = [
     amountReview: 100,
   },
   {
-    title: "English for a Better Tommorow",
+    title: "English for a Better Tomorrow",
     oldPrice: 99,
     newPrice: "Free",
     amountReview: 200,
@@ -117,10 +108,23 @@ const OurCourse: React.FC = () => {
       try {
         const res = await api.get<ApiResponse<CategoryItem[]>>("/categories");
         if (!alive) return;
-        const list = res.data?.payload ?? [];
-        setCategory(list);
+        
+        // Handle new API response structure and map to expected format
+        const categoriesData = res.data?.data;
+        if (Array.isArray(categoriesData)) {
+          // Map the API response to match Category component expectations
+          const mappedCategories = categoriesData.map((cat: any) => ({
+            categoryId: cat.categoryId,
+            categoryName: cat.name // Map 'name' to 'categoryName'
+          }));
+          setCategory(mappedCategories);
+        } else {
+          console.error("Expected categories array but got:", categoriesData);
+          setCategory([]);
+        }
       } catch (err) {
         console.error("Failed to load categories:", err);
+        setCategory([]);
       } finally {
         if (alive) setIsLoadingCategory(false);
       }
@@ -149,16 +153,22 @@ const OurCourse: React.FC = () => {
           backToTop();
         }
 
-        // Backend pages are 0-based, UI is 1-based
-        const res = await api.get<ApiResponse<CourseItem[]>>("/courses");
+        // API call with pagination support
+        const res = await api.get<ApiResponse<CourseItem[]>>(`/courses?page=${page}&size=10`);
 
         if (!alive) return;
 
-        const list = res.data?.payload ?? [];
-        setCourseList(list);
+        // Handle new API response structure
+        const coursesData = res.data?.data;
+        if (Array.isArray(coursesData)) {
+          setCourseList(coursesData);
+        } else {
+          console.error("Expected courses array but got:", coursesData);
+          setCourseList([]);
+        }
 
-        const tp = res.data?.metadata?.pagination?.totalPages ?? 0;
-        setTotalPages(tp);
+        const totalPages = res.data?.pagination?.totalPages ?? 1;
+        setTotalPages(totalPages);
       } catch (err) {
         console.error("Failed to load courses:", err);
         setCourseList([]);
@@ -220,7 +230,14 @@ const OurCourse: React.FC = () => {
 
           <div className="space-y-3">
             <h5 className="text-[17px] font-semibold">ALL COURSES</h5>
-            {isLoadingCategory ? <p>Loading...</p> : <Category category={category} />}
+            {isLoadingCategory ? (
+              <div className="flex items-center justify-center py-4">
+                <CircularProgress size={20} />
+                <span className="ml-2 text-sm text-gray-500">Loading categories...</span>
+              </div>
+            ) : (
+              <Category category={category} />
+            )}
           </div>
 
           <div className="min-w-full">
@@ -232,62 +249,74 @@ const OurCourse: React.FC = () => {
           <div className="flex flex-col gap-3">
             <h4 className="font-semibold text-lg">RECENT COURSES</h4>
             <div className="flex flex-col gap-3">
-              {
-                receentCourses.map((course) => (
-                  <BriefCourseCard title={course.title} oldPrice={course.oldPrice} newPrice={course.newPrice} amountReview={course.amountReview} />
-                ))
-              }
+              {recentCourses.map((course, index) => (
+                <BriefCourseCard 
+                  key={index}
+                  title={course.title} 
+                  oldPrice={course.oldPrice} 
+                  newPrice={course.newPrice} 
+                  amountReview={course.amountReview} 
+                />
+              ))}
             </div>
           </div>
         </div>
 
         {/* Right panel */}
         <div className="w-full space-y-8 mt-20 md:mt-0">
-          {!isLoading ? (
+          {isLoading ? (
+            <div className="text-center py-20">
+              <CircularProgress />
+              <p className="mt-4 text-gray-500">Loading courses...</p>
+            </div>
+          ) : courseList.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
               {courseList.map((course) => (
                 <CourseCard
                   key={course.courseId}
-                  courseId={course.courseId}
+                  courseId={parseInt(course.courseId)}
                   instructorName={course.instructor?.name}
-                  instructorImage={course.instructor?.avtUrl}
+                  instructorImage="" // API doesn't provide instructor image
                   thumbnail={course.courseThumbnail}
                   score={course.avgRating}
                   title={course.title}
-                  category={course.categoryName}
-                  amountReview={course.totalReviews}
-                  oldPrice={course.prePrice}
-                  newPrice={course.aftPrice}
+                  category={course.category?.name}
+                  amountReview={parseInt(course.totalRating)}
+                  oldPrice={null} // API doesn't provide separate old price
+                  newPrice={course.price}
                 />
               ))}
             </div>
           ) : (
-            <div className="text-center">
-              <CircularProgress />
+            <div className="text-center py-20">
+              <p className="text-gray-500 text-lg">No courses found.</p>
+              <p className="text-gray-400 mt-2">Try adjusting your search or browse all categories.</p>
             </div>
           )}
 
-          <div className="w-fit mx-auto">
-            <Pagination
-              variant="outlined"
-              shape="rounded"
-              // MUI `color` prop is enum; style via `sx` instead
-              sx={{
-                "& .MuiPaginationItem-root": {
-                  borderColor: "#4c1864",
-                },
-                "& .Mui-selected": {
-                  backgroundColor: "#4c1864 !important",
-                  color: "#fff",
-                },
-              }}
-              count={totalPages || 0}
-              onChange={handlePaging}
-              siblingCount={1}
-              size="large"
-              page={page}
-            />
-          </div>
+          {totalPages > 1 && (
+            <div className="w-fit mx-auto">
+              <Pagination
+                variant="outlined"
+                shape="rounded"
+                // MUI `color` prop is enum; style via `sx` instead
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    borderColor: "#4c1864",
+                  },
+                  "& .Mui-selected": {
+                    backgroundColor: "#4c1864 !important",
+                    color: "#fff",
+                  },
+                }}
+                count={totalPages}
+                onChange={handlePaging}
+                siblingCount={1}
+                size="large"
+                page={page}
+              />
+            </div>
+          )}
         </div>
       </div>
 
