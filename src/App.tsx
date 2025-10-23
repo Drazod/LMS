@@ -25,6 +25,7 @@ import { student_sidebar, instructor_sidebar } from "./constants/sidebar";
 import MockStudentStudyLayout from "@/layouts/MockStudentStudyLayout";
 import MockStudentStudy from "@/components/Student/MockStudentStudy";
 import { MockStudentStudySectionListening, MockStudentStudySectionSpeaking } from "@/components/Student/MockStudentStudySection";
+import InstructorCourseReview from "@/components/Instructor/InstructorCourseReview";
 
 function MockSectionSwitch() {
   const { sectionId } = useParams();
@@ -78,8 +79,9 @@ const App = () => {
               instructor_sidebar.map(it => ({ ...it, path: it.path.replace(/^\/+/, "") }))
             ).map((rp, i) => <Route key={i} {...rp} />)}
           </Route>
-        </Route>
 
+        </Route>
+        <Route path="/dashboard/instructor/courses/:courseId/review" element={<InstructorCourseReview />} />
         {/* Mock study (dynamic sections) */}
         <Route path="/mock/student" element={<MockStudentStudyLayout />}>
           <Route path=":courseId" element={<MockStudentStudy />}>
