@@ -8,7 +8,7 @@ import {
 } from "@/apis/CourseApi";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   SidebarProvider,
@@ -41,38 +41,41 @@ import logo from "/hoctiengvietai_white.svg";
  *********************************/
 export type SessionType = "LISTEN" | "READING" | "SPEAKING";
 
-type ContentItem = {
+export interface SectionApiDataV2 {
+  contents: ContentItem[];
+  questions?: BasicQuestionItem[];
+}
+
+export interface ContentItem {
   type: "DOCUMENT" | "VIDEO" | "IMAGE" | "TEXT";
   content: string;
   position: string | number;
   id: number;
   sectionId: number;
-};
+}
 
-type BasicQuestionItem = {
+export interface BasicQuestionItem {
   questionId: number;
   questionText: string;
   sectionId: number;
-};
+}
 
-type SectionApiDataV2 = {
-  contents: ContentItem[];
-  questions?: BasicQuestionItem[];
-};
-
-type StudentAnswer = {
-  answerId: number;
+export interface AnswerItem {
+  id: number;
   studentId: number;
-  studentName: string;
+  studentName?: string;
   answerText: string;
+  createdAt?: string;
   score?: number | null;
   note?: string | null;
-};
+}
 
-const SESSION_TYPE_CONFIG: Record<
-  SessionType,
-  { icon: any; label: string; color: string; description: string }
-> = {
+const SESSION_TYPE_CONFIG: Record<SessionType, {
+  icon: any; // icon component type from phosphor
+  label: string;
+  color: string; // tailwind bg color class
+  description: string;
+}> = {
   LISTEN: {
     icon: HeadphonesIcon,
     label: "Listening",
@@ -121,8 +124,7 @@ function StudySidebar({
                 sections.map((section) => {
                   const isActive = Number(section.sectionId) === Number(currentSectionId);
                   const isCompleted =
-                    Number(studentProgress?.sectionId) === Number(section.sectionId) &&
-                    studentProgress?.progress === 100;
+                    Number(studentProgress?.sectionId) === Number(section.sectionId) && studentProgress?.progress === 100;
                   const isAccessible = !!studentProgress;
                   const sessionType: SessionType = section.sessionType || "READING";
                   const config = SESSION_TYPE_CONFIG[sessionType];
@@ -235,142 +237,133 @@ function VideoBlock({ src }: { src: string }) {
 }
 
 /** ******************************
- * Instructor: answers list + grading
+ * Questions + answers (instructor)
  *********************************/
-function AnswersGradingPanel({
-  question,
-  courseId,
-  sectionId,
-  studentId,
-}: {
-  question: BasicQuestionItem;
-  courseId?: string;
-  sectionId: number;
-  studentId?: string;
-}) {
-  // In real app, replace with your RTK Query hooks to load answers and submit grade.
-  // For now, simple local state to demonstrate UI.
+function useQuestionAnswers(questionId: number) {
+  const [answers, setAnswers] = useState<AnswerItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [answers, setAnswers] = useState<StudentAnswer[]>([]);
-  const [pending, setPending] = useState<Record<number, { score: number | ""; note: string }>>({});
+  const [error, setError] = useState<string | null>(null);
 
-  // Simulated fetch on mount (replace with useGet...Query)
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setLoading(true);
-      try {
-        // Example: GET /api/instructor/courses/:courseId/sections/:sectionId/questions/:questionId/answers?studentId=...
-        // const res = await fetch(...); const data = await res.json();
-        // setAnswers(data.answers);
-        if (!mounted) return;
-        setAnswers([]); // start empty; plug real data here
-      } finally {
-        setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [courseId, sectionId, question.questionId, studentId]);
-
-  const handleChange = (answerId: number, field: "score" | "note", value: string) => {
-    setPending((prev) => ({
-      ...prev,
-      [answerId]: {
-        score: field === "score" ? (value === "" ? "" : Number(value)) : prev[answerId]?.score ?? "",
-        note: field === "note" ? value : prev[answerId]?.note ?? "",
-      },
-    }));
-  };
-
-  const handleSave = async (answer: StudentAnswer) => {
-    const { score, note } = pending[answer.answerId] ?? { score: "", note: "" };
-    if (score === "" || Number.isNaN(Number(score))) {
-      alert("Vui lòng nhập điểm hợp lệ (0-10).");
-      return;
-    }
+  const fetchAnswers = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      // Example POST:
-      // await fetch(`/api/.../grade`, { method: "POST", body: JSON.stringify({ score, note }) })
-      // Update local state
-      setAnswers((prev) =>
-        prev.map((a) => (a.answerId === answer.answerId ? { ...a, score: Number(score), note } : a))
-      );
-      alert("Đã lưu điểm.");
+      const res = await fetch(`https://lmsaibe-production.up.railway.app/api/answers/${questionId}`);
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      setAnswers(Array.isArray(data) ? data : data?.data || []);
+    } catch (e: any) {
+      setError(e?.message || "Failed to load answers");
+    } finally {
+      setLoading(false);
+    }
+  }, [questionId]);
+
+  useEffect(() => {
+    if (questionId) fetchAnswers();
+  }, [questionId, fetchAnswers]);
+
+  const grade = useCallback(async (answerId: number, points: number, note?: string) => {
+    const res = await fetch(`https://lmsaibe-production.up.railway.app/api/answers/${answerId}/grade`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ points, note }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const updated = await res.json();
+    // Optimistic local merge
+    setAnswers((prev) => prev.map((a) => (a.id === answerId ? { ...a, score: updated?.score ?? points, note } : a)));
+  }, []);
+
+  return { answers, loading, error, refetch: fetchAnswers, grade };
+}
+
+function QuestionWithAnswers({ question }: { question: BasicQuestionItem }) {
+  const { answers, loading, error, refetch, grade } = useQuestionAnswers(question.questionId);
+  const [points, setPoints] = useState<Record<number, string>>({});
+  const [notes, setNotes] = useState<Record<number, string>>({});
+  const [busy, setBusy] = useState<Record<number, boolean>>({});
+
+  const onGrade = async (answerId: number) => {
+    const p = Number(points[answerId]);
+    if (Number.isNaN(p)) return;
+    setBusy((b) => ({ ...b, [answerId]: true }));
+    try {
+      await grade(answerId, p, notes[answerId]);
     } catch (e) {
-      alert("Lưu điểm thất bại.");
+      // no-op visual error for brevity
+    } finally {
+      setBusy((b) => ({ ...b, [answerId]: false }));
     }
   };
 
   return (
-    <Card className="border-2 border-muted bg-white">
-      <CardHeader>
-        <CardTitle className="text-base">Bài làm của học sinh</CardTitle>
-        <CardDescription>Câu hỏi: {question.questionText}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {loading ? (
-          <div className="text-sm text-muted-foreground">Đang tải danh sách trả lời...</div>
-        ) : answers.length === 0 ? (
-          <div className="text-sm text-muted-foreground">Chưa có câu trả lời nào.</div>
-        ) : (
-          <div className="space-y-4">
-            {answers.map((ans) => (
-              <div key={ans.answerId} className="p-4 rounded-md border">
-                <div className="text-sm font-medium mb-2">
-                  {ans.studentName} {ans.score != null && <span className="text-green-600">— Điểm: {ans.score}</span>}
+    <Card className="border">
+      <CardContent className="p-4 space-y-3">
+        <div className="font-medium">{question.questionText}</div>
+        {loading && <div className="text-sm text-muted-foreground">Loading answers…</div>}
+        {error && (
+          <div className="text-sm text-red-600">
+            {error} <button className="underline" onClick={refetch}>Retry</button>
+          </div>
+        )}
+        <div className="space-y-3">
+          {answers.length === 0 && !loading ? (
+            <div className="text-sm text-muted-foreground">No answers yet.</div>
+          ) : (
+            answers.map((ans) => (
+              <div key={ans.id} className="border rounded-md p-3">
+                <div className="text-sm">
+                  <span className="font-semibold">{ans.studentName || `Student #${ans.studentId}`}:</span> {ans.answerText}
                 </div>
-                <div className="text-sm whitespace-pre-wrap mb-3">{ans.answerText}</div>
-
-                <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
-                  <div className="md:col-span-2">
-                    <label className="text-xs text-muted-foreground">Điểm (0–10)</label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={10}
-                      step="0.5"
-                      className="w-full border rounded-md p-2 text-sm"
-                      value={pending[ans.answerId]?.score ?? ans.score ?? ""}
-                      onChange={(e) => handleChange(ans.answerId, "score", e.target.value)}
-                    />
-                  </div>
-                  <div className="md:col-span-3">
-                    <label className="text-xs text-muted-foreground">Nhận xét</label>
-                    <input
-                      type="text"
-                      className="w-full border rounded-md p-2 text-sm"
-                      value={pending[ans.answerId]?.note ?? ans.note ?? ""}
-                      onChange={(e) => handleChange(ans.answerId, "note", e.target.value)}
-                      placeholder="Nhập nhận xét ngắn…"
-                    />
-                  </div>
-                  <div className="md:col-span-1 flex items-end">
-                    <Button className="w-full" onClick={() => handleSave(ans)}>
-                      Lưu điểm
+                <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
+                  <input
+                    type="number"
+                    placeholder="Points"
+                    className="border rounded px-2 py-1 text-sm"
+                    value={points[ans.id] ?? (ans.score ?? "")}
+                    onChange={(e) => setPoints((p) => ({ ...p, [ans.id]: e.target.value }))}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Note (optional)"
+                    className="border rounded px-2 py-1 text-sm col-span-2"
+                    value={notes[ans.id] ?? (ans.note ?? "")}
+                    onChange={(e) => setNotes((n) => ({ ...n, [ans.id]: e.target.value }))}
+                  />
+                  <div className="sm:col-span-3 flex justify-end">
+                    <Button size="sm" onClick={() => onGrade(ans.id)} disabled={!!busy[ans.id]}>
+                      {busy[ans.id] ? "Saving…" : "Save score"}
                     </Button>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </CardContent>
     </Card>
   );
 }
 
-/** ******************************
- * Per-section content + questions
- *********************************/
-function ContentRenderer({
-  contents,
-  questions,
-}: {
-  contents: ContentItem[];
-  questions: BasicQuestionItem[];
-}) {
+function QuestionsPanel({ questions }: { questions: BasicQuestionItem[] }) {
+  if (!questions?.length) {
+    return (
+      <Card className="border">
+        <CardContent className="p-6 text-sm text-muted-foreground">No questions in this section.</CardContent>
+      </Card>
+    );
+  }
+  return (
+    <div className="space-y-4">
+      {questions.map((q) => (
+        <QuestionWithAnswers key={q.questionId} question={q} />
+      ))}
+    </div>
+  );
+}
+
+function ContentRenderer({ contents }: { contents: ContentItem[] }) {
   const sortedContents = useMemo(() => {
     if (!Array.isArray(contents)) return [] as ContentItem[];
     return [...contents].sort((a, b) => {
@@ -392,31 +385,12 @@ function ContentRenderer({
     <div className="space-y-6">
       {sortedContents.map((item) => {
         if (item.type === "DOCUMENT" || item.type === "TEXT") {
-          return (
-            <div key={item.id}>
-              <DocumentOrText item={item} />
-            </div>
-          );
+          return <DocumentOrText key={item.id} item={item} />;
         }
         if (item.type === "IMAGE") return <ImageBlock key={item.id} src={item.content} />;
         if (item.type === "VIDEO") return <VideoBlock key={item.id} src={item.content} />;
         return null;
       })}
-
-      {/* Questions (open-ended) + student answers + grading */}
-      {questions?.length > 0 && (
-        <div className="space-y-6 pt-4">
-          <h3 className="text-xl font-semibold">Câu hỏi ôn tập</h3>
-          {questions.map((q) => (
-            <AnswersGradingPanel
-              key={q.questionId}
-              question={q}
-              // Pass identifiers so you can plug your real endpoints inside the panel
-              sectionId={q.sectionId}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -449,13 +423,9 @@ function StudyContent({
 
   // Derived values
   const sections = courseSectionList?.data?.sections ?? [];
-  // Support both legacy array response and new wrapper { contents, questions }
   const rawSection = section?.data as SectionApiDataV2 | ContentItem[] | undefined;
-  const contents: ContentItem[] = Array.isArray(rawSection)
-    ? (rawSection as ContentItem[])
-    : (rawSection?.contents ?? []);
-  const questions: BasicQuestionItem[] = Array.isArray(rawSection) ? [] : (rawSection?.questions ?? []);
-
+  const contents: ContentItem[] = Array.isArray(rawSection) ? (rawSection as ContentItem[]) : (rawSection?.contents ?? []);
+  const basicQuestions: BasicQuestionItem[] = Array.isArray(rawSection) ? [] : (rawSection?.questions ?? []);
   const currentSectionMeta = useMemo(
     () => sections.find((s: any) => Number(s.sectionId) === Number(currentSectionId)),
     [sections, currentSectionId]
@@ -466,9 +436,7 @@ function StudyContent({
   );
   const sessionType: SessionType = (currentSectionMeta?.sessionType as SessionType) || "READING";
   const config = SESSION_TYPE_CONFIG[sessionType];
-  const isCompleted = Boolean(
-    studentCourseProgress?.data?.isLastSection && studentCourseProgress?.data?.progress === 100
-  );
+  const isCompleted = Boolean(studentCourseProgress?.data?.isLastSection && studentCourseProgress?.data?.progress === 100);
   const sectionsLength = sections.length || 0;
   const canGoPrevious = currentIndex > 0;
   const canGoNext = currentIndex < Math.max(0, sectionsLength - 1);
@@ -489,7 +457,6 @@ function StudyContent({
     if (currentSectionId !== previousSectionId) setPreviousSectionId(currentSectionId);
   }, [currentSectionId, isUserNavigation, updateCompletedSection, isUpdatingSection, previousSectionId]);
 
-  // Nav handlers
   const handlePreviousSection = useCallback(() => {
     if (!sections.length || currentSectionId == null) return;
     const currentIdx = sections.findIndex((s: any) => Number(s.sectionId) === Number(currentSectionId));
@@ -508,12 +475,12 @@ function StudyContent({
     setCurrentSectionId(nextId);
     try {
       await updateCompletedSection(currentSectionId);
-    } catch {
-      /* ignore */
+    } catch (error) {
+      // ignore
     }
   }, [sections, currentSectionId, onUserNavigation, setCurrentSectionId, updateCompletedSection]);
 
-  // Loading & error states
+  // Loading & error states for page
   if (isLoadingSectionList || isLoadingStudentProgress) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -559,43 +526,28 @@ function StudyContent({
       </header>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto pb-20 bg-gray-50/50">
+      <div className="flex-1 overflow-y-auto pb-24 bg-gray-50/50">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-4">
-          {/* Left: lesson intro */}
+          {/* Left: section info (replaced) */}
           <div className="lg:col-span-1">
             <Card className="sticky top-4 shadow-lg border-0 bg-white">
-              <CardContent className="p-8">
-                <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-gray-800">
+              <CardContent className="p-8 space-y-4">
+                <div className="flex items-center gap-3">
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <BookOpenIcon size={24} className="text-blue-600" />
                   </div>
-                  Giới thiệu bài học
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-sm text-muted-foreground mb-2">Giới thiệu phần học</h4>
-                    <div className="text-sm leading-relaxed">
-                      {currentSectionMeta?.description ||
-                        courseSectionList?.data?.description ||
-                        "Trong bài học này, các em sẽ được rèn luyện kỹ năng giới thiệu, phân tích và đánh giá một truyện kể dựa trên cả hai phương diện: nội dung (cốt truyện, nhân vật, ý nghĩa) và nghệ thuật (ngôn ngữ, kết cấu, giọng điệu...)."}
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-4">
-                    <h4 className="font-medium text-sm text-muted-foreground mb-2">Các em có thể làm được gì sau khi học xong?</h4>
-                    <div className="text-sm text-muted-foreground">Rèn luyện kỹ năng phân tích và thuyết trình</div>
-                  </div>
-
-                  <div className="border-t pt-4">
-                    <h4 className="font-medium text-sm text-muted-foreground mb-2">Luyện tập nói và nghe như thế nào?</h4>
-                    <div className="text-sm text-muted-foreground">Thực hành qua các hoạt động tương tác</div>
-                  </div>
+                  <h3 className="text-xl font-bold text-gray-800">Thông tin phần học</h3>
+                </div>
+                <div className="text-sm leading-relaxed text-muted-foreground">
+                  <div className="mb-2"><span className="font-semibold text-foreground">Tên phần:</span> {currentSectionMeta?.sectionName || `Phần ${currentIndex + 1}`}</div>
+                  <div className="mb-2"><span className="font-semibold text-foreground">Loại:</span> {SESSION_TYPE_CONFIG[sessionType].label}</div>
+                  <div className="mb-2"><span className="font-semibold text-foreground">Mô tả:</span> {currentSectionMeta?.description || courseSectionList?.data?.description || "Không có mô tả."}</div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Right: main section content */}
+          {/* Right: split into content + questions/answers */}
           <div className="lg:col-span-2">
             {isLoadingSection ? (
               <div className="flex items-center justify-center py-12">
@@ -606,35 +558,14 @@ function StudyContent({
                 <h3 className="text-lg font-semibold text-destructive mb-2">Error Loading Section</h3>
                 <p className="text-muted-foreground">Please try again</p>
               </div>
-            ) : contents?.length ? (
-              <div className="space-y-8">
-                <Card className="border-0 bg-white shadow-lg">
-                  <CardContent className="p-8">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className={`p-3 rounded-lg ${config.color} text-white`}>
-                        <config.icon size={24} />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-bold text-gray-800">
-                          {currentSectionMeta?.sectionName || `Phần ${currentIndex + 1}: ${config.label}`}
-                        </h2>
-                        <h3 className="text-lg font-medium text-gray-600 mt-1">
-                          {currentSectionMeta?.title || "Hoạt động 1"}
-                        </h3>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {currentSectionMeta?.description || "Nội dung bài học"}
-                </h2>
-
-                <ContentRenderer contents={contents} questions={questions} />
-              </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No content available for this section</p>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                <div>
+                  <ContentRenderer contents={contents} />
+                </div>
+                <div>
+                  <QuestionsPanel questions={basicQuestions} />
+                </div>
               </div>
             )}
           </div>
@@ -658,9 +589,7 @@ function StudyContent({
           </Button>
 
           <div className="text-center">
-            <div className="text-sm font-medium">
-              Progress: {currentIndex + 1} / {sectionsLength}
-            </div>
+            <div className="text-sm font-medium">Progress: {currentIndex + 1} / {sectionsLength}</div>
             <div className="w-32 bg-muted rounded-full h-2 mt-1">
               <div
                 className="bg-primary h-2 rounded-full transition-all"

@@ -328,18 +328,89 @@ function GeneratedQuestions({ questions, onClear }: { questions: GeneratedQuesti
     </div>
   );
 }
-function BasicQuestionsList({ questions }: { questions: BasicQuestionItem[] }) {
+function BasicQuestionsList({
+  questions,
+  studentId,
+}: {
+  questions: BasicQuestionItem[];
+  studentId: number | null;
+}) {
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [submitting, setSubmitting] = useState<Record<number, boolean>>({});
+  const [submitAllLoading, setSubmitAllLoading] = useState(false);
+  const [submittedOk, setSubmittedOk] = useState<Record<number, boolean>>({});
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!questions?.length) return null;
 
   const handleChange = (id: number, value: string) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
+    // clear "submitted" checkmark if they edit again
+    setSubmittedOk((prev) => {
+      const clone = { ...prev };
+      delete clone[id];
+      return clone;
+    });
+  };
+
+  const postAnswer = async (questionId: number, answerText: string) => {
+    const res = await fetch(`https://lmsaibe-production.up.railway.app/api/answers/${questionId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ studentId, answerText }),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error(txt || `Submit failed (${res.status})`);
+    }
+  };
+
+  const handleSubmitOne = async (q: BasicQuestionItem) => {
+    if (!studentId) {
+      setErrorMsg("Không tìm thấy mã học viên (studentId). Vui lòng đăng nhập lại.");
+      return;
+    }
+    const answerText = (answers[q.questionId] || "").trim();
+    if (!answerText) {
+      setErrorMsg("Vui lòng nhập câu trả lời trước khi nộp.");
+      return;
+    }
+    setErrorMsg(null);
+    setSubmitting((s) => ({ ...s, [q.questionId]: true }));
+    try {
+      await postAnswer(q.questionId, answerText);
+      setSubmittedOk((ok) => ({ ...ok, [q.questionId]: true }));
+    } catch (e: any) {
+      setErrorMsg(e?.message || "Nộp câu trả lời thất bại.");
+    } finally {
+      setSubmitting((s) => ({ ...s, [q.questionId]: false }));
+    }
+  };
+
+  const handleSubmitAll = async () => {
+    if (!studentId) {
+      setErrorMsg("Không tìm thấy mã học viên (studentId). Vui lòng đăng nhập lại.");
+      return;
+    }
+    setErrorMsg(null);
+    setSubmitAllLoading(true);
+    try {
+      for (const q of questions) {
+        const answerText = (answers[q.questionId] || "").trim();
+        if (!answerText) continue; // skip unanswered
+        await postAnswer(q.questionId, answerText);
+        setSubmittedOk((ok) => ({ ...ok, [q.questionId]: true }));
+      }
+    } catch (e: any) {
+      setErrorMsg(e?.message || "Nộp nhiều câu trả lời thất bại.");
+    } finally {
+      setSubmitAllLoading(false);
+    }
   };
 
   const handleExport = () => {
-    const lines = questions.map((q, i) =>
-      `${i + 1}. ${q.questionText}\nTrả lời: ${answers[q.questionId] || "(chưa trả lời)"}`
+    const lines = questions.map(
+      (q, i) => `${i + 1}. ${q.questionText}\nTrả lời: ${answers[q.questionId] || "(chưa trả lời)"}`
     );
     const blob = new Blob([lines.join("\n\n")], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -352,31 +423,65 @@ function BasicQuestionsList({ questions }: { questions: BasicQuestionItem[] }) {
 
   return (
     <div className="mt-8">
-      <h4 className="text-lg font-semibold mb-3">Câu hỏi ôn tập</h4>
-      <div className="space-y-4">
-        {questions.map((q, i) => (
-          <Card key={q.questionId} className="p-4">
-            <div className="text-sm font-medium mb-2">
-              <span className="mr-2">{i + 1}.</span>
-              {q.questionText}
-            </div>
-            <textarea
-              className="w-full rounded-md border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Nhập câu trả lời của bạn..."
-              rows={3}
-              value={answers[q.questionId] || ""}
-              onChange={(e) => handleChange(q.questionId, e.target.value)}
-            />
-          </Card>
-        ))}
+      <div className="flex items-center justify-between mb-3">
+        <h4 className="text-lg font-semibold">Câu hỏi ôn tập</h4>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setAnswers({})}>Xóa tất cả</Button>
+          <Button variant="outline" onClick={handleExport}>Tải câu trả lời</Button>
+          <Button onClick={handleSubmitAll} disabled={submitAllLoading || !studentId}>
+            {submitAllLoading ? "Đang nộp..." : "Nộp tất cả"}
+          </Button>
+        </div>
       </div>
-      <div className="flex gap-3 justify-end mt-4">
-        <Button variant="outline" onClick={() => setAnswers({})}>Xóa tất cả</Button>
-        <Button onClick={handleExport}>Tải câu trả lời</Button>
+
+      {errorMsg && (
+        <div className="mb-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+          {errorMsg}
+        </div>
+      )}
+
+      <div className="space-y-4">
+        {questions.map((q, i) => {
+          const isBusy = !!submitting[q.questionId];
+          const ok = !!submittedOk[q.questionId];
+          return (
+            <Card key={q.questionId} className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="text-sm font-medium mb-2">
+                  <span className="mr-2">{i + 1}.</span>
+                  {q.questionText}
+                </div>
+                {ok && (
+                  <Badge variant="secondary" className="text-green-700 border-green-200 bg-green-50">
+                    Đã nộp
+                  </Badge>
+                )}
+              </div>
+
+              <textarea
+                className="w-full rounded-md border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Nhập câu trả lời của bạn..."
+                rows={3}
+                value={answers[q.questionId] || ""}
+                onChange={(e) => handleChange(q.questionId, e.target.value)}
+              />
+
+              <div className="mt-3 flex justify-end">
+                <Button
+                  onClick={() => handleSubmitOne(q)}
+                  disabled={isBusy || !studentId}
+                >
+                  {isBusy ? "Đang nộp..." : "Nộp câu này"}
+                </Button>
+              </div>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
 }
+
 
 
 function SpeakingPractice({
@@ -539,11 +644,13 @@ function ContentRenderer({
   generatedQuestions,
   setGeneratedQuestions,
   basicQuestions,
+  studentId,
 }: {
   contents: ContentItem[];
   generatedQuestions: GeneratedQuestionUI[];
   setGeneratedQuestions: (questions: GeneratedQuestionUI[]) => void;
   basicQuestions?: BasicQuestionItem[];
+  studentId: number | null; 
 }) {
   const [isRecording, setIsRecording] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -662,7 +769,7 @@ function ContentRenderer({
       })}
 
       <GeneratedQuestions questions={generatedQuestions} onClear={() => setGeneratedQuestions([])} />
-      <BasicQuestionsList questions={basicQuestions || []} />
+      <BasicQuestionsList questions={basicQuestions || []} studentId={studentId} />
     </div>
   );
 }
@@ -675,11 +782,13 @@ function StudyContent({
   setCurrentSectionId,
   isUserNavigation,
   onUserNavigation,
+  studentId,
 }: {
   currentSectionId: number | null;
   setCurrentSectionId: (id: number | null) => void;
   isUserNavigation: boolean;
   onUserNavigation?: () => void;
+  studentId: number | null;
 }) {
   const { courseId } = useParams();
 
@@ -984,6 +1093,7 @@ function StudyContent({
                   generatedQuestions={generatedQuestions}
                   setGeneratedQuestions={setGeneratedQuestions}
                   basicQuestions={basicQuestions}
+                  studentId={studentId}
                 />
               </div>
             ) : (
@@ -1051,6 +1161,7 @@ export default function NewStudentStudy() {
 
   const { data: courseSectionList, isLoading: isLoadingSectionList } = useGetCourseListQuery(courseId);
   const { data: studentCourseProgress, isLoading: isLoadingStudentProgress } = useGetCurrentSectionQuery(courseId);
+  const studentId = localStorage.getItem("userId") ? parseInt(localStorage.getItem("userId") as string, 10) : null;
 
   const handleSectionSelect = useCallback((sectionId: number) => {
     setLastChangeWasUserNav(true);
@@ -1101,6 +1212,7 @@ export default function NewStudentStudy() {
             setCurrentSectionId={setCurrentSectionId}
             isUserNavigation={lastChangeWasUserNav}
             onUserNavigation={handleUserNavigation}
+            studentId={studentId}
           />
         </div>
       </div>
