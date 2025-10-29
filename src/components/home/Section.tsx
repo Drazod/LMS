@@ -7,9 +7,9 @@ import {
   BookIcon
 } from "@phosphor-icons/react/dist/ssr";
 
-import pic1 from "@/assets/home/pic1.jpg";
-import pic2 from "@/assets/home/pic2.jpg";
-import pic3 from "@/assets/home/pic3.jpg";
+import pic1 from "@/assets/home/home_image_speaking.jpg";
+import pic2 from "@/assets/home/home_image_listening.jpg";
+import pic3 from "@/assets/home/home_image_more.jpg";
 
 const Sections = () => {
   const sectionCardData = [
@@ -17,19 +17,19 @@ const Sections = () => {
       img: pic1,
       alt: "pic1",
       icon: <RankingIcon weight="duotone" className="w-3/5 h-3/5" />,
-      title: "Best Industry Leader",
+      title: "Phòng luyện kỹ năng nói",
     },
     {
       img: pic2,
       alt: "pic2",
       icon: <GlobeIcon weight="duotone" className="w-3/5 h-3/5" />,
-      title: "Learn Courses Online",
+      title: "Phòng luyện kỹ năng nghe",
     },
     {
       img: pic3,
       alt: "pic3",
       icon: <BookIcon weight="duotone" className="w-3/5 h-3/5" />,
-      title: "Book Library & Store",
+      title: "Tài liệu đọc thêm",
     },
   ]
   return (
