@@ -126,9 +126,9 @@ function StudySidebar({
   studentProgress: any;
 }) {
   return (
-    <Sidebar variant="floating" collapsible="offcanvas" className="fixed left-0 top-0 h-screen w-64 sm:w-64 z-40">
+    <Sidebar variant="sidebar" collapsible="offcanvas" className="fixed left-0 top-0 h-screen w-64 border-r z-40">
       <SidebarHeader>
-        <a href="/"><img src={logo} className="px-2 invert w-fit h-10 object-contain" /></a>
+        <a href="/"><img src={logo} className="px-2 py-1.5 invert w-fit h-12 object-contain" /></a>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -160,16 +160,16 @@ function StudySidebar({
                             ? "bg-primary/20 text-primary border-l-4 border-l-primary font-semibold"
                             : "hover:bg-muted/50",
                           !isAccessible ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
-                          "relative transition-all duration-200",
+                          "relative transition-all duration-200 h-fit",
                         ].join(" ")}
                       >
                         <div className="flex items-center gap-3 w-full">
                           <div className={`p-1 rounded-full ${config.color} text-white flex-shrink-0`}>
                             <config.icon size={16} />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium text-sm truncate">Section {section.position}</div>
-                            <div className="text-xs text-muted-foreground truncate">
+                          <div className="flex-1 space-y-1 min-w-0">
+                            <div className="font-medium text-sm leading-none truncate">Section {section.position}</div>
+                            <div className="text-xs leading-none text-muted-foreground truncate">
                               {section.sectionName || section.title}
                             </div>
                           </div>
@@ -802,6 +802,7 @@ function StudyContent({
   onUserNavigation?: () => void;
   studentId: number | null;
 }) {
+  const { state } = useSidebar(); // "expanded" | "collapsed"
   const { courseId } = useParams();
 
   // Queries
@@ -988,9 +989,20 @@ function StudyContent({
   }
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-4">
+    <div className="min-h-screen flex flex-col px-6 pb-4">
       {/* Header */}
-      <header className="h-16 flex items-center gap-4 border-b mb-8 bg-background/95 backdrop-blur-sm">
+      <header
+        data-sidebar-state={state}
+        className={`
+          fixed top-0 left-0 right-0
+          flex items-center
+          bg-background/95 backdrop-blur-sm border-b
+          transition-[margin] duration-300 ease-in-out
+          data-[sidebar-state=expanded]:ml-64
+          data-[sidebar-state=collapsed]:ml-0
+          h-16 z-50 gap-4 mb-8 px-4
+        `}
+      >
         <SidebarTrigger />
         <div className="flex items-center gap-3 flex-1">
           <div className={`p-2 rounded-lg ${config.color} text-white`}>
@@ -1014,7 +1026,7 @@ function StudyContent({
       </header>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto pb-20 bg-gray-50/50">
+      <div className="overflow-y-auto mt-16 pt-5 pb-20 bg-gray-50/50">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-4">
           {/* Left: lesson intro */}
           <div className="lg:col-span-1">
@@ -1117,9 +1129,19 @@ function StudyContent({
         </div>
       </div>
 
-      {/* Footer navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t">
-        <div className="flex justify-between items-center p-4 max-w-4xl mx-auto">
+      {/* Bottom navigation */}
+      <div
+        data-sidebar-state={state}
+        className={`
+          fixed bottom-0 left-0 right-0
+          flex items-center
+          bg-background/95 backdrop-blur-sm border-t
+          transition-[margin] duration-300 ease-in-out
+          data-[sidebar-state=expanded]:ml-64
+          data-[sidebar-state=collapsed]:ml-0
+        `}
+      >
+        <div className="flex gap-10 items-center p-4 mx-auto">
           <Button
             variant="outline"
             onClick={(e) => {
@@ -1134,11 +1156,15 @@ function StudyContent({
           </Button>
 
           <div className="text-center">
-            <div className="text-sm font-medium">Progress: {currentIndex + 1} / {sectionsLength}</div>
+            <div className="text-sm font-medium">
+              Progress: {currentIndex + 1} / {sectionsLength}
+            </div>
             <div className="w-32 bg-muted rounded-full h-2 mt-1">
               <div
                 className="bg-primary h-2 rounded-full transition-all"
-                style={{ width: `${((currentIndex + 1) / Math.max(1, sectionsLength)) * 100}%` }}
+                style={{
+                  width: `${((currentIndex + 1) / Math.max(1, sectionsLength)) * 100}%`,
+                }}
               />
             </div>
           </div>
@@ -1207,7 +1233,7 @@ export default function NewStudentStudy() {
 
   return (
     <SidebarProvider open={open} onOpenChange={setOpen}>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen w-full flex flex-row bg-background">
         <StudySidebar
           sections={courseSectionList?.data?.sections || []}
           currentSectionId={currentSectionId}
@@ -1216,8 +1242,8 @@ export default function NewStudentStudy() {
         />
 
         <div
-          className="transition-[margin-left] duration-300 ease-in-out"
-          style={{ marginLeft: open ? "var(--sidebar-width, 16rem)" : "var(--sidebar-width-icon, 3rem)" }}
+          className="transition-[margin-left] duration-300 ease-in-out grow"
+          style={{ marginLeft: open ? "var(--sidebar-width, 16rem)" : "" }}
         >
           <StudyContent
             currentSectionId={currentSectionId}

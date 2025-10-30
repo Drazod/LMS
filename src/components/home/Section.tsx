@@ -8,9 +8,9 @@ import {
   BookIcon
 } from "@phosphor-icons/react/dist/ssr";
 
-import pic1 from "@/assets/home/pic1.jpg";
-import pic2 from "@/assets/home/pic2.jpg";
-import pic3 from "@/assets/home/pic3.jpg";
+import pic1 from "@/assets/home/home_image_speaking.jpg";
+import pic2 from "@/assets/home/home_image_listening.jpg";
+import pic3 from "@/assets/home/home_image_more.jpg";
 
 const Sections = () => {
   const sectionCardData = [
