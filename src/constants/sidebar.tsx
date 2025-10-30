@@ -18,19 +18,19 @@ import {
 
 const student_sidebar = [
   {
-    name: "Dashboard",
+    name: "Bảng điều khiển",
     path: "",
     icon: SpeedometerIcon,
     ele: <StudentDashboard />,
   },
   {
-    name: "Courses",
+    name: "Khóa học của tôi",
     path: "courses",
     icon: BooksIcon,
     ele: <StudentCourse />,
   },
   {
-    name: "Profiles",
+    name: "Hồ sơ",
     path: "profile",
     icon: UserCircleDashedIcon,
     ele: <StudentProfile />,
@@ -39,25 +39,25 @@ const student_sidebar = [
 
 const instructor_sidebar = [
   {
-    name: "Dashboard",
+    name: "Bảng điều khiển",
     path: "",
     icon: SpeedometerIcon,
     ele: <InstructorDashboard />,
   },
   {
-    name: "Courses",
+    name: "Khóa học của tôi",
     path: "courses",
     icon: BooksIcon,
     ele: <InstructorCourse />,
   },
   {
-    name: "Create Course",
+    name: "Tạo khóa học",
     path: "courses/create",
     icon: CirclesThreePlusIcon,
     ele: <CreateCourse />,
   },
   {
-    name: "Profiles",
+    name: "Hồ sơ",
     path: "profile",
     icon: UserCircleDashedIcon,
     ele: <InstructorProfile />,

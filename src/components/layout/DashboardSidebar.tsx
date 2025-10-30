@@ -36,7 +36,7 @@ export function DashboardSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Ứng dụng</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
@@ -70,7 +70,7 @@ export function DashboardSidebar() {
             window.location.href = "/auth/login";
           }}>
             <SignOutIcon className="size-6" />
-            Log out
+            Đăng xuất
           </Button>
         </SidebarMenuButton>
       </SidebarFooter>

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 
 export default function SelectLanguage() {
-  const [lang, setLang] = useState("en-us");
+  const [lang, setLang] = useState("vi-vn");
 
   const langOptions = [
     {
@@ -44,7 +44,7 @@ export default function SelectLanguage() {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>Languages</SelectLabel>
+            <SelectLabel>Ngôn ngữ</SelectLabel>
             {
               langOptions.map((option) => (
                 <SelectItem value={option.value}>
