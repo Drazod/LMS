@@ -11,7 +11,7 @@ const Home = () => {
       </div>
       <Sections />
       <PopularCourses />
-      <OnlineCourse />
+      {/* <OnlineCourse /> */}
     </div>
   );
 };

@@ -92,11 +92,11 @@ export const Header = () => {
         <div className="sm:flex gap-0 sm:grow">
           <Button variant="ghost" className="flex items-center gap-1">
             <QuestionIcon weight="duotone" className="!size-6" />
-            <p>Ask a Question</p>
+            <p>FAQ</p>
           </Button>
           <Button variant="ghost" className="flex items-center gap-1">
             <EnvelopeIcon weight="duotone" className="!size-6" />
-            <p>Contact Support</p>
+            <p>Hỗ trợ</p>
           </Button>
         </div>
         <div className="sm:flex items-center sm:text-right gap-4">
@@ -118,7 +118,7 @@ export const Header = () => {
                   variant="destructive"
                   className="hover:cursor-pointer"
                 >
-                  <SignOutIcon weight="duotone" className="!size-5" /> Log out
+                  <SignOutIcon weight="duotone" className="!size-5" /> Đăng xuất
                 </Button>
 
               </HoverCardContent>
@@ -129,10 +129,10 @@ export const Header = () => {
                 onClick={() => navigate("/auth/login")}
                 variant="ghost"
                 className="flex items-center gap-1 hover:cursor-pointer">
-                Sign In
+                Đăng nhập
               </Button>
               <Button variant="ghost" className="flex items-center gap-1">
-                Register
+                Đăng ký
               </Button>
             </div>
           )}
@@ -140,7 +140,7 @@ export const Header = () => {
       </div>
       <div className="container mx-auto px-14 h-20 flex items-center justify-between ">
         <div className="flex items-center gap-6">
-          <img src={logo} className={`${color ? "invert" : ""} h-12 sm:w-fit object-cover`}></img>
+          <a href="/"><img src={logo} className={`${color ? "invert" : ""} h-12 sm:w-fit object-cover`}></img></a>
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
@@ -150,7 +150,7 @@ export const Header = () => {
                       : `group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent text-background px-4 py-2 text-normal font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:hover:bg-accent data-[state=open]:focus:bg-accent`
                   }
                 >
-                  <Link to="/">HOME</Link>
+                  <Link to="/">TRANG CHỦ</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
@@ -160,7 +160,7 @@ export const Header = () => {
                       : `group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent text-background px-4 py-2 text-normal font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:hover:bg-accent data-[state=open]:focus:bg-accent`
                   }
                 >
-                  <Link to="/course">COURSES</Link>
+                  <Link to="/course">KHÓA HỌC</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
@@ -170,7 +170,7 @@ export const Header = () => {
                       : `group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent text-background px-4 py-2 text-normal font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:hover:bg-accent data-[state=open]:focus:bg-accent`
                   }
                 >
-                  <Link to={dashboardUrl}>DASHBOARD</Link>
+                  <Link to={dashboardUrl}>BẢNG ĐIỀU KHIỂN</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>

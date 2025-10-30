@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 import {
   RankingIcon,
@@ -17,26 +18,29 @@ const Sections = () => {
       img: pic1,
       alt: "pic1",
       icon: <RankingIcon weight="duotone" className="w-3/5 h-3/5" />,
-      title: "Best Industry Leader",
+      title: "Phòng luyện nói",
+      slug: "phan-1-ky-nang-noi"
     },
     {
       img: pic2,
       alt: "pic2",
       icon: <GlobeIcon weight="duotone" className="w-3/5 h-3/5" />,
-      title: "Learn Courses Online",
+      title: "Phòng luyện nghe",
+      slug: "phan-2-ky-nang-nghe"
     },
     {
       img: pic3,
       alt: "pic3",
       icon: <BookIcon weight="duotone" className="w-3/5 h-3/5" />,
-      title: "Book Library & Store",
+      title: "Các khóa học online",
+      slug: "courses"
     },
   ]
   return (
     <div className="container mx-auto px-14 md:grid md:grid-cols-3 gap-12 relative -top-40 z-10">
       {
         sectionCardData.map((data) => (
-          <Card className="flex flex-col items-center w-full h-80 py-0 overflow-clip">
+          <Card key={data.slug} className="flex flex-col items-center w-full h-80 py-0 overflow-clip">
             <div className="w-full h-1/2">
               <img src={data.img} alt={data.alt} className="w-full h-full object-cover" />
             </div>
@@ -47,7 +51,15 @@ const Sections = () => {
             </div>
             <div className="relative -top-15 flex flex-col gap-2 items-center">
               <p className="text-xl font-bold">{data.title}</p>
-              <Button variant="outline">View more</Button>
+              {data.slug === "khoa-hoc-online" || data.slug === "courses" ? (
+                <Link to="/course" className="w-full">
+                  <Button variant="outline" className="w-full">Xem tất cả khóa học</Button>
+                </Link>
+              ) : (
+              <Link to={`/mock/student/undefined/${data.slug}`} className="w-full">
+                <Button variant="outline" className="w-full">Chi tiết</Button>
+              </Link>
+              )}
             </div>
           </Card>
         ))

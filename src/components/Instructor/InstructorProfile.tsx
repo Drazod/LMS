@@ -76,34 +76,34 @@ const InstructorProfile = () => {
 
   useEffect(() => {
     if (!isLoading && !isError) {
-      setEmail(Instructor.payload.email);
-      setFirstName(Instructor.payload.firstName);
-      setLastName(Instructor.payload.lastName);
-      setPhoneNumber(Instructor.payload.phoneNumber);
-      setAddress(Instructor.payload.userAddress);
-      setCity(Instructor.payload.userCity);
-      setCountry(Instructor.payload.userCountry);
-      setPostalCode(Instructor.payload.userPostalCode);
-      setAvatar(Instructor.payload.avtUrl);
-      setPublicId(Instructor.payload.publicAvtId);
+      setEmail(Instructor.data?.email);
+      setFirstName(Instructor.data?.firstName);
+      setLastName(Instructor.data?.lastName);
+      setPhoneNumber(Instructor.data?.phoneNumber);
+      setAddress(Instructor.data?.userAddress);
+      setCity(Instructor.data?.userCity);
+      setCountry(Instructor.data?.userCountry);
+      setPostalCode(Instructor.data?.userPostalCode);
+      setAvatar(Instructor.data?.avtUrl);
+      setPublicId(Instructor.data?.publicAvtId);
     }
   }, [Instructor, isLoading, isError]);
   const handleCancelProfile = () => {
-    setEmail(Instructor.payload.email);
-    setFirstName(Instructor.payload.firstName);
-    setLastName(Instructor.payload.lastName);
-    setPhoneNumber(Instructor.payload.phoneNumber);
-    setAvatar(Instructor.payload.avtUrl);
-    setPublicId(Instructor.payload.publicAvtId);
+    setEmail(Instructor.data?.email);
+    setFirstName(Instructor.data?.firstName);
+    setLastName(Instructor.data?.lastName);
+    setPhoneNumber(Instructor.data?.phoneNumber);
+    setAvatar(Instructor.data?.avtUrl);
+    setPublicId(Instructor.data?.publicAvtId);
     handleDelete(updatePublicId);
     setUpdateAvatar("");
     setUpdatePublicId("");
   };
   const handleCancelAddress = () => {
-    setAddress(Instructor.payload.userAddress);
-    setCity(Instructor.payload.userCity);
-    setCountry(Instructor.payload.userCountry);
-    setPostalCode(Instructor.payload.userPostalCode);
+    setAddress(Instructor.data?.userAddress);
+    setCity(Instructor.data?.userCity);
+    setCountry(Instructor.data?.userCountry);
+    setPostalCode(Instructor.data?.userPostalCode);
   };
   const handleCancelPassword = () => {
     setPassword("");

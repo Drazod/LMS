@@ -1,8 +1,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 
 import CourseCard from "@/components/OurCourse/CourseCard";
 
@@ -56,8 +54,8 @@ const PopularCourses = () => {
   return (
     <div className="container mx-auto px-14 py-20 flex flex-col gap-10">
       <div className="text-center flex flex-col gap-3">
-        <h1 className="text-4xl font-bold">Popular Courses</h1>
-        <p>It is a long established fact that a reader will be distracted by the readable content of a page</p>
+        <h1 className="text-4xl font-bold">Khóa học nổi bật</h1>
+        <p>Các khóa học được đăng kí nhiều</p>
       </div>
       <div className="w-full h-full">
         <Swiper

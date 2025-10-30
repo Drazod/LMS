@@ -17,6 +17,7 @@ import {
   useSidebar,
   Sidebar,
   SidebarHeader,
+  SidebarFooter,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
@@ -25,6 +26,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { ArrowUUpLeft } from "@phosphor-icons/react/dist/ssr";
 import { H4 } from "@/components/ui/typography";
 import {
   HeadphonesIcon,
@@ -124,9 +126,9 @@ function StudySidebar({
   studentProgress: any;
 }) {
   return (
-    <Sidebar variant="sidebar" collapsible="icon" className="fixed left-0 top-0 h-screen w-64 sm:w-64 z-40">
+    <Sidebar variant="floating" collapsible="offcanvas" className="fixed left-0 top-0 h-screen w-64 sm:w-64 z-40">
       <SidebarHeader>
-        <img src={logo} className="px-2 invert w-fit h-10 object-contain" />
+        <a href="/"><img src={logo} className="px-2 invert w-fit h-10 object-contain" /></a>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -184,6 +186,16 @@ function StudySidebar({
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenuButton asChild>
+            <Button className="w-full justify-start" onClick={() => {
+              window.location.href = "/dashboard/student/courses";
+            }}>
+              <ArrowUUpLeft className="size-6" />
+              Back to course
+            </Button>
+          </SidebarMenuButton>
+      </SidebarFooter>
     </Sidebar>
   );
 }

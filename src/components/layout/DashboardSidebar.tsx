@@ -32,7 +32,7 @@ export function DashboardSidebar() {
   return (
     <Sidebar variant="floating" collapsible="icon" className="w-64 sm:w-64">
       <SidebarHeader>
-        <img src={logo} className="px-2 invert w-fit h-10 object-contain" />
+        <a href="/"><img src={logo} className="px-2 invert w-fit h-10 object-contain" /></a>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

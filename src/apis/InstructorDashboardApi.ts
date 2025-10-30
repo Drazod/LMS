@@ -40,7 +40,7 @@ export const instuctorApi = createApi({
       query: () => {
         const userId = localStorage.getItem("userId");
         return {
-          url: `${API_ROUTES.instructor}id/${userId}`,
+          url: `${API_ROUTES.instructor}${userId}`,
           method: "GET",
         };
       },

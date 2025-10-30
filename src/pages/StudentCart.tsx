@@ -110,7 +110,8 @@ const StudentCart: React.FC = () => {
     };
 
     const response = await processingPurchase(data);
-    window.location.href = response.data.payload.paymentUrl;
+    console.log("Payment processing response:", response.data.data);
+    window.location.href = response.data.data.paymentUrl;
   };
 
   const handleDeleteListCourse = async () => {
