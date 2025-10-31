@@ -32,7 +32,7 @@ export function DashboardSidebar() {
   return (
     <Sidebar variant="floating" collapsible="icon" className="w-64 sm:w-64">
       <SidebarHeader>
-        <a href="/"><img src={logo} className="px-2 invert w-fit h-10 object-contain" /></a>
+        <a href="/"><img src={logo} className="px-2 invert w-fit h-10 object-contain hover:opacity-50 duration-75 ease-in-out transition" /></a>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -64,9 +64,8 @@ export function DashboardSidebar() {
       <SidebarFooter>
         <SidebarMenuButton asChild>
           <Button className="w-full justify-start" onClick={() => {
-            localStorage.removeItem("name");
-            localStorage.removeItem("userId");
-            localStorage.removeItem("role");
+            // Clear local storage and redirect to login
+            localStorage.clear();
             window.location.href = "/auth/login";
           }}>
             <SignOutIcon className="size-6" />

@@ -94,17 +94,19 @@ export const Header = () => {
             <QuestionIcon weight="duotone" className="!size-6" />
             <p>FAQ</p>
           </Button>
-          <Button variant="ghost" className="flex items-center gap-1">
-            <EnvelopeIcon weight="duotone" className="!size-6" />
-            <p>Hỗ trợ</p>
-          </Button>
+          <Link to="/support">
+            <Button variant="ghost" className="flex items-center gap-1">
+              <EnvelopeIcon weight="duotone" className="!size-6" />
+              <p>Hỗ trợ</p>
+            </Button>
+          </Link>
         </div>
         <div className="sm:flex items-center sm:text-right gap-4">
           <SelectLanguage />
           {name ? (
             <HoverCard>
               <HoverCardTrigger>
-                <Badge variant="secondary" className="h-9 bg-transparent text-sm hover:cursor-grab">
+                <Badge variant="secondary" className="h-9 bg-transparent text-sm hover:cursor-grab pl-1">
                   <Avatar className="size-7 mr-2.5 border border-background">
                     <AvatarImage src={avtUrl} />
                     <AvatarFallback>CN</AvatarFallback>
@@ -140,7 +142,7 @@ export const Header = () => {
       </div>
       <div className="container mx-auto px-14 h-20 flex items-center justify-between ">
         <div className="flex items-center gap-6">
-          <a href="/"><img src={logo} className={`${color ? "invert" : ""} h-12 sm:w-fit object-cover`}></img></a>
+          <a href="/"><img src={logo} className={`${color ? "invert" : ""} h-12 sm:w-fit object-cover hover:opacity-50 duration-75 ease-in-out transition`}></img></a>
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>

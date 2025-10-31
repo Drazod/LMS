@@ -24,6 +24,7 @@ import {
 import { useGetCourseListQuery } from "@/apis/CourseApi";
 
 import Loader from "../common/Loader";
+import convertIsoToDDMMYYYY from "@/utils/convertIsoToDDMMYYYY";
 
 import { AddSession } from "@/components/create_course/addSession";
 import { Button } from "@/components/ui/button";
@@ -213,7 +214,7 @@ const InstructorCourse: React.FC = () => {
                   className="aspect-3/2 object-cover rounded-t-md"
                 />
                 <div className="px-6 mt-3 w-full overflow-hidden">
-                  <p className="flex gap-4 justify-between items-baseline text-xl font-semibold text-ellipsis">
+                  <p className="flex gap-4 justify-between items-baseline text-xl font-semibold text-ellipsis mb-2">
                     {course.title}
                   </p>
                   {Number(course.price ?? 0).toLocaleString("en-US")} đ
@@ -244,15 +245,15 @@ const InstructorCourse: React.FC = () => {
 
             <CardFooter className="flex flex-col items-start gap-3">
               <div className="flex flex-col">
-                <div className="text-xs font-medium text-gray-500">Created at:</div>
+                <div className="text-xs font-medium text-gray-500">Ngày tạo khóa học:</div>
                 <div className="text-base font-medium">
-                  {course.createDate ?? course.createdAt ?? "—"}
+                  {convertIsoToDDMMYYYY(course.createDate ?? course.createdAt) ?? "—"}
                 </div>
               </div>
 
               <div className="flex flex-row gap-1.5">
                 <Button onClick={() => openAddSession(course.courseId)}>
-                  <RowsPlusBottomIcon className="!size-5" weight="duotone" /> Create section
+                  <RowsPlusBottomIcon className="!size-5" weight="duotone" /> Tạo phần
                 </Button>
                 <Button
                   variant="destructive"
@@ -260,7 +261,7 @@ const InstructorCourse: React.FC = () => {
                   disabled={isDeleting}
                 >
                   <TrashIcon className="!size-5" weight="duotone" />{" "}
-                  {isDeleting ? "Deleting..." : "Delete"}
+                  {isDeleting ? "Đang xóa..." : "Xóa"}
                 </Button>
               </div>
             </CardFooter>

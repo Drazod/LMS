@@ -1,8 +1,8 @@
-const API_URL = "https://lmsaibe-production.up.railway.app/api/";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const API_ROUTES = {
-  student: "students/",
-  instructor: "instructors/",
-  instuctorStat: "statisticInstructor/",
+  student: "api/students/",
+  instructor: "api/instructors/",
+  instuctorStat: "api/statisticInstructor/",
 };
-//d
+
 export { API_URL, API_ROUTES };
