@@ -26,21 +26,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ArrowUUpLeft } from "@phosphor-icons/react/dist/ssr";
 import { H4 } from "@/components/ui/typography";
 import {
   HeadphonesIcon,
-  Sidebar as SidebarIcon,
-  BookOpen as BookOpenIcon,
-  Microphone as MicrophoneIcon,
-  ArrowLeft as ArrowLeftIcon,
-  ArrowRight as ArrowRightIcon,
-  CheckCircle as CheckCircleIcon,
-  Record as RecordIcon,
-  DotsThreeOutlineVertical as DotsThreeOutlineVerticalIcon,
-} from "@phosphor-icons/react";
+  SidebarIcon,
+  BookOpenTextIcon,
+  MicrophoneIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+  RecordIcon,
+  DotsThreeOutlineVerticalIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import Loader from "@/components/common/Loader";
 import logo from "/hoctiengvietai_white.svg";
+import { ArrowCircleLeftIcon } from "@phosphor-icons/react";
 
 /** ******************************
  * Types & Constants
@@ -98,7 +98,7 @@ const SESSION_TYPE_CONFIG: Record<SessionType, {
     description: "Listen and learn",
   },
   READING: {
-    icon: BookOpenIcon,
+    icon: BookOpenTextIcon,
     label: "Reading",
     color: "bg-green-500",
     description: "Read and understand",
@@ -188,11 +188,11 @@ function StudySidebar({
       </SidebarContent>
         <SidebarFooter>
           <SidebarMenuButton asChild>
-            <Button className="w-full justify-start" onClick={() => {
+            <Button className="w-full justify-start h-fit" onClick={() => {
               window.location.href = "/dashboard/student/courses";
             }}>
-              <ArrowUUpLeft className="size-6" />
-              Back to course
+              <ArrowCircleLeftIcon weight="duotone" className="!size-6" />
+              Trở về khóa học
             </Button>
           </SidebarMenuButton>
       </SidebarFooter>
@@ -1026,22 +1026,22 @@ function StudyContent({
       </header>
 
       {/* Body */}
-      <div className="overflow-y-auto mt-16 pt-5 pb-20 bg-gray-50/50">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-4">
+      <div className="overflow-y-auto mt-20 pt-5 pb-20 bg-gray-50/50">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-14 mx-auto px-4">
           {/* Left: lesson intro */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-4 shadow-lg border-0 bg-white">
+            <Card className="py-0 border-none bg-white shadow-lg">
               <CardContent className="p-8">
                 <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-gray-800">
                   <div className="p-2 bg-blue-100 rounded-lg">
-                    <BookOpenIcon size={24} className="text-blue-600" />
+                    <BookOpenTextIcon weight="duotone" size={24} className="text-blue-600" />
                   </div>
                   Giới thiệu bài học
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-medium text-sm text-muted-foreground mb-2">Giới thiệu phần học</h4>
-                    <div className="text-sm leading-relaxed">
+                    <h4 className="font-bold text-lg mb-2 leading-tight">Giới thiệu phần học</h4>
+                    <div className="text-base leading-snug">
                       {currentSectionMeta?.description ||
                         courseSectionList?.data?.description ||
                         "Trong bài học này, các em sẽ được rèn luyện kỹ năng giới thiệu, phân tích và đánh giá một truyện kể dựa trên cả hai phương diện: nội dung (cốt truyện, nhân vật, ý nghĩa) và nghệ thuật (ngôn ngữ, kết cấu, giọng điệu...)."}
@@ -1049,17 +1049,17 @@ function StudyContent({
                   </div>
 
                   <div className="border-t pt-4">
-                    <h4 className="font-medium text-sm text-muted-foreground mb-2">Các em có thể làm được gì sau khi học xong?</h4>
-                    <div className="text-sm text-muted-foreground">Rèn luyện kỹ năng phân tích và thuyết trình</div>
+                    <h4 className="font-bold text-lg mb-2 leading-tight">Các em có thể làm được gì sau khi học xong?</h4>
+                    <div className="text-base leading-snug">Rèn luyện kỹ năng phân tích và thuyết trình</div>
                   </div>
 
                   <div className="border-t pt-4">
-                    <h4 className="font-medium text-sm text-muted-foreground mb-2">Luyện tập nói và nghe như thế nào?</h4>
-                    <div className="text-sm text-muted-foreground">Thực hành qua các hoạt động tương tác</div>
+                    <h4 className="font-bold text-lg mb-2 leading-tight">Luyện tập nói và nghe như thế nào?</h4>
+                    <div className="text-base leading-snug">Thực hành qua các hoạt động tương tác</div>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t">
+                <div className="mt-6 pt-10 border-t">
                   <Button
                     variant="outline"
                     className="w-full bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-dashed border-purple-300 hover:from-blue-100 hover:to-purple-100"
@@ -1095,17 +1095,17 @@ function StudyContent({
               </div>
             ) : contents?.length ? (
               <div className="space-y-8">
-                <Card className="border-0 bg-white shadow-lg">
+                <Card className="border-0 bg-white shadow-lg py-0">
                   <CardContent className="p-8">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className={`p-3 rounded-lg ${config.color} text-white`}>
-                        <config.icon size={24} />
+                    <div className="flex items-center gap-4">
+                      <div className={`p-2 rounded-lg ${config.color} text-white`}>
+                        <config.icon size={32} />
                       </div>
                       <div>
                         <h2 className="text-2xl font-bold text-gray-800">
                           {currentSectionMeta?.sectionName || `Phần ${currentIndex + 1}: ${config.label}`}
                         </h2>
-                        <h3 className="text-lg font-medium text-gray-600 mt-1">{currentSectionMeta?.title || "Hoạt động 1"}</h3>
+                        <h3 className="text-lg font-medium text-gray-600">{currentSectionMeta?.title || "Hoạt động 1"}</h3>
                       </div>
                     </div>
                   </CardContent>

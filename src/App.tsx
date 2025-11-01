@@ -13,6 +13,7 @@ import Home from "@/pages/Home";
 import CourseDetail from "@/pages/CourseDetail";
 import StudentCart from "@/pages/StudentCart";
 import SupportPage from "@/pages/Support";
+import FrequentlyAskedQuestionsPage from "@/pages/FAQ";
 
 import PrivateRoute from "@/components/common/PrivateRoute";
 import StudentAndInstructorLayout from "@/layouts/StudentAndInstructorLayout";
@@ -52,6 +53,7 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path="course" element={<OurCourse />} />
           <Route path="support" element={<SupportPage />} />
+          <Route path="faq" element={<FrequentlyAskedQuestionsPage />} />
           <Route path="course/search" element={<CourseSearch />} />
           <Route path="course/:courseId" element={<CourseDetail />} />
           <Route path="payment-success" element={<PaymentSuccess />} />

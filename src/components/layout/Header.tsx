@@ -24,7 +24,6 @@ import {
   QuestionIcon,
   EnvelopeIcon,
   SignOutIcon,
-  UserSquareIcon,
   ShoppingCartIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
@@ -90,10 +89,12 @@ export const Header = () => {
     >
       <div className={color ? "hidden" : "container mt-4 rounded-2xl sm:flex gap-8 mx-auto px-1 py-1 backdrop-blur-3xl bg-background/25 text-center"}>
         <div className="sm:flex gap-0 sm:grow">
-          <Button variant="ghost" className="flex items-center gap-1">
-            <QuestionIcon weight="duotone" className="!size-6" />
-            <p>FAQ</p>
-          </Button>
+          <Link to="/faq">
+            <Button variant="ghost" className="flex items-center gap-1">
+              <QuestionIcon weight="duotone" className="!size-6" />
+              <p>FAQ</p>
+            </Button>
+          </Link>
           <Link to="/support">
             <Button variant="ghost" className="flex items-center gap-1">
               <EnvelopeIcon weight="duotone" className="!size-6" />

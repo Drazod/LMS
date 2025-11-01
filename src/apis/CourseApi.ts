@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const CourseApi = createApi({
   reducerPath: "CourseApi",
   baseQuery: fetchBaseQuery({ 
-    baseUrl: API_URL,
+    baseUrl: API_URL + "api/",
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("accessToken");
       if (token) headers.set("authorization", `Bearer ${token}`);

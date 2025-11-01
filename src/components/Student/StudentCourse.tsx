@@ -18,11 +18,11 @@ import {
 } from "@mui/material";
 // Removed unused red import
 import React, { useEffect, useState } from "react";
-import BreadCrumbsDashboard from "../common/BreadcrumbsDashboard";
 import { useGetStudentCoursesQuery } from "@/apis/StudentDashboardApi";
 import Loader from "../common/Loader";
 import { useNavigate } from "react-router-dom";
 import { useGetCourseListQuery } from "@/apis/CourseApi";
+import StudentCourseCard from "./StudentCourseCard";
 
 // Removed unused RatingStart component
 // const rows = [
@@ -237,7 +237,6 @@ const StudentCourse = () => {
 
   return (
     <div className="mt-5">
-      <BreadCrumbsDashboard name="Course" />
       {/* <TableContainer component={Paper} className="mt-10">
         <Table aria-label="simple table">
           <TableHead>
@@ -392,9 +391,7 @@ const StudentCourse = () => {
         </Table>
       </TableContainer> */}
       <div className="flex justify-between my-auto mt-5">
-        <Typography variant="body2" className="!my-auto">
-          {studentCourses?.metadata?.pagination?.totalElements || 0} courses
-        </Typography>
+        <p>{studentCourses?.metadata?.pagination?.totalElements || 0} courses</p>
         {/* <FormControl className="w-1/5">
           <InputLabel id="demo-simple-select-label">Status</InputLabel>
           <Select
@@ -417,127 +414,20 @@ const StudentCourse = () => {
           </Select>
         </FormControl> */}
       </div>
-      <div className="flex flex-col gap-4 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
         {filteredCourses?.map((enrollment, index) => {
           console.log("Enrollment data:", enrollment);
           return (
-          <Card key={enrollment?.course?.courseId || index}>
-            <CardContent>
-              <div className="flex flex-col md:flex-row gap-5 justify-center items-center md:items-start">
-                <div>
-                  <div
-                    data-testid="img"
-                    className="w-full h-60 box-border overflow-hidden rounded-md cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleClickOpen(enrollment?.course?.courseId);
-                    }}
-                  >
-                    <img
-                      src={enrollment?.course?.courseThumbnail}
-                      className="w-full h-60"
-                      alt={enrollment?.course?.title}
-                    />
-                  </div>
-                  <div className="w-full flex flex-row justify-between gap-2 mt-4">
-                    {enrollment.status === "COMPLETED" && (
-                      <SaveButton
-                        className="text-sm px-3 py-2 w-full rounded-full border border-teal-400 text-teal-400 hover:bg-teal-400 hover:text-white break-all cursor-pointer z-10 relative"
-                        data-testid="take-cert-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log("Certificate button clicked");
-                          handleTakeCertBtn("#"); // Certificate link not available in new API
-                        }}
-                      >
-                        Certificate
-                      </SaveButton>
-                    )}
-                    <button
-                      className="text-sm px-3 py-2 rounded-full w-full border border-teal-400 text-teal-400 hover:bg-teal-400 hover:text-white cursor-pointer z-10 relative"
-                      data-testid="study-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log("Enter Class button clicked");
-                        handleStudyBtn(enrollment.course.courseId);
-                      }}
-                    >
-                      Enter Class
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex flex-col md:w-11/12 xl:w-5/6 2xl:w-2/3">
-                  <div className="flex flex-col gap-4 w-full md:min-h-60">
-                    <div
-                      data-testid="title"
-                      className="text-xl font-semibold cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleClickOpen(enrollment?.course?.courseId);
-                      }}
-                    >
-                      {enrollment?.course?.title}
-                    </div>
-                    <div className="grid grid-col-1 md:flex md:flex-wrap md:justify-around md:gap-20 md:items-center gap-4">
-                      <div className="flex flex-row gap-3 items-center">
-                        <div className="flex flex-col">
-                          <div className="text-xs font-medium text-gray-500">
-                            Teacher
-                          </div>
-                          <div className="text-base font-medium">
-                            {enrollment?.course?.instructor?.name}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="text-xs font-medium text-gray-500">
-                          Categories
-                        </div>
-                        <div className="text-base font-medium">
-                          {enrollment?.course?.category?.name}
-                        </div>
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="text-xs font-medium text-gray-500">
-                          Progress
-                        </div>
-                        <div className="text-base font-medium">
-                          {enrollment?.progress}%
-                        </div>
-                      </div>
-                      {enrollment.status === "COMPLETED" ? (
-                        <button className="rounded-full bg-green-500 text-white text-sm px-2 py-1">
-                          Completed
-                        </button>
-                      ) : (
-                        <button className="rounded-full bg-blue-500 text-white text-sm px-2 py-1">
-                          In Progress
-                        </button>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="text-base font-semibold ">
-                        Course Description
-                      </div>
-                      <p className="text-sm h-[150px] overflow-auto">
-                        {enrollment?.course?.description}
-                      </p>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="text-sm text-gray-600">
-                        Enrolled: {new Date(enrollment.enrollmentDate).toLocaleDateString()}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Price: {enrollment.course.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        );
+            <>
+              {/* BEGIN REFACTOR */}
+              <StudentCourseCard
+                key={enrollment.course.courseId}
+                enrollment={enrollment}
+                handleStudyBtn={handleStudyBtn}
+              />
+              {/* END REFACTOR */}
+            </>
+          );
         })}
       </div>
       <div className="flex flex-col md:flex-row justify-between mt-5">
@@ -711,12 +601,12 @@ const StudentCourse = () => {
                           </div>
                         </div>
                       )) || (
-                        <div className="md:col-span-3">
-                          <Typography variant="body2">
-                            No sections available
-                          </Typography>
-                        </div>
-                      )}
+                          <div className="md:col-span-3">
+                            <Typography variant="body2">
+                              No sections available
+                            </Typography>
+                          </div>
+                        )}
                     </div>
                     {/* <div className="h-full flex items-center border-b-2 mx-auto md:border-r-2 md:border-b-0 md:mx-4 text-left">
                     <Typography variant="h6" className="font-bold text-center ">
