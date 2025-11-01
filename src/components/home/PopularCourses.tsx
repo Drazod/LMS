@@ -34,7 +34,7 @@ const PopularCourses = () => {
 
   useEffect(() => {
     axios
-     .get("https://lmsaibe-production.up.railway.app/api/courses?page=1&size=10")
+      .get("https://lmsaibe-production.up.railway.app/api/courses?page=1&size=10")
       .then((res) => {
         // Make sure data exists and is an array
         const coursesData = res.data?.data;
@@ -52,39 +52,41 @@ const PopularCourses = () => {
   }, []);
   console.log(courses);
   return (
-    <div className="container mx-auto px-14 py-20 flex flex-col gap-10">
+    <div className="container mx-auto px-14 pb-20 flex flex-col gap-10">
       <div className="text-center flex flex-col gap-3">
         <h1 className="text-4xl font-bold">Khóa học nổi bật</h1>
         <p>Các khóa học được đăng kí nhiều</p>
       </div>
-      <div className="w-full h-full">
+      <div>
         <Swiper
           breakpoints={{
             0: { slidesPerView: 1 },
-            640: { slidesPerView: 1 },
-            768: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 },
+            640: { slidesPerView: 2 },
+            768: { slidesPerView: 3 },
+            1024: { slidesPerView: 4 },
           }}
           loop={true}
-          spaceBetween={24}
+          spaceBetween={18}
           modules={[Navigation]}
-          className="w-full h-full "
+          className="w-full h-full"
         >
           <SwiperButton />
           {courses && courses.length > 0 ? courses.map((course) => (
-            <SwiperSlide key={course.courseId} className="h-full">
-              <CourseCard
-                courseId={course.courseId}
-                instructorName={course.instructor?.name}
-                instructorImage="" // API doesn't provide instructor image
-                thumbnail={course.courseThumbnail}
-                score={course.avgRating}
-                title={course.title}
-                category={course.category?.name}
-                amountReview={parseInt(course.totalRating)}
-                oldPrice={null} // API doesn't provide old price
-                newPrice={course.price}
-              />
+            <SwiperSlide key={course.courseId} className="!h-auto">
+              <div className="h-full">
+                <CourseCard
+                  courseId={course.courseId}
+                  instructorName={course.instructor?.name}
+                  instructorImage="" // API doesn't provide instructor image
+                  thumbnail={course.courseThumbnail}
+                  score={course.avgRating}
+                  title={course.title}
+                  category={course.category?.name}
+                  amountReview={parseInt(course.totalRating)}
+                  oldPrice={null} // API doesn't provide old price
+                  newPrice={course.price}
+                />
+              </div>
             </SwiperSlide>
           )) : (
             <div className="flex justify-center items-center min-h-[200px]">

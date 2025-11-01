@@ -15,7 +15,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 
 interface CourseCardProps {
-  courseId: number;
+  courseId: string;
   title: string;
   category: string;
   amountReview: number;
@@ -46,7 +46,7 @@ const CourseCard = ({
   }, [score]);
 
   return (
-    <Link to={'/course/' + courseId} className='flex'>
+    <Link to={'/course/' + courseId} className='flex grow shrink-0 h-full'>
       <Card className='pt-0 pb-6 overflow-clip hover:bg-accent/10 transition-colors duration-50 ease-in-out'>
         <div className='flex flex-col flex-1 gap-2'>
           <CardHeader className='px-0'>

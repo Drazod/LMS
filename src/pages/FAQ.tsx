@@ -5,79 +5,66 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const heading = "Câu hỏi thường gặp";
-
 const items = [
   {
     id: "faq-1",
-    question: "What is a FAQ?",
+    question: "Ứng dụng này dành cho ai?",
     answer:
-      "A FAQ is a list of frequently asked questions and answers on a particular topic.",
+      "Ứng dụng này được thiết kế chuyên biệt cho học sinh trung học đang theo học Chương trình Ngữ văn 2018. Mục tiêu chính là giúp các em rèn luyện và nâng cao kỹ năng nghe hiểu, phân tích, cũng như cải thiện khả năng phản hồi bằng kỹ năng nói và nghe trong cả môi trường học tập và đời sống hàng ngày.",
   },
   {
     id: "faq-2",
-    question: "What is the purpose of a FAQ?",
+    question: "Ứng dụng giúp rèn luyện kỹ năng nghe như thế nào?",
     answer:
-      "The purpose of a FAQ is to provide answers to common questions and help users find the information they need quickly and easily.",
+      "Người học sẽ bắt đầu bằng cách lắng nghe các đoạn âm thanh đa dạng như hội thoại, bản tin, phỏng vấn hoặc bài phát biểu, tất cả đều được tạo tự động bằng công nghệ AI Text-to-Speech. Sau khi nghe, học sinh sẽ thực hành bằng cách trả lời các câu hỏi dưới nhiều hình thức (trắc nghiệm, điền từ, tự luận, hoặc nói lại bằng giọng thật). Hệ thống sẽ cung cấp phản hồi tức thì về độ chính xác, tốc độ phản ứng và phân tích các loại lỗi nghe (như lỗi ý chính, chi tiết, hay suy luận). Dựa trên kết quả này, AI sẽ đưa ra gợi ý về các bài luyện tập tiếp theo phù hợp với trình độ của từng cá nhân.",
   },
   {
     id: "faq-3",
-    question: "How do I create a FAQ?",
+    question: "Ứng dụng sử dụng công nghệ AI nào?",
     answer:
-      "To create a FAQ, you need to compile a list of common questions and answers on a particular topic and organize them in a clear and easy-to-navigate format.",
+      "Ứng dụng được xây dựng trên ba lớp công nghệ AI chính. Đầu tiên là công nghệ Speech-to-Text (ASR) để nhận diện chính xác giọng nói của học sinh khi trả lời bằng lời. Thứ hai là các Mô hình Ngôn ngữ Lớn (LLM) chịu trách nhiệm tạo ra câu hỏi, chấm điểm tự động, cung cấp phản hồi chi tiết và cá nhân hóa lộ trình học tập cho từng em.",
   },
   {
     id: "faq-4",
-    question: "What are the benefits of a FAQ?",
+    question: "Ứng dụng khác gì so với các app học tiếng Việt hiện nay?",
     answer:
-      "The benefits of a FAQ include providing quick and easy access to information, reducing the number of support requests, and improving the overall user experience.",
+      "Điểm khác biệt lớn nhất là ứng dụng này được thiết kế cho người Việt học tiếng Việt, thay vì cho người nước ngoài. Toàn bộ nội dung và phương pháp đánh giá đều tuân theo chuẩn năng lực Nghe của Chương trình Ngữ văn 2018. Hơn nữa, ứng dụng tích hợp AI để phân tích sâu về hành vi nghe, tự động tạo bài tập cá nhân hóa và xây dựng một hồ sơ năng lực (portfolio) thể hiện sự tiến bộ. Chúng tôi cũng cung cấp một bảng điều khiển (dashboard) riêng cho giáo viên để theo dõi quá trình học tập của học sinh.",
   },
   {
     id: "faq-5",
-    question: "How should I organize my FAQ?",
+    question: "Dữ liệu học sinh có được bảo mật không?",
     answer:
-      "You should organize your FAQ in a logical manner, grouping related questions together and ordering them from most basic to more advanced topics.",
+      "Có. Chúng tôi rất coi trọng việc bảo mật dữ liệu. Tất cả các bản ghi âm và bản ghi chép (transcript) đều được mã hóa và lưu trữ an toàn trên máy chủ riêng hoặc cục bộ. Học sinh có toàn quyền yêu cầu xóa dữ liệu của mình bất cứ lúc nào. Ứng dụng cũng tuân thủ nghiêm ngặt nguyên tắc xin phép (consent form) trước khi thực hiện bất kỳ hoạt động ghi âm nào.",
   },
   {
     id: "faq-6",
-    question: "How long should FAQ answers be?",
+    question: "Làm sao để biết mình tiến bộ thế nào?",
     answer:
-      "FAQ answers should be concise and to the point, typically a few sentences or a short paragraph is sufficient for most questions.",
-  },
-  {
-    id: "faq-7",
-    question: "Should I include links in my FAQ?",
-    answer:
-      "Yes, including links to more detailed information or related resources can be very helpful for users who want to learn more about a particular topic.",
+      'Mỗi người học sẽ có một "Hồ sơ năng lực nghe" (Listening Portfolio) cá nhân. Bảng hồ sơ này bao gồm biểu đồ trực quan hóa tiến độ theo thời gian và đánh giá mức độ hoàn thành theo bốn bậc (từ Chưa đạt yêu cầu đến Vượt yêu cầu). Dựa trên dữ liệu này, hệ thống sẽ cung cấp các gợi ý cá nhân hóa, ví dụ: "Bạn nên luyện thêm 3 bài Nghe chi tiết cấp độ 3," để giúp bạn tập trung vào đúng kỹ năng cần cải thiện.',
   },
 ];
 
 export default function FrequentlyAskedQuestionsPage() {
   return (
     <div className="w-full">
-      <div className="bg-course-banner h-96 relative">
+      <div className="w-full bg-[url(src/assets/home/school-classroom.jpg)] bg-center bg-no-repeat bg-cover h-96 relative">
         <div className="h-full pt-32 bg-purple-900 opacity-80 text-center flex items-center">
           <p className="text-white m-auto font-bold text-7xl">Câu hỏi thường gặp</p>
         </div>
       </div>
-      <section>
-        <div className="container mx-auto grid grid-cols-2 gap-14 p-14">
-          <h1 className="mb-4 text-3xl font-semibold md:mb-11 md:text-4xl">
-            {heading}
-          </h1>
-          <Accordion type="single" collapsible>
-            {items.map((item, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="font-semibold hover:no-underline">
-                  {item.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  {item.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+      <section className="max-w-2xl mx-auto p-14">
+        <Accordion type="single" className="flex w-full flex-col items-center justify-center gap-3" collapsible>
+          {items.map((item, index) => (
+            <AccordionItem key={index} value={`item-${index}`} className="border-none bg-white m-0 w-full rounded-sm px-4 py-2">
+              <AccordionTrigger className="font-semibold hover:no-underline">
+                {item.question}
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                {item.answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </section>
     </div>
   );

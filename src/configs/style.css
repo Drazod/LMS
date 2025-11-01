@@ -1,6 +1,7 @@
 .bg-course-banner {
     background-image: url('../assets/CourseDetail/banner2.jpg');
     width: 100%;
+    @apply bg-center bg-no-repeat bg-cover;
     /* Other background properties as needed */
 }
 
@@ -10,4 +11,4 @@
     list-style-image: url('../assets/CourseDetail/checkmark.png') !important;
     width: 100%;
     /* Other list style properties as needed */
-} 
+}

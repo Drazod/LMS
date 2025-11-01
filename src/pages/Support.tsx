@@ -77,7 +77,7 @@ export default function SupportPage() {
 
   return (
     <div className="w-full">
-      <div className="bg-course-banner h-96 relative">
+      <div className="w-full bg-[url(src/assets/home/teacher-help.jpeg)] bg-center bg-no-repeat bg-cover h-96 relative">
         <div className="h-full pt-32 bg-purple-900 opacity-80 text-center flex items-center">
           <p className="text-white m-auto font-bold text-7xl">Hỗ trợ</p>
         </div>
@@ -114,7 +114,7 @@ export default function SupportPage() {
                   <Button variant="link" className="!px-0 !gap-0">
                     <EnvelopeIcon className="!size-6" weight="duotone" />
                     <span className="ml-2 text-base font-medium">
-                      <a href="mailto:support@viet.ai">support@viet.ai</a>
+                      <a href="mailto:support@hoctiengviet.ai">support@hoctiengviet.ai</a>
                     </span>
                   </Button>
                 </CardContent>
